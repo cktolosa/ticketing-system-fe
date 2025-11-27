@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import Sidebar from "@/components/sidebar.vue";
 </script>
 
 <template>
-    <!-- use shadcn's sidebar for all sidebars -->
-    <aside>sidebar for superuser</aside>
-    <RouterView />
+  <SidebarProvider>
+      <Sidebar />
+      <SidebarInset>
+        <SidebarTrigger />
+        <RouterView />
+      </SidebarInset>
+  </SidebarProvider>
 </template>
