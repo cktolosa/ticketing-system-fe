@@ -14,7 +14,7 @@ import { useForm, Field as VeeField } from "vee-validate";
 
 const schema = toTypedSchema(
   z.object({
-    email: z.email().min(1, "Email is required"),
+    email: z.string().email().min(1, "Email is required"),
     password: z.string().min(1, "Password is required"),
   }),
 );
@@ -47,7 +47,7 @@ const onSubmit = handleSubmit((data) => {
                 placeholder="juandelacruz@gmail.com"
                 :aria-invalid="!!errors.length"
               />
-              <FieldError :errors />
+              <FieldError :errors="errors" />
             </Field>
           </VeeField>
           <VeeField v-slot="{ field, errors }" name="password">
@@ -60,7 +60,7 @@ const onSubmit = handleSubmit((data) => {
                 placeholder="********"
                 :aria-invalid="!!errors.length"
               />
-              <FieldError :errors />
+              <FieldError :errors="errors" />
             </Field>
           </VeeField>
           <Field orientation="horizontal">
