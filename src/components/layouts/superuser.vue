@@ -64,7 +64,7 @@ const items: MenuItem[] = [
         children: [
             {
                 title: "File Ticket", 
-                url: "/tickets/create",
+                url: "/su/tickets/create",
                 icon: FilePlus,
             }, 
             {
