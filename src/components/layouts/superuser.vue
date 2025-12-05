@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute, RouterView } from "vue-router";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import type { Component } from 'vue';
 import { 
     ChevronRight,
@@ -40,6 +40,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'; 
+import Header from "../header.vue";
 
 const route = useRoute();
 const isChildActive = (item: MenuItem): boolean => {
@@ -69,12 +70,12 @@ const items: MenuItem[] = [
             }, 
             {
                 title: "My Tickets", 
-                url: "/tickets/user",
+                url: "/su/tickets/user",
                 icon: FileText,
             }, 
             {
                 title: "All Tickets", 
-                url: "/su/tickets",
+                url: "/su/tickets/all",
                 icon: Files,
             }, 
         ]
@@ -252,8 +253,8 @@ const footer: FooterItem[] = [
         </SidebarFooter>
       </Sidebar>
     <SidebarInset>
-      <SidebarTrigger />
-      <RouterView />
+        <Header />
+        <RouterView />
     </SidebarInset>
   </SidebarProvider>
 </template>

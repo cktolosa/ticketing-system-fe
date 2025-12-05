@@ -12,6 +12,7 @@ const routes = [
 	},
 	{
 		path: "/su",
+		name: "Dashboard",
 		component: () => import("@/components/layouts/superuser.vue"),
 		children: [
 			{
@@ -20,12 +21,26 @@ const routes = [
 			},
 			{
 				path: "tickets",
-				component: () => import("@/modules/tickets/pages/index.vue"),
-			},
-			{
-				path: "tickets/create",
-				component: () => import("@/modules/tickets/pages/create.vue"),
-			},
+				name: "Tickets", 
+				redirect:"/su/tickets/all",
+				children: [
+					{
+						path: "create",
+						name: "File Ticket",
+						component: () => import("@/modules/tickets/pages/create.vue"),
+					},
+					{
+						path: "user",
+						name: "My Tickets",
+						component: () => import("@/modules/tickets/pages/index.vue"),
+					},
+					{
+						path: "all",
+						name: "All Tickets",
+						component: () => import("@/modules/tickets/pages/index.vue"),
+					},
+				]
+			}, 
 		],
 	},
 ];
