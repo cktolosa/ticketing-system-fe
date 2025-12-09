@@ -3,12 +3,14 @@ import { ref, watch } from "vue";
 
 import * as z from "zod";
 import { toTypedSchema } from "@vee-validate/zod";
-import { useForm, Form, Field as VeeField } from "vee-validate";
-import type { FieldBindingObject } from "vee-validate";
+import {
+  useForm,
+  Field as VeeField,
+  type FieldBindingObject,
+} from "vee-validate";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -28,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/form";
 
 import { X, FileText, Image, Video, Upload } from "lucide-vue-next";
 
@@ -292,17 +295,13 @@ const onSubmit = handleSubmit((data) => {
           </VeeField>
         </div>
 
-        <VeeField v-slot="{ field, errors }" name="title">
-          <Field>
-            <FieldLabel :for="field.name">Title</FieldLabel>
-            <Input
-              v-bind="field"
-              type="text"
-              placeholder="Describe the subject of the ticket."
-              :aria-invalid="!!errors.length"
-            />
-            <FieldError :errors="errors" />
-          </Field>
+        <VeeField v-slot="{ componentField }" name="title">
+          <Input
+            v-bind="componentField"
+            label="Title"
+            type="text"
+            placeholder="Describe the subject of the ticket."
+          />
         </VeeField>
 
         <VeeField v-slot="{ field, errors }" name="description">
@@ -324,7 +323,7 @@ const onSubmit = handleSubmit((data) => {
               Maximum 5 files. Accepts images, videos, and PDF documents (up to
               10MB each).
             </FieldDescription>
-            <Input
+            <input
               :id="`${field.name}-input`"
               :key="field.value?.length"
               type="file"
