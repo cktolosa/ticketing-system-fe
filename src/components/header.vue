@@ -23,7 +23,7 @@ interface Breadcrumb {
 const breadcrumbs = computed<Breadcrumb[]>(() => {
     const matched = route.matched.filter(record => record.name); 
     return matched.map((record, index) => ({
-        name: record.name as string, 
+        name: record.name?.toString() || '', 
         to: record.path, 
         isLast: index === matched.length -1
     }));
@@ -31,7 +31,7 @@ const breadcrumbs = computed<Breadcrumb[]>(() => {
 </script>
 
 <template>
-     <header class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+     <header class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 border-b">
         <div class="flex items-center gap-2 px-4">
             <SidebarTrigger class="-ml-1" />
                 <Separator
