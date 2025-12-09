@@ -6,8 +6,8 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { useField } from "vee-validate";
-import { Input } from "@/components/ui/input";
 import { computed, useId } from "vue";
+import { Textarea } from "@/components/ui/textarea";
 
 const props = defineProps<{
   name: string;
@@ -27,10 +27,11 @@ const isInvalid = computed(() => !!errors.value.length && !meta.valid);
   <Field :data-invalid="isInvalid">
     <FieldLabel :for="id">{{ label }}</FieldLabel>
 
-    <Input
+    <Textarea
       :id
       :aria-invalid="isInvalid"
       :aria-describedby="isInvalid ? errorId : undefined"
+      rows="5"
       v-bind="$attrs"
     />
 

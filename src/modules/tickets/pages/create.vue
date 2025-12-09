@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Field,
   FieldError,
@@ -30,7 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/form";
+import { Input, Textarea } from "@/components/form";
 
 import { X, FileText, Image, Video, Upload } from "lucide-vue-next";
 
@@ -304,16 +303,12 @@ const onSubmit = handleSubmit((data) => {
           />
         </VeeField>
 
-        <VeeField v-slot="{ field, errors }" name="description">
-          <Field>
-            <FieldLabel :for="field.name">Description</FieldLabel>
-            <Textarea
-              v-bind="field"
-              placeholder="Describe the issue and steps to reproduce."
-              :aria-invalid="!!errors.length"
-            />
-            <FieldError :errors="errors" />
-          </Field>
+        <VeeField v-slot="{ componentField }" name="description">
+          <Textarea
+            v-bind="componentField"
+            label="Description"
+            placeholder="Describe the issue and steps to reproduce."
+          />
         </VeeField>
 
         <VeeField v-slot="{ field, errors }" name="attachments">
