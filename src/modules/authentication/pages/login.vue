@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-  FieldSet,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
 import * as z from "zod";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm, Field as VeeField } from "vee-validate";
+import { Spinner } from "@/components/ui/spinner";
+import { Input } from "@/components/form";
 
 const schema = toTypedSchema(
   z.object({
@@ -19,7 +14,7 @@ const schema = toTypedSchema(
   }),
 );
 
-const { handleSubmit } = useForm({
+const { handleSubmit, isSubmitting } = useForm({
   validationSchema: schema,
   initialValues: {
     email: "",
@@ -27,7 +22,9 @@ const { handleSubmit } = useForm({
   },
 });
 
-const onSubmit = handleSubmit((data) => {
+const onSubmit = handleSubmit(async (data) => {
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+
   alert(JSON.stringify(data));
 });
 </script>
@@ -37,34 +34,27 @@ const onSubmit = handleSubmit((data) => {
     <form @submit="onSubmit">
       <FieldSet>
         <FieldGroup>
-          <VeeField v-slot="{ field, errors }" name="email">
-            <Field :aria-invalid="!!errors.length">
-              <FieldLabel for="email">Email</FieldLabel>
-              <Input
-                v-bind="field"
-                id="email"
-                type="email"
-                placeholder="juandelacruz@gmail.com"
-                :aria-invalid="!!errors.length"
-              />
-              <FieldError :errors="errors" />
-            </Field>
+          <VeeField v-slot="{ componentField }" name="email">
+            <Input
+              v-bind="componentField"
+              label="Email"
+              type="email"
+              placeholder="user@example.com"
+            />
           </VeeField>
-          <VeeField v-slot="{ field, errors }" name="password">
-            <Field :aria-invalid="!!errors.length">
-              <FieldLabel for="password">Password</FieldLabel>
-              <Input
-                v-bind="field"
-                id="password"
-                type="password"
-                placeholder="********"
-                :aria-invalid="!!errors.length"
-              />
-              <FieldError :errors="errors" />
-            </Field>
+          <VeeField v-slot="{ componentField }" name="password">
+            <Input
+              v-bind="componentField"
+              label="Password"
+              type="password"
+              placeholder="********"
+            />
           </VeeField>
           <Field orientation="horizontal">
-            <Button>Login</Button>
+            <Button :disabled="isSubmitting">
+              <Spinner v-if="isSubmitting" />
+              Login
+            </Button>
           </Field>
         </FieldGroup>
       </FieldSet>
