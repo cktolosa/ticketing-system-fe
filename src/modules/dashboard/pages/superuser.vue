@@ -37,6 +37,12 @@ import {
     componentToString
 } from "@/components/ui/chart"; 
 
+const formatter = new Intl.NumberFormat('en-PH', {
+    style: 'percent',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+})
+
 interface CardItem {
     title: string, 
     value: string, 
@@ -48,33 +54,34 @@ const items: CardItem[] = [
     {
         title: "Resolution Time", 
         value: "2.4 days", 
-        percentage: 12, 
+        percentage: 0.1245, 
         description: "Average time to close a ticket",
         recommendation: "Monitor resolution time trends to ensure efficient ticket handling and workflow optimization.", 
     }, 
     {
         title: "Priority Resolution", 
         value: "10 tickets", 
-        percentage: 12, 
+        percentage: 0.12, 
         description: "Closed high-urgency tickets",
         recommendation: "Continue prioritizing high-urgency tickets to maintain smooth operations and user satisfaction.",
     }, 
     {
         title: "User Activity", 
         value: "6 users", 
-        percentage: -15, 
-        description: "Users engaged with the system",
+        percentage: -0.15, 
+        description: "Users system engagement",
         recommendation: "Track user engagement patterns to identify opportunities for system improvement and adoption."
     },
     {
         title: "FAQ Views", 
         value: "342 views", 
-        percentage: 22, 
+        percentage: 0.22, 
         description: "Total FAQ page visits",
         recommendation: "Keep FAQ content updated and accessible to encourage self-service problem resolution."
     }, 
 ];
 
+type DonutSegment<T> = T | { data: T };
 type PieCategory = keyof typeof pieConfig; 
 interface PieChart {
     category: PieCategory, 
@@ -178,22 +185,19 @@ const getTrend = (percentage: number) => {
             <h2 class="text-xl font-bold hidden sm:block">Overview</h2>
             <div class="flex flex-col sm:flex-row gap-2 sm:justify-end">
                 <div class="flex items-center justify-center gap-2 text-sm text-muted-foreground border rounded-sm p-2">
-                    <CalendarIcon class="h-4 w-4" />
+                    <CalendarIcon class="size-4" />
                     <span>October - December 2025</span>
                 </div>
                 <Button class="w-full sm:w-auto">
-                    <Download class="h-4 w-4 mr-2" />
+                    <Download class="size-4 mr-2" />
                     Download Report
                 </Button>
             </div> 
         </div>
-        <div class="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 md:grid-cols-4 gap-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-                <Card v-for="item in items" :key="item.title" class="@container/card">
-                    <CardHeader>
+        <div class="auto-rows-min grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card">
+                <Card v-for="item in items" :key="item.title" class="@container/card grid grid-rows-subgrid row-span-3">
+                    <CardHeader class="row-start-1">
                         <CardDescription>{{ item.title }}</CardDescription>
-                        <CardTitle class="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                                {{ item.value }}
-                        </CardTitle>
                         <CardAction>
                             <Badge 
                                 variant="outline" 
@@ -201,18 +205,21 @@ const getTrend = (percentage: number) => {
                             >
                                 <component
                                     :is="getTrend(item.percentage).icon" 
-                                    :class="['h-4 w-4', getTrend(item.percentage).color]"
+                                    :class="['size-4', getTrend(item.percentage).color]"
                                 />
-                                {{ item.percentage }} %
+                                {{ formatter.format(item.percentage) }}
                             </Badge>
                         </CardAction>
                     </CardHeader>
-                    <CardFooter class="flex-col items-start gap-1.5 text-sm">
-                        <div class="line-clamp-1 flex gap-2 font-medium">
+                    <CardTitle class="row-start-2 pl-6 text-xl md:text-2xl font-semibold tabular-nums">
+                                {{ item.value }}
+                    </CardTitle>
+                    <CardFooter class="row-start-3 flex-col items-start gap-2 text-sm">
+                        <div class="flex gap-2 font-medium">
                             {{ item.description }}
                             <component
                                 :is="getTrend(item.percentage).icon" 
-                                :class="['h-4 w-4', getTrend(item.percentage).color]"
+                                :class="['size-4', getTrend(item.percentage).color]"
                             />
                         </div>
                         <div class="text-muted-foreground">
@@ -221,12 +228,12 @@ const getTrend = (percentage: number) => {
                     </CardFooter>
                 </Card>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card class="flex flex-col">
-                <CardHeader class="items-center pb-0">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 auto-rows-min">
+            <Card class="grid grid-rows-subgrid row-span-3">
+                <CardHeader class="row-start-1 items-center">
                     <CardTitle>Ticket Counts</CardTitle>
                 </CardHeader>
-                <CardContent class="flex-1 pb-0">
+                <CardContent class="flex-1 row-start-2">
                     <ChartContainer
                         :config="pieConfig"
                         class="mx-auto aspect-square max-h-[300px]"
@@ -251,12 +258,12 @@ const getTrend = (percentage: number) => {
                             />
                             <ChartTooltip
                                 :triggers="{
-                                    [Donut.selectors.segment]: (d: any) => {
+                                    [Donut.selectors.segment]: (d: DonutSegment<PieChart>) => {
                                         const item: PieChart = 'data' in d ? d.data : d;
                                         return `
                                             <div class='bg-white text-xs p-2 rounded-full flex flex-row justify-between gap-3'>
                                                 <div class='flex flex-row justify-center items-center gap-1'>
-                                                    <div class='w-3 h-3 rounded' style='background-color: ${item.fill}'></div>
+                                                    <div class='size-3 rounded' style='background-color: ${item.fill}'></div>
                                                     <div class='font-medium'>${pieConfig[item.category]?.label}</div>
                                                 </div>
                                                 <div class='text-muted-foreground'>${item.tickets} tickets</div>
@@ -267,9 +274,9 @@ const getTrend = (percentage: number) => {
                         </VisSingleContainer>
                     </ChartContainer>
                 </CardContent>
-                <CardFooter class="flex-col gap-2 text-sm">
-                    <div class="flex items-center gap-2 font-medium leading-none">
-                        Ticket volume increased by 5.2% this month <TrendingUp class="h-4 w-4 text-green-500" />
+                <CardFooter class="row-start-3 flex-col gap-2 text-sm">
+                    <div class="flex gap-2 font-medium leading-none">
+                        Ticket volume increased by 5.20% <TrendingUp class="size-4 text-green-500" />
                     </div>
                     <div class="leading-none text-muted-foreground">
                         Showing total number of tickets for the last 3 months. 
@@ -277,11 +284,11 @@ const getTrend = (percentage: number) => {
                 </CardFooter>
             </Card>
 
-            <Card>
-                <CardHeader>
+            <Card class="grid grid-rows-subgrid row-span-3">
+                <CardHeader class="row-start-1 items-center">
                     <CardTitle>Ticket Distribution</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent class="flex-1 row-start-2 overflow-hidden">
                     <ChartContainer :config="barConfig">
                         <VisXYContainer
                             :data="bar"
@@ -323,9 +330,9 @@ const getTrend = (percentage: number) => {
                         </VisXYContainer>
                     </ChartContainer>
                 </CardContent>
-                <CardFooter class="flex-col gap-2 text-sm">
-                    <div class="flex items-center gap-2 font-medium leading-none">
-                        AIT department handled 1.2% fewer tickets this month <TrendingDown class="h-4 w-4 text-destructive" />
+                <CardFooter class="row-start-3 flex-col gap-2 text-sm">
+                    <div class="flex gap-2 font-medium leading-none">
+                        AIT department handled -1.20% tickets <TrendingDown class="size-4 text-destructive" />
                     </div>
                     <div class="leading-none text-muted-foreground">
                         Showing departments tickets comparison for the last 3 months. 
