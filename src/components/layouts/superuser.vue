@@ -6,7 +6,6 @@ import {
     ChevronRight,
     ChevronUp,
     LayoutDashboard,
-    FileText, 
     FilePlus, 
     Files, 
     UserPlus, 
@@ -70,12 +69,17 @@ const items: MenuItem[] = [
             }, 
             {
                 title: "My Tickets", 
-                url: "/su/tickets/user",
-                icon: FileText,
+                url: "/su/tickets/reported",
+                icon: Files,
+            }, 
+            {
+                title: "Assigned Tickets", 
+                url: "/su/tickets/assigned",
+                icon: Files,
             }, 
             {
                 title: "All Tickets", 
-                url: "/su/tickets/all",
+                url: "/su/tickets",
                 icon: Files,
             }, 
         ]

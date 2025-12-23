@@ -22,7 +22,7 @@ const routes = [
 			{
 				path: "tickets",
 				name: "Tickets", 
-				redirect:"/su/tickets/all",
+				redirect:"/su/tickets",
 				children: [
 					{
 						path: "create",
@@ -30,12 +30,17 @@ const routes = [
 						component: () => import("@/modules/tickets/pages/create.vue"),
 					},
 					{
-						path: "user",
+						path: "reported",
 						name: "My Tickets",
-						component: () => import("@/modules/tickets/pages/index.vue"),
+						component: () => import("@/modules/tickets/pages/reported.vue"),
 					},
 					{
-						path: "all",
+						path: "assigned",
+						name: "Assigned Tickets",
+						component: () => import("@/modules/tickets/pages/assigned.vue"),
+					},
+					{
+						path: "",
 						name: "All Tickets",
 						component: () => import("@/modules/tickets/pages/index.vue"),
 					},
