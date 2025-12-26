@@ -129,7 +129,7 @@ const tickets: Ticket[] = [
 
 <template>
     <div class="w-full p-5">
-        <h1 class="text-lg md:text-xl font-bold">All Tickets</h1>
+        <h1 class="text-lg md:text-xl font-bold">Assigned Tickets</h1>
         <DataTable :columns="columns" :data="tickets" />
     </div>
 </template>
