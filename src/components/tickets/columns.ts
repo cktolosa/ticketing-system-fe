@@ -1,5 +1,7 @@
 import { h } from 'vue'; 
 
+import { cn } from '@/lib/utils';
+
 import DropdownAction from './data-action.vue'; 
 import type { ColumnDef } from '@tanstack/vue-table';
 import type { Component } from 'vue';
@@ -100,11 +102,11 @@ export const columns: ColumnDef<Ticket>[] = [
             return h(Button, {
                 variant: 'ghost',
                 onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Status', h(ArrowUpDown, { class: 'ml-2 size-4' })])
+            }, () => ['Status', h(ArrowUpDown, { class: 'size-4' })])
         },
         cell: ({ row }) => {
             const status = row.getValue<Status>('status')
-            return h(Badge, { class: `capitalize ${statusStyles[status]}` }, () => status)
+            return h(Badge, { class: cn('capitalize', statusStyles[status]) }, () => status)
         },
         sortingFn: (a, b) => statusOrder[a.original.status] - statusOrder[b.original.status],
     }, 
@@ -114,7 +116,7 @@ export const columns: ColumnDef<Ticket>[] = [
             return h(Button, {
                 variant: 'ghost',
                 onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
-            }, () => ['Priority', h(ArrowUpDown, { class: 'ml-2 size-4' })])
+            }, () => ['Priority', h(ArrowUpDown, { class: 'size-4' })])
         },
         cell: ({ row }) => {
             const priority = row.getValue<Priority>('priority')
@@ -122,7 +124,7 @@ export const columns: ColumnDef<Ticket>[] = [
           
             return h(
                 Badge,
-                { class: `capitalize inline-flex items-center gap-1 ${config.class}` },
+                { class: cn('capitalize inline-flex items-center gap-1', config.class) },
                 () => [h(config.icon, { class: 'size-3' }), priority]
             )
         },

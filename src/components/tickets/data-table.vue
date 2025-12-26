@@ -69,7 +69,7 @@ const table = useVueTable({
                     :key="row.id"
                     class="text-sm p-5"
                 >
-                    <CardContent class="grid grid-cols-2 [&>*]:p-3 [&>*]:border-b">
+                    <CardContent class="grid grid-cols-2 *:p-3 *:border-b">
                         <template v-for="cell in row.getVisibleCells()" :key="cell.id">
                             <div class="text-muted-foreground capitalize">
                                 {{ typeof cell.column.columnDef.header === 'string' 

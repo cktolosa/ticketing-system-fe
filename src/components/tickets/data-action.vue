@@ -12,7 +12,7 @@ import {
 <template>
     <DropdownMenu>
         <DropdownMenuTrigger as-child>
-            <Button variant="ghost" class="size-8 p-0">
+            <Button variant="ghost" size="sm">
                 <span class="sr-only">Open menu</span>
                 <MoreHorizontal class="size-5" />
             </Button>
