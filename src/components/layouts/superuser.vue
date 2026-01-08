@@ -43,7 +43,9 @@ import Header from "../header.vue";
 
 const route = useRoute();
 const isChildActive = (item: MenuItem): boolean => {
-    return item.children?.some((child) => route.path === child.url) ?? false; 
+    return item.children?.some((child) => {
+        return route.path === child.url || route.path.startsWith(child.url + '/');
+    }) ?? false;
 }; 
 
 interface MenuItem {
