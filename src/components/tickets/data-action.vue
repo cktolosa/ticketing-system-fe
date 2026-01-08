@@ -18,8 +18,11 @@ import {
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-            <DropdownMenuItem>View ticket</DropdownMenuItem>
-            <DropdownMenuItem>Edit ticket</DropdownMenuItem>
+            <DropdownMenuItem as-child>
+                <router-link to="/su/tickets/view">
+                    View ticket
+                </router-link>
+            </DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
 </template>
