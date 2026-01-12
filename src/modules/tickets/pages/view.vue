@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { formatDate } from '@/lib/utils';
+
 import * as z from "zod";
 import { toTypedSchema } from "@vee-validate/zod";
 import {
@@ -139,17 +141,6 @@ const comments: Comment[] = [
 
 const isOpen = ref(true); 
 const isDialogOpen = ref(false); 
-
-const formatDate = (date: Date) => {
-  return new Date(date).toLocaleString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true, 
-  });
-};
 
 type Status = {
   id: number;

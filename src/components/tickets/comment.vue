@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref, computed} from "vue";
+
+import { formatDate } from "@/lib/utils";
+
 import * as z from "zod";
 import { toTypedSchema } from "@vee-validate/zod";
 import {
@@ -26,17 +29,6 @@ export type Comment = {
     comment: string, 
     attachment?: Attachment [],
 }; 
-
-const formatDate = (date: Date) => {
-  return new Date(date).toLocaleString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true, 
-  });
-};
 
 const commentSchema = z
   .object({

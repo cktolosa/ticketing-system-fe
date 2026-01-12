@@ -1,4 +1,5 @@
 import { h} from "vue";
+import { formatDate } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/vue-table";
 
 import DropdownAction from "@/components/tickets/data-action.vue";
@@ -40,10 +41,10 @@ export const columns: ColumnDef<Ticket>[] = [
       return h(
         "div",
         { class: "text-left tabular-nums" },
-        date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "2-digit",
-          year: "numeric",
+        formatDate(new Date(date), {
+          year: 'numeric', 
+          month: 'long',
+          day: '2-digit'
         }),
       );
     },

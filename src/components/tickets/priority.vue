@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue';
+import { cn } from '@/lib/utils';
 
 import { Badge } from "@/components/ui/badge";
 
@@ -39,7 +40,7 @@ const config: Record<Priority, PriorityConfig> = {
 </script>
 
 <template>
-   <Badge :class="['capitalize inline-flex items-center gap-1', config[priority].class]">
+   <Badge :class="cn('capitalize inline-flex items-center gap-1', config[priority].class)">
         <component :is="config[priority].icon" class="size-3" />
         {{ priority }}
   </Badge>

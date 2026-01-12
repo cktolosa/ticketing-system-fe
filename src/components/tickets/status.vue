@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { cn } from "@/lib/utils";
+
 import { Badge } from "@/components/ui/badge";
 
 //to handle ids
@@ -18,7 +20,7 @@ const styles: Record<Status, string> = {
 </script>
 
 <template>
-    <Badge :class="`capitalize ${styles[status]}`">
+    <Badge :class="cn('capitalize', styles[status])">
         {{ status }}
     </Badge>
 </template>
