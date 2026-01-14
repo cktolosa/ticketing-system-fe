@@ -1,13 +1,11 @@
-import { h, type Component } from "vue";
+import { h} from "vue";
+import { formatDate } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/vue-table";
-
-import { cn } from '@/lib/utils';
 
 import DropdownAction from "@/components/tickets/data-action.vue";
 import ColumnHeader from "@/components/table/column-header.vue";
-import { Badge } from "@/components/ui/badge";
-
-import { ArrowDown, ArrowRight, ArrowUp } from "lucide-vue-next";
+import StatusBadge from "@/components/tickets/status.vue";
+import PriorityBadge from "@/components/tickets/priority.vue";
 
 const statusOrder = {
   new: 1,
@@ -34,33 +32,6 @@ export interface Ticket {
   priority: Priority;
 }
 
-const statusStyles: Record<Status, string> = {
-  new: "bg-purple-100 text-purple-800 ring-1 ring-inset ring-purple-400",
-  "in progress": "bg-blue-100 text-blue-800 ring-1 ring-inset ring-blue-400",
-  resolved: "bg-green-100 text-green-800 ring-1 ring-inset ring-green-400",
-  closed: "bg-gray-100 text-gray-800 ring-1 ring-inset ring-gray-400",
-};
-
-type PriorityConfig = {
-  class: string;
-  icon: Component;
-};
-
-const priorityConfig: Record<Priority, PriorityConfig> = {
-  low: {
-    class: "bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-300",
-    icon: ArrowDown,
-  },
-  medium: {
-    class: "bg-orange-100 text-orange-800 ring-1 ring-inset ring-orange-400",
-    icon: ArrowRight,
-  },
-  high: {
-    class: "bg-red-100 text-red-800 ring-1 ring-inset ring-red-400",
-    icon: ArrowUp,
-  },
-};
-
 export const columns: ColumnDef<Ticket>[] = [
   {
     accessorKey: "date",
@@ -70,10 +41,10 @@ export const columns: ColumnDef<Ticket>[] = [
       return h(
         "div",
         { class: "text-left tabular-nums" },
-        date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "2-digit",
-          year: "numeric",
+        formatDate(new Date(date), {
+          year: 'numeric', 
+          month: 'long',
+          day: '2-digit'
         }),
       );
     },
@@ -102,11 +73,7 @@ export const columns: ColumnDef<Ticket>[] = [
     header: ({ column }) => h(ColumnHeader, { column }, "Status"),
     cell: ({ row }) => {
       const status = row.getValue<Status>("status");
-      return h(
-        Badge,
-        { class: `capitalize ${statusStyles[status]}` },
-        () => status,
-      );
+      return h(StatusBadge, {status});
     },
     sortingFn: (a, b) =>
       statusOrder[a.original.status] - statusOrder[b.original.status],
@@ -116,13 +83,7 @@ export const columns: ColumnDef<Ticket>[] = [
     header: ({ column }) => h(ColumnHeader, { column }, "Priority"),
     cell: ({ row }) => {
       const priority = row.getValue<Priority>("priority");
-      const config = priorityConfig[priority];
-
-      return h(
-        Badge,
-        { class: `capitalize inline-flex items-center gap-1 ${config.class}` },
-        () => [h(config.icon, { class: "size-3" }), priority],
-      );
+      return h(PriorityBadge, {priority});
     },
     sortingFn: (a, b) =>
       priorityOrder[a.original.priority] - priorityOrder[b.original.priority],

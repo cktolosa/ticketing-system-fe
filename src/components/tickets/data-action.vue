@@ -7,6 +7,7 @@ import {
     DropdownMenuItem, 
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'; 
+import { Eye } from 'lucide-vue-next';
 </script>
 
 <template>
@@ -18,8 +19,12 @@ import {
             </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-            <DropdownMenuItem>View ticket</DropdownMenuItem>
-            <DropdownMenuItem>Edit ticket</DropdownMenuItem>
+            <DropdownMenuItem as-child>
+                <router-link to="/su/tickets/view">
+                    <Eye />
+                    View
+                </router-link>
+            </DropdownMenuItem>
         </DropdownMenuContent>
     </DropdownMenu>
 </template>
