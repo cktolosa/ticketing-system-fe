@@ -1,15 +1,16 @@
-import { h} from "vue";
-import { formatDate } from "@/lib/utils";
-import type { ColumnDef } from "@tanstack/vue-table";
+import type { ColumnDef } from '@tanstack/vue-table';
+import { h } from 'vue';
 
-import DropdownAction from "@/components/tickets/data-action.vue";
-import ColumnHeader from "@/components/table/column-header.vue";
-import StatusBadge from "@/components/tickets/status.vue";
-import PriorityBadge from "@/components/tickets/priority.vue";
+import ColumnHeader from '@/components/table/column-header.vue';
+import DropdownAction from '@/components/tickets/data-action.vue';
+import PriorityBadge from '@/components/tickets/priority.vue';
+import StatusBadge from '@/components/tickets/status.vue';
+
+import { formatDate } from '@/lib/utils';
 
 const statusOrder = {
   new: 1,
-  "in progress": 2,
+  'in progress': 2,
   resolved: 3,
   closed: 4,
 } as const;
@@ -34,63 +35,60 @@ export interface Ticket {
 
 export const columns: ColumnDef<Ticket>[] = [
   {
-    accessorKey: "date",
-    header: ({ column }) => h(ColumnHeader, { column }, "Date"),
+    accessorKey: 'date',
+    header: ({ column }) => h(ColumnHeader, { column }, 'Date'),
     cell: ({ row }) => {
-      const date = row.getValue<Date>("date");
+      const date = row.getValue<Date>('date');
       return h(
-        "div",
-        { class: "text-left tabular-nums" },
+        'div',
+        { class: 'text-left tabular-nums' },
         formatDate(new Date(date), {
-          year: 'numeric', 
+          year: 'numeric',
           month: 'long',
-          day: '2-digit'
-        }),
+          day: '2-digit',
+        })
       );
     },
   },
   {
-    accessorKey: "title",
-    header: ({ column }) => h(ColumnHeader, { column }, "Title"),
-    cell: ({ row }) => h("div", { class: "text-left" }, row.getValue("title")),
+    accessorKey: 'title',
+    header: ({ column }) => h(ColumnHeader, { column }, 'Title'),
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('title')),
     enableSorting: false,
   },
   {
-    accessorKey: "department",
-    header: ({ column }) => h(ColumnHeader, { column }, "Department"),
-    cell: ({ row }) =>
-      h("div", { class: "text-left" }, row.getValue("department")),
+    accessorKey: 'department',
+    header: ({ column }) => h(ColumnHeader, { column }, 'Department'),
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('department')),
     enableSorting: false,
   },
   {
-    accessorKey: "admin",
-    header: ({ column }) => h(ColumnHeader, { column }, "Admin"),
-    cell: ({ row }) => h("div", { class: "text-left" }, row.getValue("admin")),
+    accessorKey: 'admin',
+    header: ({ column }) => h(ColumnHeader, { column }, 'Admin'),
+    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('admin')),
     enableSorting: false,
   },
   {
-    accessorKey: "status",
-    header: ({ column }) => h(ColumnHeader, { column }, "Status"),
+    accessorKey: 'status',
+    header: ({ column }) => h(ColumnHeader, { column }, 'Status'),
     cell: ({ row }) => {
-      const status = row.getValue<Status>("status");
-      return h(StatusBadge, {status});
+      const status = row.getValue<Status>('status');
+      return h(StatusBadge, { status });
     },
-    sortingFn: (a, b) =>
-      statusOrder[a.original.status] - statusOrder[b.original.status],
+    sortingFn: (a, b) => statusOrder[a.original.status] - statusOrder[b.original.status],
   },
   {
-    accessorKey: "priority",
-    header: ({ column }) => h(ColumnHeader, { column }, "Priority"),
+    accessorKey: 'priority',
+    header: ({ column }) => h(ColumnHeader, { column }, 'Priority'),
     cell: ({ row }) => {
-      const priority = row.getValue<Priority>("priority");
-      return h(PriorityBadge, {priority});
+      const priority = row.getValue<Priority>('priority');
+      return h(PriorityBadge, { priority });
     },
-    sortingFn: (a, b) =>
-      priorityOrder[a.original.priority] - priorityOrder[b.original.priority],
+    sortingFn: (a, b) => priorityOrder[a.original.priority] - priorityOrder[b.original.priority],
   },
   {
-    id: "actions",
-    header: ({ column }) => h(ColumnHeader, { column }, "Actions"),
+    id: 'actions',
+    header: ({ column }) => h(ColumnHeader, { column }, 'Actions'),
     cell: ({ row }) => h(DropdownAction, { ticket: row.original }),
     enableSorting: false,
   },

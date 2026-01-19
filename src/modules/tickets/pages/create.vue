@@ -1,42 +1,36 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { toTypedSchema } from '@vee-validate/zod';
+import { FileText, Image, Upload, Video, X } from 'lucide-vue-next';
+import { type FieldBindingObject, useForm, Field as VeeField } from 'vee-validate';
+import { ref, watch } from 'vue';
+import * as z from 'zod';
 
-import * as z from "zod";
-import { toTypedSchema } from "@vee-validate/zod";
-import {
-  useForm,
-  Field as VeeField,
-  type FieldBindingObject,
-} from "vee-validate";
-
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input, Textarea } from '@/components/form';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Field,
+  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldSet,
   FieldLegend,
-  FieldDescription,
-} from "@/components/ui/field";
+  FieldSet,
+} from '@/components/ui/field';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input, Textarea } from "@/components/form";
-
-import { X, FileText, Image, Video, Upload } from "lucide-vue-next";
+} from '@/components/ui/select';
 
 const getFileIcon = (fileType: string) => {
-  if (fileType.startsWith("image/")) return Image;
-  if (fileType.startsWith("video/")) return Video;
-  if (fileType === "application/pdf") return FileText;
+  if (fileType.startsWith('image/')) return Image;
+  if (fileType.startsWith('video/')) return Video;
+  if (fileType === 'application/pdf') return FileText;
   return FileText;
 };
 
@@ -61,7 +55,7 @@ const removeFile = (index: number, field: FieldBindingObject<File[]>) => {
 const isUnassigned = ref<boolean>(false);
 watch(isUnassigned, (checked) => {
   if (checked) {
-    setFieldValue("admin_id", undefined);
+    setFieldValue('admin_id', undefined);
   }
 });
 
@@ -70,9 +64,9 @@ type Employee = {
   name: string;
 };
 const employees = ref<Employee[]>([
-  { id: 1, name: "Jose Reyes" },
-  { id: 2, name: "Carlos Mendoza" },
-  { id: 3, name: "Ana Marie Garcia" },
+  { id: 1, name: 'Jose Reyes' },
+  { id: 2, name: 'Carlos Mendoza' },
+  { id: 3, name: 'Ana Marie Garcia' },
 ]);
 
 type Priority = {
@@ -80,9 +74,9 @@ type Priority = {
   name: string;
 };
 const priorities = ref<Priority[]>([
-  { id: 1, name: "Low" },
-  { id: 2, name: "Medium" },
-  { id: 3, name: "High" },
+  { id: 1, name: 'Low' },
+  { id: 2, name: 'Medium' },
+  { id: 3, name: 'High' },
 ]);
 
 type Department = {
@@ -90,12 +84,12 @@ type Department = {
   name: string;
 };
 const departments = ref<Department[]>([
-  { id: 1, name: "Team Banana" },
-  { id: 2, name: "AIT" },
-  { id: 3, name: "HRAD" },
-  { id: 4, name: "Equinox" },
-  { id: 5, name: "QA" },
-  { id: 6, name: "Crowd Works" },
+  { id: 1, name: 'Team Banana' },
+  { id: 2, name: 'AIT' },
+  { id: 3, name: 'HRAD' },
+  { id: 4, name: 'Equinox' },
+  { id: 5, name: 'QA' },
+  { id: 6, name: 'Crowd Works' },
 ]);
 
 type Admin = {
@@ -103,44 +97,44 @@ type Admin = {
   name: string;
 };
 const admins = ref<Admin[]>([
-  { id: 1, name: "Juan Dela Cruz" },
-  { id: 2, name: "Juana Rodriguez" },
-  { id: 3, name: "Ruby Velasquez" },
+  { id: 1, name: 'Juan Dela Cruz' },
+  { id: 2, name: 'Juana Rodriguez' },
+  { id: 3, name: 'Ruby Velasquez' },
 ]);
 
 const ticketSchema = z
   .object({
-    employee_id: z.number().min(1, "Please select an employee."),
-    priority_id: z.number().min(1, "Please select a priority."),
-    department_id: z.number().min(1, "Please select a department."),
+    employee_id: z.number().min(1, 'Please select an employee.'),
+    priority_id: z.number().min(1, 'Please select a priority.'),
+    department_id: z.number().min(1, 'Please select a department.'),
     admin_id: z
       .number()
-      .min(1, "Please select an admin or check the leave unassigned option.")
+      .min(1, 'Please select an admin or check the leave unassigned option.')
       .optional(),
     title: z
       .string()
-      .min(10, "Title must be at least 10 characters.")
-      .max(50, "Title must not exceed 50 characters."),
+      .min(10, 'Title must be at least 10 characters.')
+      .max(50, 'Title must not exceed 50 characters.'),
     description: z
       .string()
-      .min(20, "Description must be at least 20 characters.")
-      .max(500, "Description must not exceed 500 characters."),
+      .min(20, 'Description must be at least 20 characters.')
+      .max(500, 'Description must not exceed 500 characters.'),
     attachments: z
       .array(z.instanceof(File))
-      .max(5, "You can upload up to 5 files only.")
+      .max(5, 'You can upload up to 5 files only.')
       .refine(
         (files) => files.every((file) => file.size <= 10_485_760),
-        "Each file must be less than 10MB.",
+        'Each file must be less than 10MB.'
       )
       .refine(
         (files) =>
           files.every((file) => {
-            const isImage = file.type.startsWith("image/");
-            const isVideo = file.type.startsWith("video/");
-            const isPDF = file.type === "application/pdf";
+            const isImage = file.type.startsWith('image/');
+            const isVideo = file.type.startsWith('video/');
+            const isPDF = file.type === 'application/pdf';
             return isImage || isVideo || isPDF;
           }),
-        "Only image, video, and PDF files are allowed.",
+        'Only image, video, and PDF files are allowed.'
       )
       .optional(),
   })
@@ -152,9 +146,9 @@ const ticketSchema = z
       return true;
     },
     {
-      message: "Please select an admin or check the leave unassigned option.",
-      path: ["admin_id"],
-    },
+      message: 'Please select an admin or check the leave unassigned option.',
+      path: ['admin_id'],
+    }
   );
 
 const defaultValues: z.infer<typeof ticketSchema> = {
@@ -162,8 +156,8 @@ const defaultValues: z.infer<typeof ticketSchema> = {
   department_id: 0,
   admin_id: 0,
   priority_id: 0,
-  title: "",
-  description: "",
+  title: '',
+  description: '',
   attachments: undefined,
 };
 
@@ -186,7 +180,7 @@ const onSubmit = handleSubmit((data) => {
         size: f.size,
         type: f.type,
       })),
-    }),
+    })
   );
   handleCancel();
 });
@@ -201,14 +195,11 @@ const onSubmit = handleSubmit((data) => {
           Provide the details below and we'll get your issue resolved quickly.
         </FieldDescription>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
           <VeeField v-slot="{ field, errors }" name="employee_id">
             <Field>
               <FieldLabel>Employee</FieldLabel>
-              <Select
-                :model-value="field.value"
-                @update:modelValue="field.onChange"
-              >
+              <Select :model-value="field.value" @update:modelValue="field.onChange">
                 <SelectTrigger :aria-invalid="!!errors.length">
                   <SelectValue placeholder="Select an employee" />
                 </SelectTrigger>
@@ -225,10 +216,7 @@ const onSubmit = handleSubmit((data) => {
           <VeeField v-slot="{ field, errors }" name="priority_id">
             <Field>
               <FieldLabel>Priority</FieldLabel>
-              <Select
-                :model-value="field.value"
-                @update:modelValue="field.onChange"
-              >
+              <Select :model-value="field.value" @update:modelValue="field.onChange">
                 <SelectTrigger :aria-invalid="!!errors.length">
                   <SelectValue placeholder="Select a priority" />
                 </SelectTrigger>
@@ -245,19 +233,12 @@ const onSubmit = handleSubmit((data) => {
           <VeeField v-slot="{ field, errors }" name="department_id">
             <Field>
               <FieldLabel>Department</FieldLabel>
-              <Select
-                :model-value="field.value"
-                @update:modelValue="field.onChange"
-              >
+              <Select :model-value="field.value" @update:modelValue="field.onChange">
                 <SelectTrigger :aria-invalid="!!errors.length">
                   <SelectValue placeholder="Select a department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="d in departments"
-                    :key="d.id"
-                    :value="d.id"
-                  >
+                  <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
                     {{ d.name }}
                   </SelectItem>
                 </SelectContent>
@@ -315,8 +296,7 @@ const onSubmit = handleSubmit((data) => {
           <Field>
             <FieldLabel :for="field.name">Attachments</FieldLabel>
             <FieldDescription>
-              Maximum 5 files. Accepts images, videos, and PDF documents (up to
-              10MB each).
+              Maximum 5 files. Accepts images, videos, and PDF documents (up to 10MB each).
             </FieldDescription>
             <input
               :id="`${field.name}-input`"
@@ -338,46 +318,30 @@ const onSubmit = handleSubmit((data) => {
               >
                 <span>
                   <Upload class="mr-2 h-4 w-4" />
-                  {{
-                    field.value?.length >= 5
-                      ? "Maximum files reached"
-                      : "Choose Files"
-                  }}
+                  {{ field.value?.length >= 5 ? 'Maximum files reached' : 'Choose Files' }}
                 </span>
               </Button>
             </Label>
 
-            <div
-              v-if="field.value && field.value.length > 0"
-              class="mt-3 space-y-2"
-            >
+            <div v-if="field.value && field.value.length > 0" class="mt-3 space-y-2">
               <Card
                 v-for="(file, index) in field.value"
                 :key="`${file.name}-${index}`"
-                :class="
-                  file.size > 10485760 ? 'bg-red-50 border-destructive' : ''
-                "
+                :class="file.size > 10485760 ? 'border-destructive bg-red-50' : ''"
               >
                 <CardContent class="flex items-center justify-between p-3">
                   <div class="flex items-center gap-3">
-                    <component
-                      :is="getFileIcon(file.type)"
-                      class="h-8 w-8 text-muted-foreground"
-                    />
+                    <component :is="getFileIcon(file.type)" class="text-muted-foreground h-8 w-8" />
                     <div class="flex flex-col">
-                      <p class="text-sm font-medium truncate">
+                      <p class="truncate text-sm font-medium">
                         {{ file.name }}
                       </p>
-                      <p class="text-xs font-medium truncate">
+                      <p class="truncate text-xs font-medium">
                         {{ (file.size / 1048576).toFixed(2) }} MB
                       </p>
                     </div>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    @click="removeFile(index, field)"
-                  >
+                  <Button type="button" variant="ghost" @click="removeFile(index, field)">
                     <X />
                   </Button>
                 </CardContent>
@@ -387,10 +351,8 @@ const onSubmit = handleSubmit((data) => {
           </Field>
         </VeeField>
 
-        <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-          <Button type="button" variant="secondary" @click="handleCancel">
-            Cancel
-          </Button>
+        <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="secondary" @click="handleCancel"> Cancel </Button>
           <Button type="submit">File Ticket</Button>
         </div>
       </FieldSet>

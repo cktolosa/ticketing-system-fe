@@ -1,21 +1,18 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { toTypedSchema } from '@vee-validate/zod';
+import { useForm, Field as VeeField } from 'vee-validate';
+import { computed, ref } from 'vue';
+import * as z from 'zod';
 
-import { formatDate } from "@/lib/utils";
+import { Textarea } from '@/components/form';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { FieldDescription, FieldError } from '@/components/ui/field';
+import { ItemGroup } from '@/components/ui/item';
 
-import * as z from "zod";
-import { toTypedSchema } from "@vee-validate/zod";
-import { useForm, Field as VeeField } from "vee-validate";
-
-import { Textarea } from "@/components/form";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FieldError, FieldDescription } from "@/components/ui/field";
-import { ItemGroup } from "@/components/ui/item";
-
-import AttachmentItem from "@/modules/tickets/components/attachment-item.vue";
-
-import type { Attachment } from "@/modules/tickets/types";
+import { formatDate } from '@/lib/utils';
+import AttachmentItem from '@/modules/tickets/components/attachment-item.vue';
+import type { Attachment } from '@/modules/tickets/types';
 
 export type Comment = {
   id: number;
@@ -28,16 +25,16 @@ export type Comment = {
 const commentSchema = z.object({
   comment: z
     .string()
-    .min(10, "Comment must be at least 10 characters.")
-    .max(50, "Comment must not exceed 50 characters."),
+    .min(10, 'Comment must be at least 10 characters.')
+    .max(50, 'Comment must not exceed 50 characters.'),
   picture: z
     .instanceof(File)
-    .refine((file) => file.size <= 10_485_760, "File must be less than 10MB.")
+    .refine((file) => file.size <= 10_485_760, 'File must be less than 10MB.')
     .optional(),
 });
 
 const defaultValues: z.infer<typeof commentSchema> = {
-  comment: "",
+  comment: '',
   picture: undefined,
 };
 
@@ -50,7 +47,7 @@ const fileRef = ref<HTMLInputElement | null>(null);
 const handleCancel = () => {
   resetForm();
   if (fileRef.value) {
-    fileRef.value.value = "";
+    fileRef.value.value = '';
   }
 };
 
@@ -65,7 +62,7 @@ const onSubmit = handleSubmit((data) => {
             type: data.picture.type,
           }
         : undefined,
-    }),
+    })
   );
   handleCancel();
 });
@@ -92,14 +89,11 @@ const hasMore = computed(() => props.comments.length > limit);
     <h3 class="text-sm font-semibold">Discussion</h3>
     <form @submit="onSubmit" class="space-y-3">
       <div class="flex items-start gap-3">
-        <Avatar class="size-8 mt-3 shrink-0">
-          <AvatarImage
-            src="https://github.com/evilrabbit.png"
-            alt="@evilrabbit"
-          />
+        <Avatar class="mt-3 size-8 shrink-0">
+          <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
           <AvatarFallback>AB</AvatarFallback>
         </Avatar>
-        <div class="flex flex-col w-full gap-3">
+        <div class="flex w-full flex-col gap-3">
           <VeeField v-slot="{ componentField }" name="comment">
             <Textarea
               v-bind="componentField"
@@ -116,7 +110,7 @@ const hasMore = computed(() => props.comments.length > limit);
                 id="picture"
                 type="file"
                 accept="application/pdf,image/*,video/*"
-                class="flex h-10 w-full rounded-md border border-input p-3 py-2.5 text-sm file:font-medium"
+                class="border-input flex h-10 w-full rounded-md border p-3 py-2.5 text-sm file:font-medium"
               />
               <FieldDescription>
                 Accepts images, videos, and PDF documents (up to 10MB each).
@@ -127,9 +121,7 @@ const hasMore = computed(() => props.comments.length > limit);
         </div>
       </div>
       <div class="flex justify-end gap-2">
-        <Button type="button" variant="outline" @click="handleCancel"
-          >Cancel</Button
-        >
+        <Button type="button" variant="outline" @click="handleCancel">Cancel</Button>
         <Button type="submit">Post</Button>
       </div>
     </form>
@@ -138,26 +130,17 @@ const hasMore = computed(() => props.comments.length > limit);
       <div
         v-for="c in displayedComments"
         :key="c.id"
-        class="border-b last:border-b-0 pb-4 last:pb-0"
+        class="border-b pb-4 last:border-b-0 last:pb-0"
       >
         <div class="flex gap-3">
           <Avatar class="size-8 shrink-0">
-            <AvatarImage
-              src="https://github.com/evilrabbit.png"
-              alt="@evilrabbit"
-            />
-            <AvatarFallback>{{
-              c.author.charAt(0).toUpperCase()
-            }}</AvatarFallback>
+            <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
+            <AvatarFallback>{{ c.author.charAt(0).toUpperCase() }}</AvatarFallback>
           </Avatar>
-          <div class="flex flex-col gap-2 min-w-0 flex-1">
-            <div
-              class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2"
-            >
-              <span class="font-medium text-sm">{{ c.author }}</span>
-              <span class="text-muted-foreground text-xs">{{
-                formatDate(c.timestamp)
-              }}</span>
+          <div class="flex min-w-0 flex-1 flex-col gap-2">
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+              <span class="text-sm font-medium">{{ c.author }}</span>
+              <span class="text-muted-foreground text-xs">{{ formatDate(c.timestamp) }}</span>
             </div>
             <p class="text-sm leading-relaxed whitespace-pre-wrap">
               {{ c.comment }}
@@ -173,14 +156,11 @@ const hasMore = computed(() => props.comments.length > limit);
 
     <div v-if="hasMore" class="flex justify-center pt-2">
       <Button variant="ghost" @click="showAll = !showAll">
-        {{ showAll ? "Show less" : `Show all (${comments.length})` }}
+        {{ showAll ? 'Show less' : `Show all (${comments.length})` }}
       </Button>
     </div>
 
-    <div
-      v-if="!comments.length"
-      class="text-center py-8 text-sm text-muted-foreground"
-    >
+    <div v-if="!comments.length" class="text-muted-foreground py-8 text-center text-sm">
       No comments yet.
     </div>
   </div>

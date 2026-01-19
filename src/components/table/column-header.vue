@@ -1,49 +1,43 @@
 <script setup lang="ts">
-import { type Component, type HTMLAttributes } from "vue";
-import type { Column, SortDirection } from "@tanstack/vue-table";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
-  DropdownMenuGroup,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-
+import type { Column, SortDirection } from '@tanstack/vue-table';
 import {
   ArrowDownNarrowWideIcon,
   ArrowDownWideNarrowIcon,
   ArrowUpDownIcon,
   CircleXIcon,
-} from "lucide-vue-next";
-import { cn } from "@/lib/utils";
+} from 'lucide-vue-next';
+import { type Component, type HTMLAttributes } from 'vue';
+
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+import { cn } from '@/lib/utils';
 
 const props = defineProps<{
   column: Column<any, any>;
-  class?: HTMLAttributes["class"];
+  class?: HTMLAttributes['class'];
 }>();
 
 const sortIconMapping = new Map<false | SortDirection, Component>([
   [false, ArrowUpDownIcon],
-  ["asc", ArrowDownNarrowWideIcon],
-  ["desc", ArrowDownWideNarrowIcon],
+  ['asc', ArrowDownNarrowWideIcon],
+  ['desc', ArrowDownWideNarrowIcon],
 ]);
 </script>
 
 <template>
   <DropdownMenu v-if="column.getCanSort()">
     <DropdownMenuTrigger as-child>
-      <Button
-        variant="ghost"
-        :class="cn('justify-start rounded-sm gap-x-2', props.class)"
-      >
+      <Button variant="ghost" :class="cn('justify-start gap-x-2 rounded-sm', props.class)">
         <slot />
-        <component
-          :is="sortIconMapping.get(column.getIsSorted())"
-          class="size-3.5"
-        />
+        <component :is="sortIconMapping.get(column.getIsSorted())" class="size-3.5" />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="start">

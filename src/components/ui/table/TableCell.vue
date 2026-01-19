@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from "vue";
-import { cn } from "@/lib/utils";
+import type { HTMLAttributes } from 'vue';
+
+import { cn } from '@/lib/utils';
 
 const props = defineProps<{
-  class?: HTMLAttributes["class"];
+  class?: HTMLAttributes['class'];
 }>();
 </script>
 
@@ -12,8 +13,8 @@ const props = defineProps<{
     data-slot="table-cell"
     :class="
       cn(
-        'p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px] last:text-end [&:has(button[data-slot=dropdown-menu-trigger])]:text-center',
-        props.class,
+        'p-2 align-middle whitespace-nowrap last:text-end [&:has([role=checkbox])]:pr-0 [&:has(button[data-slot=dropdown-menu-trigger])]:text-center [&>[role=checkbox]]:translate-y-[2px]',
+        props.class
       )
     "
   >

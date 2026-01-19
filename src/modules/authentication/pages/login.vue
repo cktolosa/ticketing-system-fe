@@ -1,29 +1,30 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
-import { Field, FieldGroup, FieldSet } from "@/components/ui/field";
-import * as z from "zod";
-import { toTypedSchema } from "@vee-validate/zod";
-import { useForm, Field as VeeField } from "vee-validate";
-import { Spinner } from "@/components/ui/spinner";
-import { Input } from "@/components/form";
+import { toTypedSchema } from '@vee-validate/zod';
+import { useForm, Field as VeeField } from 'vee-validate';
+import * as z from 'zod';
+
+import { Input } from '@/components/form';
+import { Button } from '@/components/ui/button';
+import { Field, FieldGroup, FieldSet } from '@/components/ui/field';
+import { Spinner } from '@/components/ui/spinner';
 
 const schema = toTypedSchema(
   z.object({
-    email: z.string().email().min(1, "Email is required"),
-    password: z.string().min(1, "Password is required"),
-  }),
+    email: z.string().email().min(1, 'Email is required'),
+    password: z.string().min(1, 'Password is required'),
+  })
 );
 
 const { handleSubmit, isSubmitting } = useForm({
   validationSchema: schema,
   initialValues: {
-    email: "",
-    password: "",
+    email: '',
+    password: '',
   },
 });
 
 const onSubmit = handleSubmit(async (data) => {
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await new Promise((r) => setTimeout(r, 5000));
 
   alert(JSON.stringify(data));
 });

@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
-import { useField } from "vee-validate";
-import { Input } from "@/components/ui/input";
-import { computed, useId } from "vue";
+import { useField } from 'vee-validate';
+import { computed, useId } from 'vue';
+
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 
 const props = defineProps<{
   name: string;

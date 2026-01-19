@@ -1,41 +1,40 @@
-import { useDialog } from "@/composables/useDialog";
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import type { Attachment } from "../../types";
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
-export const useViewAttachmentDialogStore = defineStore(
-  "view-attachment-dialog",
-  () => {
-    // dialog state & controls
-    const { isOpen, handleOpen, handleClose, handleToggle } = useDialog();
+import { useDialog } from '@/composables/useDialog';
 
-    // initializing attachment
-    const attachment = ref<Attachment | null>();
+import type { Attachment } from '../../types';
 
-    function handleInitialize(payload: Attachment) {
-      attachment.value = payload;
-    }
+export const useViewAttachmentDialogStore = defineStore('view-attachment-dialog', () => {
+  // dialog state & controls
+  const { isOpen, handleOpen, handleClose, handleToggle } = useDialog();
 
-    function handleClear() {
-      attachment.value = null;
-    }
+  // initializing attachment
+  const attachment = ref<Attachment | null>();
 
-    function storeHandleToggle() {
-      handleClear();
-      handleToggle();
-    }
+  function handleInitialize(payload: Attachment) {
+    attachment.value = payload;
+  }
 
-    return {
-      isOpen,
-      handleOpen,
-      handleClose,
-      // overwriting `useDialog`'s handleToggle with the local's storeHandleToggle
-      // since I do not want to think of another name for `handleToggle`
-      handleToggle: storeHandleToggle,
+  function handleClear() {
+    attachment.value = null;
+  }
 
-      attachment,
-      handleInitialize,
-      handleClear,
-    };
-  },
-);
+  function storeHandleToggle() {
+    handleClear();
+    handleToggle();
+  }
+
+  return {
+    isOpen,
+    handleOpen,
+    handleClose,
+    // overwriting `useDialog`'s handleToggle with the local's storeHandleToggle
+    // since I do not want to think of another name for `handleToggle`
+    handleToggle: storeHandleToggle,
+
+    attachment,
+    handleInitialize,
+    handleClear,
+  };
+});

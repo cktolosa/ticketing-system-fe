@@ -1,16 +1,5 @@
 <script setup lang="ts" generic="TData, TValue">
-import { ref } from "vue";
-
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-
-import { valueUpdater } from "@/components/ui/table/utils";
-import type {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-} from "@tanstack/vue-table";
+import type { ColumnDef, ColumnFiltersState, SortingState } from '@tanstack/vue-table';
 import {
   FlexRender,
   getCoreRowModel,
@@ -18,7 +7,12 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useVueTable,
-} from "@tanstack/vue-table";
+} from '@tanstack/vue-table';
+import { ref } from 'vue';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -26,7 +20,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
+import { valueUpdater } from '@/components/ui/table/utils';
 
 const props = defineProps<{
   columns: ColumnDef<TData, TValue>[];
@@ -46,8 +41,7 @@ const table = useVueTable({
   getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
   onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
-  onColumnFiltersChange: (updaterOrValue) =>
-    valueUpdater(updaterOrValue, columnFilters),
+  onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
   getFilteredRowModel: getFilteredRowModel(),
   state: {
     get sorting() {
@@ -71,27 +65,20 @@ const table = useVueTable({
       />
     </div>
 
-    <div class="block lg:hidden space-y-3">
+    <div class="block space-y-3 lg:hidden">
       <template v-if="table.getRowModel().rows?.length">
-        <Card
-          v-for="row in table.getRowModel().rows"
-          :key="row.id"
-          class="text-sm p-5"
-        >
-          <CardContent class="grid grid-cols-2 *:p-3 *:border-b">
+        <Card v-for="row in table.getRowModel().rows" :key="row.id" class="p-5 text-sm">
+          <CardContent class="grid grid-cols-2 *:border-b *:p-3">
             <template v-for="cell in row.getVisibleCells()" :key="cell.id">
               <div class="text-muted-foreground capitalize">
                 {{
-                  typeof cell.column.columnDef.header === "string"
+                  typeof cell.column.columnDef.header === 'string'
                     ? cell.column.columnDef.header
                     : cell.column.id
                 }}
               </div>
               <div>
-                <FlexRender
-                  :render="cell.column.columnDef.cell"
-                  :props="cell.getContext()"
-                />
+                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
               </div>
             </template>
           </CardContent>
@@ -102,13 +89,10 @@ const table = useVueTable({
       </Card>
     </div>
 
-    <div class="hidden lg:block border rounded-md overflow-auto">
+    <div class="hidden overflow-auto rounded-md border lg:block">
       <Table>
         <TableHeader>
-          <TableRow
-            v-for="headerGroup in table.getHeaderGroups()"
-            :key="headerGroup.id"
-          >
+          <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
             <TableHead
               v-for="header in headerGroup.headers"
               :key="header.id"
@@ -125,15 +109,8 @@ const table = useVueTable({
         <TableBody>
           <template v-if="table.getRowModel().rows?.length">
             <TableRow v-for="row in table.getRowModel().rows" :key="row.id">
-              <TableCell
-                v-for="cell in row.getVisibleCells()"
-                :key="cell.id"
-                class="px-4"
-              >
-                <FlexRender
-                  :render="cell.column.columnDef.cell"
-                  :props="cell.getContext()"
-                />
+              <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id" class="px-4">
+                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
               </TableCell>
             </TableRow>
           </template>
@@ -147,10 +124,8 @@ const table = useVueTable({
         </TableBody>
       </Table>
     </div>
-    <div
-      class="flex flex-col sm:flex-row p-4 gap-3 items-center justify-between"
-    >
-      <div class="text-sm text-muted-foreground">
+    <div class="flex flex-col items-center justify-between gap-3 p-4 sm:flex-row">
+      <div class="text-muted-foreground text-sm">
         Displaying total of
         {{ table.getFilteredRowModel().rows.length }} row(s).
       </div>

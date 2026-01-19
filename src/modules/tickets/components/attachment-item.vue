@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { Item, ItemContent, ItemMedia, ItemTitle } from "@/components/ui/item";
-import { ImageIcon } from "lucide-vue-next";
-import type { Attachment } from "../types";
-import { useViewAttachmentDialogStore } from "./view-attachment-dialog";
+import { ImageIcon } from 'lucide-vue-next';
+
+import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item';
+
+import type { Attachment } from '../types';
+import { useViewAttachmentDialogStore } from './view-attachment-dialog';
 
 const props = defineProps<{
   attachment: Attachment;
@@ -19,7 +21,7 @@ function handleClick() {
 <template>
   <Item
     variant="outline"
-    class="cursor-pointer hover:bg-muted transition-colors"
+    class="hover:bg-muted cursor-pointer transition-colors"
     @click="handleClick"
   >
     <ItemMedia>
