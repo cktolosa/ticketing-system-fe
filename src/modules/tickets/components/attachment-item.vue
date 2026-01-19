@@ -23,7 +23,7 @@ function handleClick() {
     @click="handleClick"
   >
     <ItemMedia>
-      <ImageIcon class="text-muted-foreground" />
+      <ImageIcon class="text-muted-foreground size-4" />
     </ItemMedia>
     <ItemContent>
       <ItemTitle>
