@@ -92,7 +92,7 @@ const items: MenuItem[] = [
     children: [
       {
         title: 'Create User',
-        url: '/users/create',
+        url: '/su/users/create',
         icon: UserPlus,
       },
       {
