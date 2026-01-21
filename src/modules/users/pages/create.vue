@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
-import { Check, Copy } from 'lucide-vue-next';
+import { useClipboard } from '@vueuse/core';
+import { CheckIcon, CopyIcon } from 'lucide-vue-next';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { ref } from 'vue';
 import * as z from 'zod';
@@ -16,6 +17,12 @@ import {
   FieldLegend,
   FieldSet,
 } from '@/components/ui/field';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from '@/components/ui/input-group';
 import {
   Select,
   SelectContent,
@@ -52,19 +59,7 @@ const generatePassword = () => {
   return Math.random().toString(36).slice(2, 10);
 };
 const generatedPassword = ref(generatePassword());
-
-const copied = ref(false);
-const copyPassword = async () => {
-  try {
-    await navigator.clipboard.writeText(generatedPassword.value);
-    copied.value = true;
-    setTimeout(() => {
-      copied.value = false;
-    }, 2000);
-  } catch (err) {
-    console.error('failed copying', err);
-  }
-};
+const { copy, copied } = useClipboard({ source: generatedPassword });
 
 const userSchema = z.object({
   picture: z
@@ -201,14 +196,18 @@ const onSubmit = handleSubmit((data) => {
 
           <VeeField name="password" :value="generatedPassword">
             <template v-slot="{ componentField }">
-              <Input v-bind="componentField" label="Generated Password" type="text" readonly>
-                <template #append>
-                  <Button variant="ghost" type="button" @click="copyPassword">
-                    <Check v-if="copied" class="size-4 text-green-700" />
-                    <Copy v-else class="size-4" />
-                  </Button>
-                </template>
-              </Input>
+              <Field>
+                <FieldLabel>Generated Password</FieldLabel>
+                <InputGroup>
+                  <InputGroupInput v-bind="componentField" id="password" type="text" readonly />
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupButton type="button" size="icon-xs" @click="copy()">
+                      <CopyIcon v-if="!copied" />
+                      <CheckIcon v-if="copied" />
+                    </InputGroupButton>
+                  </InputGroupAddon>
+                </InputGroup>
+              </Field>
             </template>
           </VeeField>
 
