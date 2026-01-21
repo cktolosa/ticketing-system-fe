@@ -16,6 +16,7 @@ const props = withDefaults(
   {
     as: 'a',
     size: 'md',
+    class: '',
   }
 );
 </script>

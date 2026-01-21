@@ -177,9 +177,9 @@ const footer: FooterItem[] = [
                 </SidebarMenuItem>
                 <Collapsible
                   v-else
+                  :key="route.path"
                   as-child
                   class="group/collapsible"
-                  :key="route.path"
                   :data-active="isChildActive(item)"
                   :default-open="isChildActive(item)"
                 >

@@ -87,7 +87,7 @@ const hasMore = computed(() => props.comments.length > limit);
 <template>
   <div class="space-y-2">
     <h3 class="text-sm font-semibold">Discussion</h3>
-    <form @submit="onSubmit" class="space-y-3">
+    <form class="space-y-3" @submit="onSubmit">
       <div class="flex items-start gap-3">
         <Avatar class="mt-3 size-8 shrink-0">
           <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
@@ -106,8 +106,8 @@ const hasMore = computed(() => props.comments.length > limit);
             <div class="space-y-1">
               <input
                 v-bind="componentField"
-                ref="fileRef"
                 id="picture"
+                ref="fileRef"
                 type="file"
                 accept="application/pdf,image/*,video/*"
                 class="border-input flex h-10 w-full rounded-md border p-3 py-2.5 text-sm file:font-medium"
@@ -147,7 +147,11 @@ const hasMore = computed(() => props.comments.length > limit);
             </p>
 
             <ItemGroup v-if="c.attachments?.length" class="gap-y-2">
-              <AttachmentItem v-for="attachment in c.attachments" :attachment />
+              <AttachmentItem
+                v-for="(attachment, index) in c.attachments"
+                :key="index"
+                :attachment
+              />
             </ItemGroup>
           </div>
         </div>

@@ -8,15 +8,15 @@ import type { ChartConfig } from '.';
 const cache = new Map<string, string>();
 
 // Convert object to a consistent string key
-function serializeKey(key: Record<string, any>): string {
+function serializeKey(key: Record<string, unknown>): string {
   return JSON.stringify(key, Object.keys(key).sort());
 }
 
-interface Constructor<P = any> {
+interface Constructor<P = unknown> {
   __isFragment?: never;
   __isTeleport?: never;
   __isSuspense?: never;
-  new (...args: any[]): {
+  new (...args: unknown[]): {
     $props: P;
   };
 }
@@ -28,6 +28,7 @@ export function componentToString<P>(config: ChartConfig, component: Constructor
   const id = useId();
 
   // https://unovis.dev/docs/auxiliary/Crosshair#component-props
+  /* eslint @typescript-eslint/no-explicit-any: "off" */
   return (_data: any, x: number | Date) => {
     const data = 'data' in _data ? _data.data : _data;
     const serializedKey = `${id}-${serializeKey(data)}`;

@@ -189,7 +189,7 @@ const onSubmit = handleSubmit((data) => {
 
 <template>
   <div class="grid w-full grid-cols-1 lg:grid-cols-2">
-    <Card className="w-full py-5">
+    <Card class-name="w-full py-5">
       <CardHeader>
         <div class="space-y-1">
           <CardTitle class="flex flex-row items-center justify-between gap-2">
@@ -216,7 +216,7 @@ const onSubmit = handleSubmit((data) => {
                         <VeeField v-slot="{ field, errors }" name="priority_id">
                           <Field>
                             <FieldLabel>Priority</FieldLabel>
-                            <Select :model-value="field.value" @update:modelValue="field.onChange">
+                            <Select :model-value="field.value" @update:model-value="field.onChange">
                               <SelectTrigger :aria-invalid="!!errors.length">
                                 <SelectValue placeholder="Select a priority" />
                               </SelectTrigger>
@@ -233,7 +233,7 @@ const onSubmit = handleSubmit((data) => {
                         <VeeField v-slot="{ field, errors }" name="status_id">
                           <Field>
                             <FieldLabel>Status</FieldLabel>
-                            <Select :model-value="field.value" @update:modelValue="field.onChange">
+                            <Select :model-value="field.value" @update:model-value="field.onChange">
                               <SelectTrigger :aria-invalid="!!errors.length">
                                 <SelectValue placeholder="Select a status" />
                               </SelectTrigger>
@@ -250,7 +250,7 @@ const onSubmit = handleSubmit((data) => {
                         <VeeField v-slot="{ field, errors }" name="department_id">
                           <Field>
                             <FieldLabel>Department</FieldLabel>
-                            <Select :model-value="field.value" @update:modelValue="field.onChange">
+                            <Select :model-value="field.value" @update:model-value="field.onChange">
                               <SelectTrigger :aria-invalid="!!errors.length">
                                 <SelectValue placeholder="Select a department" />
                               </SelectTrigger>
@@ -269,7 +269,7 @@ const onSubmit = handleSubmit((data) => {
                             <div class="flex justify-between">
                               <FieldLabel>Admin</FieldLabel>
                             </div>
-                            <Select :model-value="field.value" @update:modelValue="field.onChange">
+                            <Select :model-value="field.value" @update:model-value="field.onChange">
                               <SelectTrigger :aria-invalid="!!errors.length">
                                 <SelectValue placeholder="Select an admin" />
                               </SelectTrigger>
@@ -316,7 +316,7 @@ const onSubmit = handleSubmit((data) => {
           </p>
         </div>
         <ItemGroup v-if="attachments.length" class="gap-y-2">
-          <AttachmentItem v-for="attachment in attachments" :attachment />
+          <AttachmentItem v-for="(attachment, index) in attachments" :key="index" :attachment />
         </ItemGroup>
         <Comments :comments="comments" />
       </CardContent>

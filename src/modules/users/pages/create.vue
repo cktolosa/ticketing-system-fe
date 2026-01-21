@@ -144,8 +144,8 @@ const onSubmit = handleSubmit((data) => {
               <FieldLabel for="picture">Profile Picture</FieldLabel>
               <input
                 v-bind="componentField"
-                ref="fileRef"
                 id="picture"
+                ref="fileRef"
                 type="file"
                 accept="image/*"
                 :class="[
@@ -195,7 +195,7 @@ const onSubmit = handleSubmit((data) => {
           </VeeField>
 
           <VeeField name="password" :value="generatedPassword">
-            <template v-slot="{ componentField }">
+            <template #default="{ componentField }">
               <Field>
                 <FieldLabel>Generated Password</FieldLabel>
                 <InputGroup>
@@ -214,7 +214,7 @@ const onSubmit = handleSubmit((data) => {
           <VeeField v-slot="{ field, errors }" name="department_id">
             <Field>
               <FieldLabel>Department</FieldLabel>
-              <Select :model-value="field.value" @update:modelValue="field.onChange">
+              <Select :model-value="field.value" @update:model-value="field.onChange">
                 <SelectTrigger :aria-invalid="!!errors.length">
                   <SelectValue placeholder="Select a department" />
                 </SelectTrigger>
@@ -231,7 +231,7 @@ const onSubmit = handleSubmit((data) => {
           <VeeField v-slot="{ field, errors }" name="role_id">
             <Field>
               <FieldLabel>Role</FieldLabel>
-              <Select :model-value="field.value" @update:modelValue="field.onChange">
+              <Select :model-value="field.value" @update:model-value="field.onChange">
                 <SelectTrigger :aria-invalid="!!errors.length">
                   <SelectValue placeholder="Select a role" />
                 </SelectTrigger>

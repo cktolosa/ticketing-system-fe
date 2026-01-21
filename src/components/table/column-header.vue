@@ -21,7 +21,7 @@ import {
 import { cn } from '@/lib/utils';
 
 const props = defineProps<{
-  column: Column<any, any>;
+  column: Column<unknown, unknown>;
   class?: HTMLAttributes['class'];
 }>();
 

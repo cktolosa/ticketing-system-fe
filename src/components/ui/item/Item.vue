@@ -17,6 +17,9 @@ const props = withDefaults(
   >(),
   {
     as: 'div',
+    class: '',
+    variant: 'default',
+    size: 'default',
   }
 );
 </script>

@@ -15,12 +15,12 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 
 const route = useRoute();
 
-interface Breadcrumb {
+interface IBreadcrumb {
   name: string;
   to: string;
   isLast: boolean;
 }
-const breadcrumbs = computed<Breadcrumb[]>(() => {
+const breadcrumbs = computed<IBreadcrumb[]>(() => {
   const matched = route.matched.filter((record) => record.name);
   return matched.map((record, index) => ({
     name: record.name?.toString() || '',

@@ -14,7 +14,7 @@ const props = withDefaults(
     nameKey?: string;
     labelKey?: string;
     labelFormatter?: (d: number | Date) => string;
-    payload?: Record<string, any>;
+    payload?: Record<string, unknown>;
     config?: ChartConfig;
     class?: HTMLAttributes['class'];
     color?: string;
@@ -24,6 +24,12 @@ const props = withDefaults(
     payload: () => ({}),
     config: () => ({}),
     indicator: 'dot',
+    nameKey: '',
+    labelKey: '',
+    labelFormatter: () => '',
+    class: '',
+    color: '',
+    x: 0,
   }
 );
 

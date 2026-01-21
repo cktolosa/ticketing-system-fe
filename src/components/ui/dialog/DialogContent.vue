@@ -19,6 +19,7 @@ const props = withDefaults(
   >(),
   {
     showCloseButton: true,
+    class: '',
   }
 );
 const emits = defineEmits<DialogContentEmits>();

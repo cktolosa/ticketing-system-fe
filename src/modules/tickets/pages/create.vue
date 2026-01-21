@@ -199,7 +199,7 @@ const onSubmit = handleSubmit((data) => {
           <VeeField v-slot="{ field, errors }" name="employee_id">
             <Field>
               <FieldLabel>Employee</FieldLabel>
-              <Select :model-value="field.value" @update:modelValue="field.onChange">
+              <Select :model-value="field.value" @update:model-value="field.onChange">
                 <SelectTrigger :aria-invalid="!!errors.length">
                   <SelectValue placeholder="Select an employee" />
                 </SelectTrigger>
@@ -216,7 +216,7 @@ const onSubmit = handleSubmit((data) => {
           <VeeField v-slot="{ field, errors }" name="priority_id">
             <Field>
               <FieldLabel>Priority</FieldLabel>
-              <Select :model-value="field.value" @update:modelValue="field.onChange">
+              <Select :model-value="field.value" @update:model-value="field.onChange">
                 <SelectTrigger :aria-invalid="!!errors.length">
                   <SelectValue placeholder="Select a priority" />
                 </SelectTrigger>
@@ -233,7 +233,7 @@ const onSubmit = handleSubmit((data) => {
           <VeeField v-slot="{ field, errors }" name="department_id">
             <Field>
               <FieldLabel>Department</FieldLabel>
-              <Select :model-value="field.value" @update:modelValue="field.onChange">
+              <Select :model-value="field.value" @update:model-value="field.onChange">
                 <SelectTrigger :aria-invalid="!!errors.length">
                   <SelectValue placeholder="Select a department" />
                 </SelectTrigger>
@@ -258,8 +258,8 @@ const onSubmit = handleSubmit((data) => {
               </div>
               <Select
                 :model-value="field.value"
-                @update:modelValue="field.onChange"
                 :disabled="isUnassigned"
+                @update:model-value="field.onChange"
               >
                 <SelectTrigger :aria-invalid="!!errors.length">
                   <SelectValue placeholder="Select an admin" />

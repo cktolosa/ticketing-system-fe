@@ -14,6 +14,7 @@ const props = withDefaults(
   >(),
   {
     as: 'button',
+    class: '',
   }
 );
 </script>
