@@ -51,6 +51,18 @@ const routes = [
           },
         ],
       },
+      {
+        path: 'users',
+        name: 'Users',
+        redirect: '/su/users',
+        children: [
+          {
+            path: 'create',
+            name: 'Create User',
+            component: () => import('@/modules/users/pages/create.vue'),
+          },
+        ],
+      },
     ],
   },
 ];
