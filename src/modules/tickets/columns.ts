@@ -2,11 +2,11 @@ import type { ColumnDef } from '@tanstack/vue-table';
 import { h } from 'vue';
 
 import ColumnHeader from '@/components/table/column-header.vue';
-import DropdownAction from '@/components/tickets/data-action.vue';
-import PriorityBadge from '@/components/tickets/priority.vue';
-import StatusBadge from '@/components/tickets/status.vue';
 
 import { formatDate } from '@/lib/utils';
+import DataAction from '@/modules/tickets/components/data-action.vue';
+import PriorityBadge from '@/modules/tickets/components/priority.vue';
+import StatusBadge from '@/modules/tickets/components/status.vue';
 
 const statusOrder = {
   new: 1,
@@ -89,7 +89,7 @@ export const columns: ColumnDef<Ticket>[] = [
   {
     id: 'actions',
     header: ({ column }) => h(ColumnHeader, { column }, 'Actions'),
-    cell: ({ row }) => h(DropdownAction, { ticket: row.original }),
+    cell: ({ row }) => h(DataAction, { ticket: row.original }),
     enableSorting: false,
   },
 ];

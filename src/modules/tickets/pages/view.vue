@@ -5,11 +5,6 @@ import { useForm, Field as VeeField } from 'vee-validate';
 import { ref } from 'vue';
 import * as z from 'zod';
 
-import type { Ticket } from '@/components/tickets/columns';
-import Comments from '@/components/tickets/comment.vue';
-import type { Comment } from '@/components/tickets/comment.vue';
-import PriorityBadge from '@/components/tickets/priority.vue';
-import StatusBadge from '@/components/tickets/status.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,10 +30,14 @@ import {
 } from '@/components/ui/select';
 
 import { formatDate } from '@/lib/utils';
-
-import AttachmentItem from '../components/attachment-item.vue';
-import { ViewAttachmentDialog } from '../components/view-attachment-dialog';
-import type { Attachment } from '../types';
+import type { Ticket } from '@/modules/tickets/columns';
+import AttachmentItem from '@/modules/tickets/components/attachment-item.vue';
+import Comments from '@/modules/tickets/components/comment.vue';
+import type { Comment } from '@/modules/tickets/components/comment.vue';
+import PriorityBadge from '@/modules/tickets/components/priority.vue';
+import StatusBadge from '@/modules/tickets/components/status.vue';
+import { ViewAttachmentDialog } from '@/modules/tickets/components/view-attachment-dialog';
+import type { Attachment } from '@/modules/tickets/types';
 
 const ticket: Ticket = {
   date: new Date('2025-12-02'),

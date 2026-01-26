@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Column<any, any>">
 import type { Column, SortDirection } from '@tanstack/vue-table';
 import {
   ArrowDownNarrowWideIcon,
@@ -21,7 +21,7 @@ import {
 import { cn } from '@/lib/utils';
 
 const props = defineProps<{
-  column: Column<unknown, unknown>;
+  column: T;
   class?: HTMLAttributes['class'];
 }>();
 

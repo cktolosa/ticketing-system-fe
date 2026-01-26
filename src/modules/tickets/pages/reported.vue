@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { columns } from '@/components/tickets/columns';
-import type { Ticket } from '@/components/tickets/columns';
-import DataTable from '@/components/tickets/data-table.vue';
+import DataTable from '@/components/table/data-table.vue';
+
+import { columns, type Ticket } from '@/modules/tickets/columns';
 
 const tickets: Ticket[] = [
   {
