@@ -22,14 +22,12 @@ const isInvalid = computed(() => !!errors.value.length && !meta.valid);
 <template>
   <Field :data-invalid="isInvalid">
     <FieldLabel :for="id">{{ label }}</FieldLabel>
-    <div class="relative">
-      <Input
-        :id
-        :aria-invalid="isInvalid"
-        :aria-describedby="isInvalid ? errorId : undefined"
-        v-bind="$attrs"
-      />
-    </div>
+    <Input
+      :id
+      :aria-invalid="isInvalid"
+      :aria-describedby="isInvalid ? errorId : undefined"
+      v-bind="$attrs"
+    />
 
     <FieldDescription v-if="description">{{ description }}</FieldDescription>
     <FieldError v-if="isInvalid" :id="errorId" :errors />
