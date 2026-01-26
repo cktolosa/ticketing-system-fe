@@ -340,7 +340,7 @@ const onSubmit = handleSubmit((data) => {
         <CollapsibleContent>
           <dl class="space-y-5 text-sm">
             <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-[150px]">Assignee</dt>
+              <dt class="text-muted-foreground min-w-37.5">Assignee</dt>
               <dd class="flex items-center gap-2">
                 <Avatar class="size-6">
                   <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
@@ -351,12 +351,12 @@ const onSubmit = handleSubmit((data) => {
             </div>
 
             <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-[150px]">Department</dt>
+              <dt class="text-muted-foreground min-w-37.5">Department</dt>
               <dd>{{ ticket.department }}</dd>
             </div>
 
             <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-[150px]">Reporter</dt>
+              <dt class="text-muted-foreground min-w-37.5">Reporter</dt>
               <dd class="flex items-center gap-2">
                 <Avatar class="size-6">
                   <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
@@ -367,33 +367,33 @@ const onSubmit = handleSubmit((data) => {
             </div>
 
             <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-[150px]">Status</dt>
+              <dt class="text-muted-foreground min-w-37.5">Status</dt>
               <dd><StatusBadge :status="ticket.status" /></dd>
             </div>
 
             <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-[150px]">Priority</dt>
+              <dt class="text-muted-foreground min-w-37.5">Priority</dt>
               <dd><PriorityBadge :priority="ticket.priority" /></dd>
             </div>
 
             <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-[150px]">Created</dt>
+              <dt class="text-muted-foreground min-w-37.5">Created</dt>
               <dd>{{ formatDate(ticket.date) }}</dd>
             </div>
 
             <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-[150px]">Resolved</dt>
+              <dt class="text-muted-foreground min-w-37.5">Resolved</dt>
               <dd class="text-muted-foreground">Not yet resolved</dd>
             </div>
           </dl>
         </CollapsibleContent>
       </Collapsible>
 
-      <Card class="min-h-[400px]">
+      <Card class="min-h-100">
         <CardHeader>
           <h3 class="text-sm font-semibold">Activity</h3>
         </CardHeader>
-        <CardContent class="max-h-[500px] overflow-y-auto">
+        <CardContent class="max-h-125 overflow-y-auto">
           <div class="space-y-3">
             <div
               v-for="(history, index) in histories"
