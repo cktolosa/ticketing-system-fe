@@ -12,16 +12,8 @@ import { ItemGroup } from '@/components/ui/item';
 
 import { formatDate } from '@/lib/utils';
 
-import AttachmentItem from '@/modules/tickets/components/attachment-item.vue';
-import type { Attachment } from '@/modules/tickets/types';
-
-export type Comment = {
-  id: number;
-  author: string;
-  timestamp: Date;
-  comment: string;
-  attachments?: Attachment[];
-};
+import { AttachmentItem } from '@/modules/tickets/components';
+import { type Comment } from '@/modules/tickets/types';
 
 const commentSchema = z.object({
   comment: z

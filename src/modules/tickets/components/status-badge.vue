@@ -3,8 +3,7 @@ import { Badge } from '@/components/ui/badge';
 
 import { cn } from '@/lib/utils';
 
-//to handle ids
-export type Status = 'new' | 'in progress' | 'resolved' | 'closed';
+import type { Status } from '@/modules/tickets/types';
 
 defineProps<{
   status: Status;

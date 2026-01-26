@@ -6,8 +6,7 @@ import { Badge } from '@/components/ui/badge';
 
 import { cn } from '@/lib/utils';
 
-//to handle ids
-export type Priority = 'low' | 'medium' | 'high';
+import type { Priority } from '@/modules/tickets/types';
 
 const { priority } = defineProps<{
   priority: Priority;

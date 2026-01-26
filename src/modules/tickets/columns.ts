@@ -5,34 +5,14 @@ import ColumnHeader from '@/components/table/column-header.vue';
 
 import { formatDate } from '@/lib/utils';
 
-import DataAction from '@/modules/tickets/components/data-action.vue';
-import PriorityBadge from '@/modules/tickets/components/priority.vue';
-import StatusBadge from '@/modules/tickets/components/status.vue';
-
-const statusOrder = {
-  new: 1,
-  'in progress': 2,
-  resolved: 3,
-  closed: 4,
-} as const;
-
-const priorityOrder = {
-  low: 1,
-  medium: 2,
-  high: 3,
-} as const;
-
-export type Status = keyof typeof statusOrder;
-export type Priority = keyof typeof priorityOrder;
-
-export interface Ticket {
-  date: Date;
-  title: string;
-  department: string;
-  admin: string;
-  status: Status;
-  priority: Priority;
-}
+import { DataAction, PriorityBadge, StatusBadge } from '@/modules/tickets/components';
+import {
+  type Priority,
+  priorityOrder,
+  type Status,
+  statusOrder,
+  type Ticket,
+} from '@/modules/tickets/types';
 
 export const columns: ColumnDef<Ticket>[] = [
   {

@@ -31,14 +31,14 @@ import {
 
 import { formatDate } from '@/lib/utils';
 
-import type { Ticket } from '@/modules/tickets/columns';
-import AttachmentItem from '@/modules/tickets/components/attachment-item.vue';
-import Comments from '@/modules/tickets/components/comment.vue';
-import type { Comment } from '@/modules/tickets/components/comment.vue';
-import PriorityBadge from '@/modules/tickets/components/priority.vue';
-import StatusBadge from '@/modules/tickets/components/status.vue';
-import { ViewAttachmentDialog } from '@/modules/tickets/components/view-attachment-dialog';
-import type { Attachment } from '@/modules/tickets/types';
+import {
+  AttachmentItem,
+  CommentsSection,
+  PriorityBadge,
+  StatusBadge,
+  ViewAttachmentDialog,
+} from '@/modules/tickets/components';
+import type { Attachment, Comment, Ticket } from '@/modules/tickets/types';
 
 const ticket: Ticket = {
   date: new Date('2025-12-02'),
@@ -318,7 +318,7 @@ const onSubmit = handleSubmit((data) => {
         <ItemGroup v-if="attachments.length" class="gap-y-2">
           <AttachmentItem v-for="(attachment, index) in attachments" :key="index" :attachment />
         </ItemGroup>
-        <Comments :comments="comments" />
+        <CommentsSection :comments />
       </CardContent>
     </Card>
 
