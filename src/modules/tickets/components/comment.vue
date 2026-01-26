@@ -11,6 +11,7 @@ import { FieldDescription, FieldError } from '@/components/ui/field';
 import { ItemGroup } from '@/components/ui/item';
 
 import { formatDate } from '@/lib/utils';
+
 import AttachmentItem from '@/modules/tickets/components/attachment-item.vue';
 import type { Attachment } from '@/modules/tickets/types';
 

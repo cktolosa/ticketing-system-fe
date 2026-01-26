@@ -13,6 +13,7 @@ const config: Config = {
     '<BUILTIN_MODULES>',
     '<THIRD_PARTY_MODULES>',
     '^@/components/(.*)$',
+    '^@/lib/(.*)$',
     '^@/(.*)$',
     '^[./]',
   ],

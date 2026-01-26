@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/select';
 
 import { formatDate } from '@/lib/utils';
+
 import type { Ticket } from '@/modules/tickets/columns';
 import AttachmentItem from '@/modules/tickets/components/attachment-item.vue';
 import Comments from '@/modules/tickets/components/comment.vue';
