@@ -1,7 +1,7 @@
 import type { ColumnDef } from '@tanstack/vue-table';
 import { h } from 'vue';
 
-import ColumnHeader from '@/components/table/column-header.vue';
+import { ColumnHeader } from '@/components/data-table';
 
 import { formatDate } from '@/lib/utils';
 

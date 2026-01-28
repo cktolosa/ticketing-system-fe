@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { getCoreRowModel, getPaginationRowModel, useVueTable } from '@tanstack/vue-table';
+import {
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useVueTable,
+} from '@tanstack/vue-table';
 
-import NewDataTable from '@/components/table/data-table.new.vue';
-import DataTable from '@/components/table/data-table.vue';
-import Pagination from '@/components/table/pagination.vue';
+import { DataTable, DataTableOld, Pagination, Search } from '@/components/data-table';
 
 import { columns } from '@/modules/tickets/columns';
 import type { Ticket } from '@/modules/tickets/types';
@@ -20,23 +23,23 @@ const tickets: Ticket[] = [
   {
     date: new Date('2025-12-03'),
     title: 'Email not sending or receiving',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
+    department: 'Team Banana',
+    admin: 'John Doe',
     status: 'new',
     priority: 'medium',
   },
   {
     date: new Date('2025-12-03'),
     title: 'Slow computer performance',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
+    department: 'HRAD',
+    admin: 'Jane Smith',
     status: 'in progress',
     priority: 'medium',
   },
   {
     date: new Date('2025-12-04'),
     title: 'Laptop not responding',
-    department: 'AIT',
+    department: 'Team Equinox',
     admin: 'Juan Dela Cruz',
     status: 'resolved',
     priority: 'low',
@@ -143,13 +146,16 @@ const table = useVueTable({
 
   // pagination
   getPaginationRowModel: getPaginationRowModel(),
+
+  // filter
+  getFilteredRowModel: getFilteredRowModel(),
 });
 </script>
 
 <template>
   <div class="w-full p-5">
     <h1 class="text-lg font-bold md:text-xl">All Tickets</h1>
-    <DataTable
+    <DataTableOld
       :columns="columns"
       :data="tickets"
       filter-column="title"
@@ -158,7 +164,8 @@ const table = useVueTable({
     />
   </div>
   <main class="flex flex-col gap-y-4 p-4">
-    <NewDataTable :table />
+    <Search :table column="title" model="tickets" />
+    <DataTable :table />
     <Pagination :table />
   </main>
 </template>

@@ -44,7 +44,7 @@ defineProps<{
         </template>
         <template v-else>
           <TableRow>
-            <TableCell :colspan="table.getAllColumns().length" class="h-24 text-center">
+            <TableCell :colspan="table.getAllColumns().length" class="h-24 text-center" data-empty>
               No results.
             </TableCell>
           </TableRow>
