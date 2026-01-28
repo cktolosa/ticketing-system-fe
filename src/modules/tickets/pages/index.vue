@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getCoreRowModel, useVueTable } from '@tanstack/vue-table';
+
 import NewDataTable from '@/components/table/data-table.new.vue';
 import DataTable from '@/components/table/data-table.vue';
 
@@ -127,6 +129,16 @@ const tickets: Ticket[] = [
     priority: 'low',
   },
 ];
+
+const table = useVueTable({
+  get columns() {
+    return columns;
+  },
+  get data() {
+    return tickets;
+  },
+  getCoreRowModel: getCoreRowModel(),
+});
 </script>
 
 <template>
@@ -139,6 +151,6 @@ const tickets: Ticket[] = [
       filter-placeholder="Filter ticket title"
       enable-sorting
     />
-    <NewDataTable :columns :data="tickets" />
+    <NewDataTable :table />
   </div>
 </template>
