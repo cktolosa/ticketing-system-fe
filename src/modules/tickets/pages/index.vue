@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { getCoreRowModel, useVueTable } from '@tanstack/vue-table';
+import { getCoreRowModel, getPaginationRowModel, useVueTable } from '@tanstack/vue-table';
 
 import NewDataTable from '@/components/table/data-table.new.vue';
 import DataTable from '@/components/table/data-table.vue';
+import Pagination from '@/components/table/pagination.vue';
 
 import { columns } from '@/modules/tickets/columns';
 import type { Ticket } from '@/modules/tickets/types';
@@ -131,6 +132,7 @@ const tickets: Ticket[] = [
 ];
 
 const table = useVueTable({
+  // to get started
   get columns() {
     return columns;
   },
@@ -138,6 +140,9 @@ const table = useVueTable({
     return tickets;
   },
   getCoreRowModel: getCoreRowModel(),
+
+  // pagination
+  getPaginationRowModel: getPaginationRowModel(),
 });
 </script>
 
@@ -151,6 +156,9 @@ const table = useVueTable({
       filter-placeholder="Filter ticket title"
       enable-sorting
     />
-    <NewDataTable :table />
   </div>
+  <main class="flex flex-col gap-y-4 p-4">
+    <NewDataTable :table />
+    <Pagination :table />
+  </main>
 </template>
