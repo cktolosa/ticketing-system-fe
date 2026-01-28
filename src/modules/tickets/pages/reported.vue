@@ -130,6 +130,12 @@ const tickets: Ticket[] = [
 <template>
   <div class="w-full p-5">
     <h1 class="text-lg font-bold md:text-xl">My Tickets</h1>
-    <DataTable :columns="columns" :data="tickets" />
+    <DataTable
+      :columns="columns"
+      :data="tickets"
+      filter-column="title"
+      filter-placeholder="Filter ticket title"
+      enable-sorting
+    />
   </div>
 </template>

@@ -69,8 +69,11 @@ export const columns: ColumnDef<Ticket>[] = [
   },
   {
     id: 'actions',
-    header: ({ column }) => h(ColumnHeader, { column }, 'Actions'),
-    cell: ({ row }) => h(DataAction, { ticket: row.original }),
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Actions'),
+    cell: ({ row }) =>
+      h('div', { class: 'flex justify-start' }, [
+        h(DataAction, { link: `/su/tickets/view`, ticket: row.original }),
+      ]),
     enableSorting: false,
   },
 ];

@@ -8,6 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+defineProps<{ link: string }>();
 </script>
 
 <template>
@@ -20,7 +22,7 @@ import {
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem as-child>
-        <router-link to="/su/tickets/view">
+        <router-link :to="link">
           <Eye />
           View
         </router-link>
