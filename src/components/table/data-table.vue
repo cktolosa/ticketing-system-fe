@@ -28,7 +28,7 @@ const props = withDefaults(
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     filterColumn: string;
-    filterPlaceholder?: string;
+    filterPlaceholder: string;
     enableSorting?: boolean;
   }>(),
   {
