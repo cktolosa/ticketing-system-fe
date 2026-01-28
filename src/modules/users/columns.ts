@@ -4,8 +4,9 @@ import { h } from 'vue';
 
 import ColumnHeader from '@/components/table/column-header.vue';
 
-import { DataAction, StatusBadge } from '@/modules/users/components';
+import { DataAction } from '@/modules/tickets/components';
 
+import StatusBadge from './components/status.vue';
 import type { User, UserStatus } from './types';
 
 export const columns: ColumnDef<User>[] = [
@@ -59,7 +60,9 @@ export const columns: ColumnDef<User>[] = [
     id: 'actions',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Actions'),
     cell: ({ row }) =>
-      h('div', { class: 'flex justify-start' }, [h(DataAction, { user: row.original })]),
+      h('div', { class: 'flex justify-start' }, [
+        h(DataAction, { link: `/su/users/view`, user: row.original }),
+      ]),
     enableSorting: false,
   },
 ];
