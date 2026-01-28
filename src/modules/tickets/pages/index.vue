@@ -3,10 +3,11 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table';
 
-import { DataTable, DataTableOld, Pagination, Search } from '@/components/data-table';
+import { DataTable, Pagination, Search } from '@/components/data-table';
 
 import { columns } from '@/modules/tickets/columns';
 import type { Ticket } from '@/modules/tickets/types';
@@ -135,7 +136,7 @@ const tickets: Ticket[] = [
 ];
 
 const table = useVueTable({
-  // to get started
+  // what we only need for displaying
   get columns() {
     return columns;
   },
@@ -144,25 +145,18 @@ const table = useVueTable({
   },
   getCoreRowModel: getCoreRowModel(),
 
-  // pagination
+  // for pagination to work
   getPaginationRowModel: getPaginationRowModel(),
 
-  // filter
+  // for filtering to work
   getFilteredRowModel: getFilteredRowModel(),
+
+  // for sorting to work
+  getSortedRowModel: getSortedRowModel(),
 });
 </script>
 
 <template>
-  <div class="w-full p-5">
-    <h1 class="text-lg font-bold md:text-xl">All Tickets</h1>
-    <DataTableOld
-      :columns="columns"
-      :data="tickets"
-      filter-column="title"
-      filter-placeholder="Filter ticket title"
-      enable-sorting
-    />
-  </div>
   <main class="flex flex-col gap-y-4 p-4">
     <Search :table column="title" model="tickets" />
     <DataTable :table />

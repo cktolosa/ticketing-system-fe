@@ -23,9 +23,10 @@ export const columns: ColumnDef<Ticket>[] = [
       return h(
         'div',
         { class: 'text-left tabular-nums' },
+
         formatDate(new Date(date), {
           year: 'numeric',
-          month: 'long',
+          month: 'short',
           day: '2-digit',
         })
       );

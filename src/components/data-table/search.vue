@@ -34,10 +34,12 @@ const placeholder = props.model
 
     <InputGroupInput v-model="search" type="search" :placeholder />
 
-    <InputGroupAddon align="inline-end">
-      <InputGroupButton size="icon-xs" @click="search = ''">
-        <XIcon />
-      </InputGroupButton>
-    </InputGroupAddon>
+    <Transition name="fade">
+      <InputGroupAddon v-show="search" align="inline-end">
+        <InputGroupButton size="icon-xs" @click="search = ''">
+          <XIcon />
+        </InputGroupButton>
+      </InputGroupAddon>
+    </Transition>
   </InputGroup>
 </template>

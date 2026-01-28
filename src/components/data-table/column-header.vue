@@ -15,6 +15,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
@@ -51,6 +52,7 @@ const sortIconMapping = new Map<false | SortDirection, Component>([
           <ArrowDownWideNarrowIcon />
           Descending
         </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem @click="column.clearSorting()">
           <CircleXIcon />
           Reset
