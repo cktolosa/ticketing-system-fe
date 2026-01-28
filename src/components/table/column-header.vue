@@ -59,7 +59,7 @@ const sortIconMapping = new Map<false | SortDirection, Component>([
     </DropdownMenuContent>
   </DropdownMenu>
 
-  <span v-else :class="cn('px-2', props.class)">
+  <div v-else :class="cn('px-3', 'data-action:text-center', props.class)">
     <slot />
-  </span>
+  </div>
 </template>

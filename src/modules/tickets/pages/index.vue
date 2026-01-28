@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import NewDataTable from '@/components/table/data-table.new.vue';
 import DataTable from '@/components/table/data-table.vue';
 
-import { columns, type Ticket } from '@/modules/tickets/columns';
+import { columns } from '@/modules/tickets/columns';
+import type { Ticket } from '@/modules/tickets/types';
 
 const tickets: Ticket[] = [
   {
@@ -137,5 +139,6 @@ const tickets: Ticket[] = [
       filter-placeholder="Filter ticket title"
       enable-sorting
     />
+    <NewDataTable :columns :data="tickets" />
   </div>
 </template>

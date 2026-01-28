@@ -13,7 +13,7 @@ const props = defineProps<{
     data-slot="table-cell"
     :class="
       cn(
-        'p-2 align-middle whitespace-nowrap last:text-end [&:has([role=checkbox])]:pr-0 [&:has(button[data-slot=dropdown-menu-trigger])]:text-center [&>[role=checkbox]]:translate-y-[2px]',
+        'px-5 py-2 align-middle whitespace-nowrap last:text-end [&:has([role=checkbox])]:pr-0 [&:has(button[data-slot=dropdown-menu-trigger])]:text-center [&>[role=checkbox]]:translate-y-[2px]',
         props.class
       )
     "
