@@ -61,6 +61,11 @@ const routes = [
             name: 'Create User',
             component: () => import('@/modules/users/pages/create.vue'),
           },
+          {
+            path: '',
+            name: 'All Users',
+            component: () => import('@/modules/users/pages/index.vue'),
+          },
         ],
       },
     ],

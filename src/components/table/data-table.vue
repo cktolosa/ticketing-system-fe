@@ -23,10 +23,18 @@ import {
 } from '@/components/ui/table';
 import { valueUpdater } from '@/components/ui/table/utils';
 
-const props = defineProps<{
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    columns: ColumnDef<TData, TValue>[];
+    data: TData[];
+    filterColumn: string;
+    filterPlaceholder: string;
+    enableSorting?: boolean;
+  }>(),
+  {
+    enableSorting: false,
+  }
+);
 
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
@@ -59,9 +67,9 @@ const table = useVueTable({
     <div class="flex items-center py-4">
       <Input
         class="max-w-full"
-        placeholder="Filter ticket title"
-        :model-value="table.getColumn('title')?.getFilterValue() as string"
-        @update:model-value="table.getColumn('title')?.setFilterValue($event)"
+        :placeholder="filterPlaceholder"
+        :model-value="table.getColumn(filterColumn)?.getFilterValue() as string"
+        @update:model-value="table.getColumn(filterColumn)?.setFilterValue($event)"
       />
     </div>
 
@@ -89,7 +97,7 @@ const table = useVueTable({
       </Card>
     </div>
 
-    <div class="hidden overflow-auto rounded-md border lg:block">
+    <div class="hidden w-full overflow-auto rounded-md border px-2 lg:block">
       <Table>
         <TableHeader>
           <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">

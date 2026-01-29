@@ -97,7 +97,7 @@ const items: MenuItem[] = [
       },
       {
         title: 'All Users',
-        url: '/users',
+        url: '/su/users',
         icon: Users,
       },
     ],
