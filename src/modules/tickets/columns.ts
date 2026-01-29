@@ -17,7 +17,7 @@ import {
 export const columns: ColumnDef<Ticket>[] = [
   {
     accessorKey: 'date',
-    header: ({ column }) => h(ColumnHeader, { column }, 'Date'),
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Date'),
     cell: ({ row }) => {
       const date = row.getValue<Date>('date');
       return h(
@@ -33,25 +33,25 @@ export const columns: ColumnDef<Ticket>[] = [
   },
   {
     accessorKey: 'title',
-    header: ({ column }) => h(ColumnHeader, { column }, 'Title'),
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Title'),
     cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('title')),
     enableSorting: false,
   },
   {
     accessorKey: 'department',
-    header: ({ column }) => h(ColumnHeader, { column }, 'Department'),
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Department'),
     cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('department')),
     enableSorting: false,
   },
   {
     accessorKey: 'admin',
-    header: ({ column }) => h(ColumnHeader, { column }, 'Admin'),
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Admin'),
     cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('admin')),
     enableSorting: false,
   },
   {
     accessorKey: 'status',
-    header: ({ column }) => h(ColumnHeader, { column }, 'Status'),
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Status'),
     cell: ({ row }) => {
       const status = row.getValue<Status>('status');
       return h(StatusBadge, { status });
@@ -60,7 +60,7 @@ export const columns: ColumnDef<Ticket>[] = [
   },
   {
     accessorKey: 'priority',
-    header: ({ column }) => h(ColumnHeader, { column }, 'Priority'),
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Priority'),
     cell: ({ row }) => {
       const priority = row.getValue<Priority>('priority');
       return h(PriorityBadge, { priority });
@@ -71,9 +71,7 @@ export const columns: ColumnDef<Ticket>[] = [
     id: 'actions',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Actions'),
     cell: ({ row }) =>
-      h('div', { class: 'flex justify-start' }, [
-        h(DataAction, { link: `/su/tickets/view`, ticket: row.original }),
-      ]),
+      h('div', { class: 'flex justify-start' }, [h(DataAction, { ticket: row.original })]),
     enableSorting: false,
   },
 ];

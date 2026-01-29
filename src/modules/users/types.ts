@@ -4,7 +4,7 @@ export type User = {
   email: string;
   department: string;
   role: string;
-  status: 'active' | 'inactive';
+  status: UserStatus;
 };
 
 export type UserStatus = 'active' | 'inactive';
