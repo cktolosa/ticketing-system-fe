@@ -1,7 +1,16 @@
 <script setup lang="ts">
-import DataTable from '@/components/table/data-table.vue';
+import {
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useVueTable,
+} from '@tanstack/vue-table';
 
-import { columns, type Ticket } from '@/modules/tickets/columns';
+import { DataTable, Pagination, Search } from '@/components/data-table';
+
+import { columns } from '@/modules/tickets/columns';
+import { type Ticket } from '@/modules/tickets/types';
 
 const tickets: Ticket[] = [
   {
@@ -125,17 +134,25 @@ const tickets: Ticket[] = [
     priority: 'low',
   },
 ];
+
+const table = useVueTable({
+  get columns() {
+    return columns;
+  },
+  get data() {
+    return tickets;
+  },
+  getCoreRowModel: getCoreRowModel(),
+  getPaginationRowModel: getPaginationRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+});
 </script>
 
 <template>
-  <div class="w-full p-5">
-    <h1 class="text-lg font-bold md:text-xl">My Tickets</h1>
-    <DataTable
-      :columns="columns"
-      :data="tickets"
-      filter-column="title"
-      filter-placeholder="Filter ticket title"
-      enable-sorting
-    />
-  </div>
+  <main class="flex flex-col gap-y-4 p-4">
+    <Search :table column="title" model="tickets" />
+    <DataTable :table />
+    <Pagination :table />
+  </main>
 </template>

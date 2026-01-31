@@ -2,12 +2,10 @@ import type { ColumnDef } from '@tanstack/vue-table';
 import { UserIcon } from 'lucide-vue-next';
 import { h } from 'vue';
 
-import ColumnHeader from '@/components/table/column-header.vue';
+import { ColumnHeader } from '@/components/data-table';
 
-import { DataAction } from '@/modules/tickets/components';
-
-import StatusBadge from './components/status.vue';
-import type { User, UserStatus } from './types';
+import { DataAction, StatusBadge } from '@/modules/users/components';
+import type { User, UserStatus } from '@/modules/users/types';
 
 export const columns: ColumnDef<User>[] = [
   {

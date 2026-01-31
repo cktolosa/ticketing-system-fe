@@ -1,8 +1,16 @@
 <script setup lang="ts">
-import DataTable from '@/components/table/data-table.vue';
+import {
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useVueTable,
+} from '@tanstack/vue-table';
 
-import { columns } from '../columns';
-import type { User } from '../types';
+import { DataTable, Pagination, Search } from '@/components/data-table';
+
+import { columns } from '@/modules/users/columns';
+import type { User } from '@/modules/users/types';
 
 const users: User[] = [
   {
@@ -27,17 +35,25 @@ const users: User[] = [
     status: 'inactive',
   },
 ];
+
+const table = useVueTable({
+  get columns() {
+    return columns;
+  },
+  get data() {
+    return users;
+  },
+  getCoreRowModel: getCoreRowModel(),
+  getPaginationRowModel: getPaginationRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+});
 </script>
 
 <template>
-  <div class="w-full p-5">
-    <h1 class="text-lg font-bold md:text-xl">All Users</h1>
-    <DataTable
-      :columns="columns"
-      :data="users"
-      filter-column="name"
-      filter-placeholder="Filter user name"
-      enable-sorting
-    />
-  </div>
+  <main class="flex flex-col gap-y-4 p-4">
+    <Search :table column="name" model="users" />
+    <DataTable :table />
+    <Pagination :table />
+  </main>
 </template>
