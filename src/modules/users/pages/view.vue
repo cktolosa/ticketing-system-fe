@@ -34,7 +34,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import EditCard from '../components/edit-card.vue';
+import { cn } from '@/lib/utils';
+
+import DetailCard from '../components/detail-card.vue';
 import StatusBadge from '../components/status-badge.vue';
 
 type Role = {
@@ -152,7 +154,10 @@ const onSubmit = handleSubmit((data) => {
             Edit
           </Button>
         </DialogTrigger>
-        <DialogContent class="!max-w-4xl" @interact-outside="(e) => e.preventDefault()">
+        <DialogContent
+          class="max-h-[90vh] overflow-y-auto md:max-w-4xl"
+          @interact-outside="(e) => e.preventDefault()"
+        >
           <DialogHeader>
             <DialogTitle>Edit user</DialogTitle>
             <DialogDescription>
@@ -172,12 +177,14 @@ const onSubmit = handleSubmit((data) => {
                         ref="fileRef"
                         type="file"
                         accept="image/*"
-                        :class="[
-                          'bg-background flex w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium',
-                          errors.length ? 'border-destructive' : 'border-input',
-                        ]"
+                        :class="
+                          cn(
+                            'bg-background flex w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium',
+                            errors.length ? 'border-destructive' : 'border-input'
+                          )
+                        "
                       />
-                      <FieldDescription class="mb-5">Accepts images up to 10MB.</FieldDescription>
+                      <FieldDescription>Accepts images up to 10MB.</FieldDescription>
                       <FieldError v-if="errors.length" :errors="errors" />
                     </Field>
                   </VeeField>
@@ -283,7 +290,7 @@ const onSubmit = handleSubmit((data) => {
       </Dialog>
     </div>
 
-    <EditCard title="Personal Information">
+    <DetailCard title="Personal Information">
       <div class="space-y-5">
         <div class="space-y-1">
           <p class="text-muted-foreground text-sm">Profile Picture</p>
@@ -319,39 +326,39 @@ const onSubmit = handleSubmit((data) => {
           </div>
         </div>
       </div>
-    </EditCard>
+    </DetailCard>
 
-    <EditCard
+    <DetailCard
       title="Access Control"
       description="Changing a user’s role will immediately update their permissions and access across the system."
-      :show-warning="true"
+      show-warning
     >
       <div class="space-y-1 text-sm">
         <p class="text-muted-foreground text-sm">Role</p>
         <p>Admin</p>
       </div>
-    </EditCard>
+    </DetailCard>
 
-    <EditCard
+    <DetailCard
       title="Department Assignment"
       description="Changing the department may affect data visibility, reporting structure, and workflow assignments."
-      :show-warning="true"
+      show-warning
     >
       <div class="space-y-1 text-sm">
         <p class="text-muted-foreground text-sm">Department</p>
         <p>AIT</p>
       </div>
-    </EditCard>
+    </DetailCard>
 
-    <EditCard
+    <DetailCard
       title="Account Status"
       description="Deactivating this account will immediately prevent the user from accessing the system."
-      :show-warning="true"
+      show-warning
     >
       <div class="space-y-1 text-sm">
         <p class="text-muted-foreground text-sm">Status</p>
         <StatusBadge status="active" />
       </div>
-    </EditCard>
+    </DetailCard>
   </div>
 </template>

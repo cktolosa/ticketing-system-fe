@@ -14,9 +14,9 @@ defineProps<{
   <Card>
     <CardHeader>
       <CardTitle>{{ title }}</CardTitle>
-      <CardDescription v-if="description && showWarning" class="flex flex-row items-center gap-x-2">
-        <TriangleAlert class="hidden size-4 lg:block" />
-        {{ description }}
+      <CardDescription v-if="description" class="flex items-center gap-2">
+        <TriangleAlert v-if="showWarning" class="size-4 shrink-0" />
+        <span>{{ description }}</span>
       </CardDescription>
     </CardHeader>
     <CardContent>
