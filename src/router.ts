@@ -66,6 +66,11 @@ const routes = [
             name: 'All Users',
             component: () => import('@/modules/users/pages/index.vue'),
           },
+          {
+            path: 'view',
+            name: 'View User',
+            component: () => import('@/modules/users/pages/view.vue'),
+          },
         ],
       },
     ],
