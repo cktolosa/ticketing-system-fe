@@ -73,6 +73,23 @@ const routes = [
           },
         ],
       },
+      {
+        path: 'departments',
+        name: 'Departments',
+        redirect: '/su/departments',
+        children: [
+          {
+            path: '',
+            name: 'All Departments',
+            component: () => import('@/modules/departments/pages/index.vue'),
+          },
+          {
+            path: 'view',
+            name: 'View Department',
+            component: () => import('@/modules/departments/pages/view.vue'),
+          },
+        ],
+      },
     ],
   },
 ];
