@@ -14,9 +14,10 @@ const routes = [
     path: '/su',
     name: 'Dashboard',
     component: () => import('@/components/layouts/superuser.vue'),
+    redirect: '/su/dashboard',
     children: [
       {
-        path: '',
+        path: 'dashboard',
         component: () => import('@/modules/dashboard/pages/superuser.vue'),
       },
       {
@@ -70,6 +71,23 @@ const routes = [
             path: 'view',
             name: 'View User',
             component: () => import('@/modules/users/pages/view.vue'),
+          },
+        ],
+      },
+      {
+        path: 'departments',
+        name: 'Departments',
+        redirect: '/su/departments',
+        children: [
+          {
+            path: '',
+            name: 'All Departments',
+            component: () => import('@/modules/departments/pages/index.vue'),
+          },
+          {
+            path: 'view',
+            name: 'View Department',
+            component: () => import('@/modules/departments/pages/view.vue'),
           },
         ],
       },

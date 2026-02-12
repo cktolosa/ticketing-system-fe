@@ -57,8 +57,13 @@ interface MenuItem {
 const items: MenuItem[] = [
   {
     title: 'Dashboard',
-    url: '/su',
+    url: '/su/dashboard',
     icon: LayoutDashboard,
+  },
+  {
+    title: 'Departments',
+    url: '/su/departments',
+    icon: Files,
   },
   {
     title: 'Tickets',
@@ -99,22 +104,6 @@ const items: MenuItem[] = [
         title: 'All Users',
         url: '/su/users',
         icon: Users,
-      },
-    ],
-  },
-  {
-    title: 'Departments',
-    icon: Files,
-    children: [
-      {
-        title: 'Create Department',
-        url: '/departments/create',
-        icon: FilePlus,
-      },
-      {
-        title: 'All Departments',
-        url: '/departments',
-        icon: Files,
       },
     ],
   },
@@ -168,7 +157,7 @@ const footer: FooterItem[] = [
                   <SidebarMenuButton as-child>
                     <router-link
                       :to="item.url || ''"
-                      exact-active-class="bg-sidebar-primary text-sidebar-primary-foreground"
+                      active-class="bg-sidebar-primary text-sidebar-primary-foreground"
                     >
                       <component :is="item.icon" />
                       <span>{{ item.title }}</span>
