@@ -36,3 +36,8 @@ export type Ticket = {
   status: Status;
   priority: Priority;
 };
+
+export type History = {
+  description: string;
+  timestamp: Date;
+};
