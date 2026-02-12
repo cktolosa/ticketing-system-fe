@@ -14,9 +14,10 @@ const routes = [
     path: '/su',
     name: 'Dashboard',
     component: () => import('@/components/layouts/superuser.vue'),
+    redirect: '/su/dashboard',
     children: [
       {
-        path: '',
+        path: 'dashboard',
         component: () => import('@/modules/dashboard/pages/superuser.vue'),
       },
       {

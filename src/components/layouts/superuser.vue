@@ -37,8 +37,6 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 
-import { cn } from '@/lib/utils';
-
 import Header from '../header.vue';
 
 const route = useRoute();
@@ -59,7 +57,7 @@ interface MenuItem {
 const items: MenuItem[] = [
   {
     title: 'Dashboard',
-    url: '/su',
+    url: '/su/dashboard',
     icon: LayoutDashboard,
   },
   {
@@ -159,16 +157,7 @@ const footer: FooterItem[] = [
                   <SidebarMenuButton as-child>
                     <router-link
                       :to="item.url || ''"
-                      :class="
-                        cn(
-                          route.path === item.url ||
-                            (item.url &&
-                              item.url !== '/su' &&
-                              route.path.startsWith(item.url + '/'))
-                            ? 'bg-sidebar-primary text-sidebar-primary-foreground'
-                            : ''
-                        )
-                      "
+                      active-class="bg-sidebar-primary text-sidebar-primary-foreground"
                     >
                       <component :is="item.icon" />
                       <span>{{ item.title }}</span>
