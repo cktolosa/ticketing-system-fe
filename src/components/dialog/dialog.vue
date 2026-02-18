@@ -62,25 +62,26 @@ const handleSubmit = () => {
       </slot>
     </DialogTrigger>
     <DialogContent
-      :class="cn('space-y-5', contentClass)"
+      :class="cn('flex flex-col gap-y-5', contentClass)"
       @interact-outside="(e) => e.preventDefault()"
     >
-      <form class="space-y-5" @submit.prevent="handleSubmit">
-        <DialogHeader>
-          <DialogTitle>{{ defaultTitle }}</DialogTitle>
-          <DialogDescription>
-            {{ defaultDescription }}
-          </DialogDescription>
-        </DialogHeader>
-        <slot name="content" />
+      <DialogHeader>
+        <DialogTitle>{{ defaultTitle }}</DialogTitle>
+        <DialogDescription>
+          {{ defaultDescription }}
+        </DialogDescription>
+      </DialogHeader>
 
-        <DialogFooter>
-          <DialogClose as-child>
-            <Button type="button" variant="outline"> Cancel </Button>
-          </DialogClose>
-          <Button type="submit"> {{ submitText }} </Button>
-        </DialogFooter>
+      <form id="dialogForm" @submit.prevent="handleSubmit">
+        <slot name="content" />
       </form>
+
+      <DialogFooter>
+        <DialogClose as-child>
+          <Button type="button" variant="outline"> Cancel </Button>
+        </DialogClose>
+        <Button type="submit" form="dialogForm"> {{ submitText }} </Button>
+      </DialogFooter>
     </DialogContent>
   </Dialog>
 </template>
