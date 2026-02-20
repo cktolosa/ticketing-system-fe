@@ -1,23 +1,12 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
-import { Pencil } from 'lucide-vue-next';
 import { useForm, Field as VeeField } from 'vee-validate';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import * as z from 'zod';
 
+import { FormDialog } from '@/components/dialog';
 import { Input } from '@/components/form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import {
   Field,
   FieldDescription,
@@ -109,14 +98,6 @@ const { handleSubmit, resetForm } = useForm({
 });
 
 const isDialogOpen = ref(false);
-const fileRef = ref<HTMLInputElement | null>(null);
-const handleCancel = () => {
-  if (fileRef.value) {
-    fileRef.value.value = '';
-  }
-  resetForm();
-  isDialogOpen.value = false;
-};
 
 const onSubmit = handleSubmit((data) => {
   alert(
@@ -131,7 +112,15 @@ const onSubmit = handleSubmit((data) => {
         : undefined,
     })
   );
-  handleCancel();
+  isDialogOpen.value = false;
+});
+
+watch(isDialogOpen, (open) => {
+  if (open) {
+    resetForm({
+      values: defaultValues,
+    });
+  }
 });
 </script>
 
@@ -147,147 +136,128 @@ const onSubmit = handleSubmit((data) => {
         <StatusBadge status="active" />
       </div>
 
-      <Dialog v-model:open="isDialogOpen">
-        <DialogTrigger as-child>
-          <Button variant="ghost">
-            <Pencil class="size-4" />
-            Edit
-          </Button>
-        </DialogTrigger>
-        <DialogContent
-          class="max-h-[90vh] overflow-y-auto md:max-w-4xl"
-          @interact-outside="(e) => e.preventDefault()"
-        >
-          <DialogHeader>
-            <DialogTitle>Edit user</DialogTitle>
-            <DialogDescription>
-              Make changes to the user here. Click update when you are done.
-            </DialogDescription>
-          </DialogHeader>
-          <form @submit="onSubmit">
-            <FieldGroup>
-              <FieldSet>
-                <div class="grid gap-4 md:grid-cols-2">
-                  <VeeField v-slot="{ componentField, errors }" name="picture">
-                    <Field>
-                      <FieldLabel for="picture">Profile Picture</FieldLabel>
-                      <input
-                        v-bind="componentField"
-                        id="picture"
-                        ref="fileRef"
-                        type="file"
-                        accept="image/*"
-                        :class="
-                          cn(
-                            'bg-background flex w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium',
-                            errors.length ? 'border-destructive' : 'border-input'
-                          )
-                        "
-                      />
-                      <FieldDescription>Accepts images up to 10MB.</FieldDescription>
-                      <FieldError v-if="errors.length" :errors="errors" />
-                    </Field>
-                  </VeeField>
-
-                  <VeeField v-slot="{ componentField }" name="first_name">
-                    <Input
+      <FormDialog
+        v-model:open="isDialogOpen"
+        name="user"
+        content-class="max-h-[90vh] overflow-y-auto md:max-w-4xl"
+        @submit="onSubmit"
+      >
+        <template #content>
+          <FieldGroup>
+            <FieldSet>
+              <div class="grid gap-4 md:grid-cols-2">
+                <VeeField v-slot="{ componentField, errors }" name="picture">
+                  <Field>
+                    <FieldLabel for="picture">Profile Picture</FieldLabel>
+                    <input
                       v-bind="componentField"
-                      label="First Name"
-                      type="text"
-                      placeholder="Enter the first name"
+                      id="picture"
+                      ref="fileRef"
+                      type="file"
+                      accept="image/*"
+                      :class="
+                        cn(
+                          'bg-background flex w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium',
+                          errors.length ? 'border-destructive' : 'border-input'
+                        )
+                      "
                     />
-                  </VeeField>
+                    <FieldDescription>Accepts images up to 10MB.</FieldDescription>
+                    <FieldError v-if="errors.length" :errors="errors" />
+                  </Field>
+                </VeeField>
 
-                  <VeeField v-slot="{ componentField }" name="middle_name">
-                    <Input
-                      v-bind="componentField"
-                      label="Middle Name"
-                      type="text"
-                      placeholder="Enter the middle name"
-                    />
-                  </VeeField>
+                <VeeField v-slot="{ componentField }" name="first_name">
+                  <Input
+                    v-bind="componentField"
+                    label="First Name"
+                    type="text"
+                    placeholder="Enter the first name"
+                  />
+                </VeeField>
 
-                  <VeeField v-slot="{ componentField }" name="last_name">
-                    <Input
-                      v-bind="componentField"
-                      label="Last Name"
-                      type="text"
-                      placeholder="Enter the last name"
-                    />
-                  </VeeField>
+                <VeeField v-slot="{ componentField }" name="middle_name">
+                  <Input
+                    v-bind="componentField"
+                    label="Middle Name"
+                    type="text"
+                    placeholder="Enter the middle name"
+                  />
+                </VeeField>
 
-                  <VeeField v-slot="{ componentField }" name="email">
-                    <Input
-                      v-bind="componentField"
-                      label="Email"
-                      type="email"
-                      placeholder="Enter the work email address"
-                    />
-                  </VeeField>
+                <VeeField v-slot="{ componentField }" name="last_name">
+                  <Input
+                    v-bind="componentField"
+                    label="Last Name"
+                    type="text"
+                    placeholder="Enter the last name"
+                  />
+                </VeeField>
 
-                  <VeeField v-slot="{ field, errors }" name="role_id">
-                    <Field>
-                      <FieldLabel>Role</FieldLabel>
-                      <Select :model-value="field.value" @update:model-value="field.onChange">
-                        <SelectTrigger :aria-invalid="!!errors.length">
-                          <SelectValue placeholder="Select a role" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem v-for="r in roles" :key="r.id" :value="r.id">
-                            {{ r.name }}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FieldError :errors="errors" />
-                    </Field>
-                  </VeeField>
+                <VeeField v-slot="{ componentField }" name="email">
+                  <Input
+                    v-bind="componentField"
+                    label="Email"
+                    type="email"
+                    placeholder="Enter the work email address"
+                  />
+                </VeeField>
 
-                  <VeeField v-slot="{ field, errors }" name="department_id">
-                    <Field>
-                      <FieldLabel>Department</FieldLabel>
-                      <Select :model-value="field.value" @update:model-value="field.onChange">
-                        <SelectTrigger :aria-invalid="!!errors.length">
-                          <SelectValue placeholder="Select a department" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
-                            {{ d.name }}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FieldError :errors="errors" />
-                    </Field>
-                  </VeeField>
+                <VeeField v-slot="{ field, errors }" name="role_id">
+                  <Field>
+                    <FieldLabel>Role</FieldLabel>
+                    <Select :model-value="field.value" @update:model-value="field.onChange">
+                      <SelectTrigger :aria-invalid="!!errors.length">
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem v-for="r in roles" :key="r.id" :value="r.id">
+                          {{ r.name }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FieldError :errors="errors" />
+                  </Field>
+                </VeeField>
 
-                  <VeeField v-slot="{ field, errors }" name="status_id">
-                    <Field>
-                      <FieldLabel>Status</FieldLabel>
-                      <Select :model-value="field.value" @update:model-value="field.onChange">
-                        <SelectTrigger :aria-invalid="!!errors.length">
-                          <SelectValue placeholder="Select a status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem v-for="s in statuses" :key="s.id" :value="s.id">
-                            {{ s.name }}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FieldError :errors="errors" />
-                    </Field>
-                  </VeeField>
-                </div>
+                <VeeField v-slot="{ field, errors }" name="department_id">
+                  <Field>
+                    <FieldLabel>Department</FieldLabel>
+                    <Select :model-value="field.value" @update:model-value="field.onChange">
+                      <SelectTrigger :aria-invalid="!!errors.length">
+                        <SelectValue placeholder="Select a department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
+                          {{ d.name }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FieldError :errors="errors" />
+                  </Field>
+                </VeeField>
 
-                <DialogFooter>
-                  <DialogClose as-child>
-                    <Button variant="outline"> Cancel </Button>
-                  </DialogClose>
-                  <Button type="submit"> Update </Button>
-                </DialogFooter>
-              </FieldSet>
-            </FieldGroup>
-          </form>
-        </DialogContent>
-      </Dialog>
+                <VeeField v-slot="{ field, errors }" name="status_id">
+                  <Field>
+                    <FieldLabel>Status</FieldLabel>
+                    <Select :model-value="field.value" @update:model-value="field.onChange">
+                      <SelectTrigger :aria-invalid="!!errors.length">
+                        <SelectValue placeholder="Select a status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem v-for="s in statuses" :key="s.id" :value="s.id">
+                          {{ s.name }}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FieldError :errors="errors" />
+                  </Field>
+                </VeeField>
+              </div>
+            </FieldSet>
+          </FieldGroup>
+        </template>
+      </FormDialog>
     </div>
 
     <DetailCard title="Personal Information">

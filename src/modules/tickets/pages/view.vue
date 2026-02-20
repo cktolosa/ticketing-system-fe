@@ -1,24 +1,11 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
-import { ChevronDown, Circle, Pencil } from 'lucide-vue-next';
 import { useForm, Field as VeeField } from 'vee-validate';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import * as z from 'zod';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { FormDialog } from '@/components/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from '@/components/ui/field';
 import { ItemGroup } from '@/components/ui/item';
 import {
@@ -29,16 +16,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { formatDate } from '@/lib/utils';
-
 import {
+  ActivitySection,
   AttachmentItem,
   CommentsSection,
+  DetailsSection,
   PriorityBadge,
   StatusBadge,
   ViewAttachmentDialog,
 } from '@/modules/tickets/components';
-import type { Attachment, Comment, Ticket } from '@/modules/tickets/types';
+import type { Attachment, Comment, History, Ticket } from '@/modules/tickets/types';
 
 const ticket: Ticket = {
   date: new Date('2025-12-02'),
@@ -54,11 +41,6 @@ const attachments: Attachment[] = [
   { filename: 'IMG_0002', size: '3 MB' },
   { filename: 'IMG_0003', size: '2 MB' },
 ];
-
-type History = {
-  description: string;
-  timestamp: Date;
-};
 
 const histories: History[] = [
   {
@@ -109,7 +91,7 @@ const comments: Comment[] = [
   },
 ];
 
-const isOpen = ref(true);
+const isCollapsibleOpen = ref(true);
 const isDialogOpen = ref(false);
 
 type Status = {
@@ -176,127 +158,111 @@ const { handleSubmit, resetForm } = useForm({
   initialValues: defaultValues,
 });
 
-const handleCancel = () => {
-  resetForm();
-};
-
 const onSubmit = handleSubmit((data) => {
   alert(JSON.stringify(data));
-  handleCancel();
   isDialogOpen.value = false;
 });
+
+watch(isDialogOpen, (open) => {
+  if (open) {
+    resetForm({
+      values: defaultValues,
+    });
+  }
+});
+
+const description = `I'm unable to log into my account and need help regaining access as soon as possible. I think I either forgot my password, my credentials might have expired, or my account got automatically locked after several failed login attempts. I'm ready to verify my identity through the security procedures, reset my password if needed, and follow the steps to create a new secure password. I'd also appreciate guidance on setting up additional security measures like two-factor authentication to avoid this issue in the future.`;
 </script>
 
 <template>
-  <div class="grid w-full grid-cols-1 lg:grid-cols-2">
-    <Card class-name="w-full py-5">
+  <div class="grid w-full grid-cols-1 gap-5 p-5 lg:grid-cols-2">
+    <Card>
       <CardHeader>
         <div class="space-y-1">
           <CardTitle class="flex flex-row items-center justify-between gap-2">
             <span class="leading-relaxed"> {{ ticket.title }}</span>
 
-            <Dialog v-model:open="isDialogOpen">
-              <DialogTrigger as-child>
-                <Button variant="ghost">
-                  <Pencil class="size-4" />
-                  Edit
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Edit ticket</DialogTitle>
-                  <DialogDescription>
-                    Make changes to the ticket here. Click update when you are done.
-                  </DialogDescription>
-                </DialogHeader>
-                <form @submit="onSubmit">
-                  <FieldGroup>
-                    <FieldSet>
-                      <div class="grid gap-4">
-                        <VeeField v-slot="{ field, errors }" name="priority_id">
-                          <Field>
-                            <FieldLabel>Priority</FieldLabel>
-                            <Select :model-value="field.value" @update:model-value="field.onChange">
-                              <SelectTrigger :aria-invalid="!!errors.length">
-                                <SelectValue placeholder="Select a priority" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem v-for="p in priorities" :key="p.id" :value="p.id">
-                                  {{ p.name }}
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FieldError :errors="errors" />
-                          </Field>
-                        </VeeField>
+            <FormDialog v-model:open="isDialogOpen" name="ticket" @submit="onSubmit">
+              <template #content>
+                <FieldGroup>
+                  <FieldSet>
+                    <div class="grid gap-4">
+                      <VeeField v-slot="{ field, errors }" name="priority_id">
+                        <Field>
+                          <FieldLabel>Priority</FieldLabel>
+                          <Select :model-value="field.value" @update:model-value="field.onChange">
+                            <SelectTrigger :aria-invalid="!!errors.length">
+                              <SelectValue placeholder="Select a priority" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem v-for="p in priorities" :key="p.id" :value="p.id">
+                                {{ p.name }}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FieldError :errors="errors" />
+                        </Field>
+                      </VeeField>
 
-                        <VeeField v-slot="{ field, errors }" name="status_id">
-                          <Field>
-                            <FieldLabel>Status</FieldLabel>
-                            <Select :model-value="field.value" @update:model-value="field.onChange">
-                              <SelectTrigger :aria-invalid="!!errors.length">
-                                <SelectValue placeholder="Select a status" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem v-for="s in statuses" :key="s.id" :value="s.id">
-                                  {{ s.name }}
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FieldError :errors="errors" />
-                          </Field>
-                        </VeeField>
+                      <VeeField v-slot="{ field, errors }" name="status_id">
+                        <Field>
+                          <FieldLabel>Status</FieldLabel>
+                          <Select :model-value="field.value" @update:model-value="field.onChange">
+                            <SelectTrigger :aria-invalid="!!errors.length">
+                              <SelectValue placeholder="Select a status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem v-for="s in statuses" :key="s.id" :value="s.id">
+                                {{ s.name }}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FieldError :errors="errors" />
+                        </Field>
+                      </VeeField>
 
-                        <VeeField v-slot="{ field, errors }" name="department_id">
-                          <Field>
-                            <FieldLabel>Department</FieldLabel>
-                            <Select :model-value="field.value" @update:model-value="field.onChange">
-                              <SelectTrigger :aria-invalid="!!errors.length">
-                                <SelectValue placeholder="Select a department" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
-                                  {{ d.name }}
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FieldError :errors="errors" />
-                          </Field>
-                        </VeeField>
+                      <VeeField v-slot="{ field, errors }" name="department_id">
+                        <Field>
+                          <FieldLabel>Department</FieldLabel>
+                          <Select :model-value="field.value" @update:model-value="field.onChange">
+                            <SelectTrigger :aria-invalid="!!errors.length">
+                              <SelectValue placeholder="Select a department" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
+                                {{ d.name }}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FieldError :errors="errors" />
+                        </Field>
+                      </VeeField>
 
-                        <VeeField v-slot="{ field, errors }" name="admin_id">
-                          <Field>
-                            <div class="flex justify-between">
-                              <FieldLabel>Admin</FieldLabel>
-                            </div>
-                            <Select :model-value="field.value" @update:model-value="field.onChange">
-                              <SelectTrigger :aria-invalid="!!errors.length">
-                                <SelectValue placeholder="Select an admin" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem v-for="a in admins" :key="a.id" :value="a.id">
-                                  {{ a.name }}
-                                </SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FieldError :errors="errors" />
-                          </Field>
-                        </VeeField>
-                      </div>
-
-                      <DialogFooter>
-                        <DialogClose as-child>
-                          <Button variant="outline"> Cancel </Button>
-                        </DialogClose>
-                        <Button type="submit"> Update </Button>
-                      </DialogFooter>
-                    </FieldSet>
-                  </FieldGroup>
-                </form>
-              </DialogContent>
-            </Dialog>
+                      <VeeField v-slot="{ field, errors }" name="admin_id">
+                        <Field>
+                          <div class="flex justify-between">
+                            <FieldLabel>Admin</FieldLabel>
+                          </div>
+                          <Select :model-value="field.value" @update:model-value="field.onChange">
+                            <SelectTrigger :aria-invalid="!!errors.length">
+                              <SelectValue placeholder="Select an admin" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem v-for="a in admins" :key="a.id" :value="a.id">
+                                {{ a.name }}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FieldError :errors="errors" />
+                        </Field>
+                      </VeeField>
+                    </div>
+                  </FieldSet>
+                </FieldGroup>
+              </template>
+            </FormDialog>
           </CardTitle>
-          <CardDescription class="mb-2 flex items-center gap-2">
+          <CardDescription class="flex items-center gap-2">
             <StatusBadge :status="ticket.status" />
             <PriorityBadge :priority="ticket.priority" />
           </CardDescription>
@@ -305,15 +271,7 @@ const onSubmit = handleSubmit((data) => {
       <CardContent class="mt-1 space-y-7">
         <div class="space-y-1">
           <h3 class="mb-2 text-sm font-semibold">Description</h3>
-          <p class="leading-relaxed">
-            I'm unable to log into my account and need help regaining access as soon as possible. I
-            think I either forgot my password, my credentials might have expired, or my account got
-            automatically locked after several failed login attempts. I'm ready to verify my
-            identity through the security procedures, reset my password if needed, and follow the
-            steps to create a new secure password. I'd also appreciate guidance on setting up
-            additional security measures like two-factor authentication to avoid this issue in the
-            future.
-          </p>
+          <p class="leading-relaxed">{{ description }}</p>
         </div>
         <ItemGroup v-if="attachments.length" class="gap-y-2">
           <AttachmentItem v-for="(attachment, index) in attachments" :key="index" :attachment />
@@ -322,95 +280,9 @@ const onSubmit = handleSubmit((data) => {
       </CardContent>
     </Card>
 
-    <div class="w-full space-y-4 p-5">
-      <Collapsible v-model:open="isOpen" class="space-y-2 rounded-lg border p-5 shadow-sm">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-semibold">Details</h3>
-          <CollapsibleTrigger as-child>
-            <Button variant="ghost" size="icon" class="size-8">
-              <ChevronDown
-                class="size-4 transition-transform duration-200"
-                :class="{ 'rotate-180': isOpen }"
-              />
-              <span class="sr-only">Toggle</span>
-            </Button>
-          </CollapsibleTrigger>
-        </div>
-
-        <CollapsibleContent>
-          <dl class="space-y-5 text-sm">
-            <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-37.5">Assignee</dt>
-              <dd class="flex items-center gap-2">
-                <Avatar class="size-6">
-                  <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-                  <AvatarFallback>{{ ticket.admin.charAt(0).toUpperCase() }}</AvatarFallback>
-                </Avatar>
-                <span>{{ ticket.admin }}</span>
-              </dd>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-37.5">Department</dt>
-              <dd>{{ ticket.department }}</dd>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-37.5">Reporter</dt>
-              <dd class="flex items-center gap-2">
-                <Avatar class="size-6">
-                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                  <AvatarFallback>JR</AvatarFallback>
-                </Avatar>
-                <span>Jose Reyes</span>
-              </dd>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-37.5">Status</dt>
-              <dd><StatusBadge :status="ticket.status" /></dd>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-37.5">Priority</dt>
-              <dd><PriorityBadge :priority="ticket.priority" /></dd>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-37.5">Created</dt>
-              <dd>{{ formatDate(ticket.date) }}</dd>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <dt class="text-muted-foreground min-w-37.5">Resolved</dt>
-              <dd class="text-muted-foreground">Not yet resolved</dd>
-            </div>
-          </dl>
-        </CollapsibleContent>
-      </Collapsible>
-
-      <Card class="min-h-100">
-        <CardHeader>
-          <h3 class="text-sm font-semibold">Activity</h3>
-        </CardHeader>
-        <CardContent class="max-h-125 overflow-y-auto">
-          <div class="space-y-3">
-            <div
-              v-for="(history, index) in histories"
-              :key="index"
-              class="flex items-start gap-3 gap-y-3"
-            >
-              <Circle class="text-muted-foreground mt-2 size-2 fill-current" />
-              <div class="flex-1">
-                <div class="text-sm">{{ history.description }}</div>
-                <span class="text-muted-foreground text-xs">
-                  {{ formatDate(history.timestamp) }}
-                </span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div class="space-y-5">
+      <DetailsSection v-model:open="isCollapsibleOpen" :ticket="ticket" />
+      <ActivitySection :histories="histories" />
     </div>
   </div>
 

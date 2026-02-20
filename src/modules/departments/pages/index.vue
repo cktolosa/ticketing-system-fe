@@ -9,22 +9,13 @@ import {
 import { toTypedSchema } from '@vee-validate/zod';
 import { Plus } from 'lucide-vue-next';
 import { useForm, Field as VeeField } from 'vee-validate';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import * as z from 'zod';
 
 import { DataTable, Pagination, Search } from '@/components/data-table';
+import { FormDialog } from '@/components/dialog';
 import { Input } from '@/components/form';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 
 import { columns } from '@/modules/departments/columns';
 import type { Department } from '@/modules/departments/types';
@@ -70,28 +61,35 @@ const { handleSubmit, resetForm } = useForm({
 
 const onSubmit = handleSubmit((data) => {
   alert(JSON.stringify(data));
-  resetForm();
   isDialogOpen.value = false;
+});
+
+watch(isDialogOpen, (open) => {
+  if (open) {
+    resetForm({
+      values: defaultValues,
+    });
+  }
 });
 </script>
 
 <template>
   <main class="flex flex-col gap-4 p-4">
-    <Dialog v-model:open="isDialogOpen">
-      <div class="flex flex-col justify-between gap-3 md:flex-row">
-        <Search :table column="name" model="departments" />
-        <DialogTrigger as-child>
+    <div class="flex flex-col justify-between gap-3 md:flex-row">
+      <Search :table column="name" model="departments" />
+      <FormDialog
+        v-model:open="isDialogOpen"
+        name="department"
+        title="Create new department"
+        description="Create a new department by providing a descriptive name. Click create when you are done."
+        submit-text="Create"
+        @submit="onSubmit"
+      >
+        <template #trigger>
           <Button type="button"><Plus />Create New</Button>
-        </DialogTrigger>
-      </div>
-      <DialogContent @interact-outside="(e) => e.preventDefault()">
-        <DialogHeader>
-          <DialogTitle>Add new department</DialogTitle>
-          <DialogDescription>
-            Create a new department by providing a descriptive name. Click submit when you are done.
-          </DialogDescription>
-        </DialogHeader>
-        <form class="space-y-5" @submit="onSubmit">
+        </template>
+
+        <template #content>
           <VeeField v-slot="{ componentField }" name="department">
             <Input
               v-bind="componentField"
@@ -100,15 +98,9 @@ const onSubmit = handleSubmit((data) => {
               placeholder="Enter department name"
             />
           </VeeField>
-          <DialogFooter>
-            <DialogClose as-child>
-              <Button type="button" variant="outline"> Cancel </Button>
-            </DialogClose>
-            <Button type="submit"> Create </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </template>
+      </FormDialog>
+    </div>
     <DataTable :table />
     <Pagination :table />
   </main>

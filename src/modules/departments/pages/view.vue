@@ -1,24 +1,13 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
-import { Pencil } from 'lucide-vue-next';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { ref, watch } from 'vue';
 import * as z from 'zod';
 
+import { FormDialog } from '@/components/dialog';
 import { Input } from '@/components/form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 
 type Employee = {
   id: number;
@@ -64,54 +53,33 @@ watch(isDialogOpen, (open) => {
 
 <template>
   <div class="w-full p-5">
-    <Dialog v-model:open="isDialogOpen">
-      <Card>
-        <CardHeader>
-          <CardTitle>Team Banana</CardTitle>
-          <CardAction>
-            <DialogTrigger as-child>
-              <Button type="button" variant="ghost">
-                <Pencil class="size-4" />
-                Edit
-              </Button>
-            </DialogTrigger>
-          </CardAction>
-        </CardHeader>
+    <Card>
+      <CardHeader>
+        <CardTitle>Team Banana</CardTitle>
+        <CardAction>
+          <FormDialog v-model:open="isDialogOpen" name="department" @submit="onSubmit">
+            <template #content>
+              <VeeField v-slot="{ componentField }" name="department">
+                <Input v-bind="componentField" label="Department" type="text" />
+              </VeeField>
+            </template>
+          </FormDialog>
+        </CardAction>
+      </CardHeader>
 
-        <CardContent class="space-y-3">
-          <h3 class="font-medium">Members</h3>
-          <div v-for="employee in employees" :key="employee.id" class="flex items-center gap-2">
-            <Avatar class="size-8">
-              <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-              <AvatarFallback>{{ employee.name.charAt(0).toUpperCase() }}</AvatarFallback>
-            </Avatar>
-            <div class="flex flex-col text-sm">
-              <p class="font-medium">{{ employee.name }}</p>
-              <p class="text-muted-foreground">{{ employee.email }}</p>
-            </div>
+      <CardContent class="space-y-3">
+        <h3 class="font-medium">Members</h3>
+        <div v-for="employee in employees" :key="employee.id" class="flex items-center gap-2">
+          <Avatar class="size-8">
+            <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
+            <AvatarFallback>{{ employee.name.charAt(0).toUpperCase() }}</AvatarFallback>
+          </Avatar>
+          <div class="flex flex-col text-sm">
+            <p class="font-medium">{{ employee.name }}</p>
+            <p class="text-muted-foreground">{{ employee.email }}</p>
           </div>
-        </CardContent>
-
-        <DialogContent @interact-outside="(e) => e.preventDefault()">
-          <DialogHeader>
-            <DialogTitle>Edit department</DialogTitle>
-            <DialogDescription>
-              Make changes to the department here. Click update when you are done.
-            </DialogDescription>
-          </DialogHeader>
-          <form class="space-y-5" @submit="onSubmit">
-            <VeeField v-slot="{ componentField }" name="department">
-              <Input v-bind="componentField" label="Department" type="text" />
-            </VeeField>
-            <DialogFooter>
-              <DialogClose as-child>
-                <Button type="button" variant="outline"> Cancel </Button>
-              </DialogClose>
-              <Button type="submit"> Update </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Card>
-    </Dialog>
+        </div>
+      </CardContent>
+    </Card>
   </div>
 </template>
