@@ -113,7 +113,7 @@ const items: MenuItem[] = [
     children: [
       {
         title: 'Create FAQ',
-        url: '/faqs/create',
+        url: '/su/faqs/create',
         icon: FilePlus,
       },
       {
