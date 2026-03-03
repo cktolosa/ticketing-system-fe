@@ -91,6 +91,18 @@ const routes = [
           },
         ],
       },
+      {
+        path: 'faqs',
+        name: 'FAQs',
+        redirect: '/su/faqs',
+        children: [
+          {
+            path: 'create',
+            name: 'Create FAQ',
+            component: () => import('@/modules/faqs/pages/create.vue'),
+          },
+        ],
+      },
     ],
   },
 ];
