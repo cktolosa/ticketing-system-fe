@@ -118,7 +118,7 @@ const items: MenuItem[] = [
       },
       {
         title: 'All FAQs',
-        url: '/faqs',
+        url: '/su/faqs',
         icon: Files,
       },
     ],

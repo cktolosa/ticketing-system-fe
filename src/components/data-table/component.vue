@@ -2,6 +2,7 @@
 import type { Table as TableType } from '@tanstack/vue-table';
 import { FlexRender } from '@tanstack/vue-table';
 
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -17,7 +18,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="rounded-md border">
+  <div class="hidden w-full overflow-auto rounded-md border px-2 lg:block">
     <Table>
       <TableHeader>
         <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
@@ -51,5 +52,25 @@ defineProps<{
         </template>
       </TableBody>
     </Table>
+  </div>
+
+  <div class="block space-y-3 lg:hidden">
+    <template v-if="table.getRowModel().rows?.length">
+      <Card v-for="row in table.getRowModel().rows" :key="row.id" class="text-sm">
+        <CardContent class="grid grid-cols-2 px-0 *:border-b *:p-3">
+          <template v-for="cell in row.getVisibleCells()" :key="cell.id">
+            <div class="text-muted-foreground flex items-center capitalize">
+              {{ cell.column.id.replace(/_/g, ' ') }}
+            </div>
+            <div>
+              <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+            </div>
+          </template>
+        </CardContent>
+      </Card>
+    </template>
+    <Card v-else>
+      <CardContent class="py-5 text-center"> No results. </CardContent>
+    </Card>
   </div>
 </template>
