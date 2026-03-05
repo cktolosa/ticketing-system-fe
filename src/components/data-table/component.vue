@@ -18,7 +18,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="hidden w-full overflow-auto rounded-md border px-2 lg:block">
+  <div class="hidden rounded-md border lg:block">
     <Table>
       <TableHeader>
         <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
@@ -54,7 +54,7 @@ defineProps<{
     </Table>
   </div>
 
-  <div class="block space-y-3 lg:hidden">
+  <div class="flex flex-col gap-y-3 lg:hidden">
     <template v-if="table.getRowModel().rows?.length">
       <Card v-for="row in table.getRowModel().rows" :key="row.id" class="text-sm">
         <CardContent class="grid grid-cols-2 px-0 *:border-b *:p-3">
