@@ -101,6 +101,16 @@ const routes = [
             name: 'Create FAQ',
             component: () => import('@/modules/faqs/pages/create.vue'),
           },
+          {
+            path: '',
+            name: 'All FAQs',
+            component: () => import('@/modules/faqs/pages/index.vue'),
+          },
+          {
+            path: 'view',
+            name: 'View FAQ',
+            component: () => import('@/modules/faqs/pages/view.vue'),
+          },
         ],
       },
     ],
