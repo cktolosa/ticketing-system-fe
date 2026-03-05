@@ -32,9 +32,8 @@ export const columns: ColumnDef<Faq>[] = [
   },
   {
     id: 'actions',
-    header: ({ column }) => h(ColumnHeader, { column }, () => 'Actions'),
-    cell: ({ row }) =>
-      h('div', { class: 'flex justify-start' }, [h(DataAction, { faq: row.original })]),
+    header: ({ column }) => h(ColumnHeader, { column, '^data-action': true }, () => 'Actions'),
+    cell: ({ row }) => h(DataAction, { faq: row.original }),
     enableSorting: false,
   },
 ];

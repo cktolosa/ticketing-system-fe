@@ -15,9 +15,8 @@ export const columns: ColumnDef<Department>[] = [
   },
   {
     id: 'actions',
-    header: ({ column }) => h(ColumnHeader, { column }, () => 'Actions'),
-    cell: ({ row }) =>
-      h('div', { class: 'flex justify-start' }, [h(DataAction, { department: row.original })]),
+    header: ({ column }) => h(ColumnHeader, { column, '^data-action': true }, () => 'Actions'),
+    cell: ({ row }) => h(DataAction, { department: row.original }),
     enableSorting: false,
   },
 ];
