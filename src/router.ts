@@ -113,6 +113,11 @@ const routes = [
           },
         ],
       },
+      {
+        path: 'profile',
+        name: 'View Profile',
+        component: () => import('@/modules/profile/pages/index.vue'),
+      },
     ],
   },
 ];
