@@ -1,17 +1,24 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
+import { Kanban } from 'lucide-vue-next';
 import { useForm, Field as VeeField } from 'vee-validate';
 import * as z from 'zod';
 
 import { Input } from '@/components/form';
 import { Button } from '@/components/ui/button';
-import { Field, FieldGroup, FieldSet } from '@/components/ui/field';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { FieldGroup, FieldSeparator } from '@/components/ui/field';
+import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+
+import Google from '@/assets/google.svg';
 
 const schema = toTypedSchema(
   z.object({
     email: z.string().email().min(1, 'Email is required'),
     password: z.string().min(1, 'Password is required'),
+    remember: z.boolean().default(false),
   })
 );
 
@@ -29,36 +36,67 @@ const onSubmit = handleSubmit(async (data) => {
   alert(JSON.stringify(data));
 });
 </script>
-
 <template>
-  <main>
-    <form @submit="onSubmit">
-      <FieldSet>
-        <FieldGroup>
-          <VeeField v-slot="{ componentField }" name="email">
-            <Input
-              v-bind="componentField"
-              label="Email"
-              type="email"
-              placeholder="user@example.com"
-            />
-          </VeeField>
-          <VeeField v-slot="{ componentField }" name="password">
-            <Input
-              v-bind="componentField"
-              label="Password"
-              type="password"
-              placeholder="********"
-            />
-          </VeeField>
-          <Field orientation="horizontal">
-            <Button :disabled="isSubmitting">
-              <Spinner v-if="isSubmitting" />
-              Login
-            </Button>
-          </Field>
-        </FieldGroup>
-      </FieldSet>
-    </form>
-  </main>
+  <div
+    class="from-primary/5 to-card flex min-h-svh flex-col items-center justify-center gap-6 bg-gradient-to-t p-6 md:p-10"
+  >
+    <div class="flex w-full max-w-md flex-col gap-6">
+      <div class="flex items-center gap-2 self-center font-medium">
+        <div
+          class="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md"
+        >
+          <Kanban class="size-4" />
+        </div>
+        adish HAP
+      </div>
+      <Card>
+        <CardHeader class="text-center">
+          <CardTitle class="text-xl"> Welcome back </CardTitle>
+          <CardDescription> Choose how you would like to sign in </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form @submit="onSubmit">
+            <FieldGroup>
+              <Button variant="outline" type="button">
+                <img :src="Google" alt="Google" />
+                Login with Google
+              </Button>
+              <FieldSeparator> or continue with </FieldSeparator>
+              <VeeField v-slot="{ componentField }" name="email">
+                <Input
+                  v-bind="componentField"
+                  label="Email"
+                  type="email"
+                  placeholder="user@example.com"
+                />
+              </VeeField>
+              <VeeField v-slot="{ componentField }" name="password">
+                <Input
+                  v-bind="componentField"
+                  label="Password"
+                  type="password"
+                  placeholder="********"
+                />
+              </VeeField>
+
+              <div class="text-muted-foreground flex flex-wrap justify-between gap-3">
+                <VeeField v-slot="{ value, handleChange }" name="remember">
+                  <div class="flex items-center gap-2">
+                    <Checkbox id="remember" :checked="value" @update:model-value="handleChange" />
+                    <Label for="remember" class="font-normal">Keep me signed in</Label>
+                  </div>
+                </VeeField>
+                <a href="#" class="text-sm hover:underline">Forgot your password?</a>
+              </div>
+
+              <Button type="submit" :disabled="isSubmitting">
+                <Spinner v-if="isSubmitting" />
+                Login
+              </Button>
+            </FieldGroup>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  </div>
 </template>
