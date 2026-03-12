@@ -133,7 +133,7 @@ interface FooterItem {
 const footer: FooterItem[] = [
   {
     title: 'View Profile',
-    url: '/profile',
+    url: '/su/profile',
     icon: User,
   },
   {
