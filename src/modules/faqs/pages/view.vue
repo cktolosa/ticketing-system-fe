@@ -7,9 +7,9 @@ import * as z from 'zod';
 
 import { FormDialog } from '@/components/dialog';
 import { Input } from '@/components/form';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FieldError, FieldGroup, FieldSet } from '@/components/ui/field';
+import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
 
@@ -105,14 +105,7 @@ watch(isDialogOpen, (open) => {
 
       <CardContent class="flex flex-col gap-y-4">
         <div class="flex items-center gap-2">
-          <Avatar class="size-8">
-            <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-            <AvatarFallback>{{ faq.author.charAt(0).toUpperCase() }}</AvatarFallback>
-          </Avatar>
-          <div class="flex flex-col gap-1 text-sm">
-            <p class="font-medium">{{ faq.author }}</p>
-            <p class="text-muted-foreground">{{ formatDate(faq.updated_at) }}</p>
-          </div>
+          <UserAvatar :name="faq.author" :subtitle="formatDate(faq.updated_at)" variant="md" />
         </div>
         <p class="leading-relaxed">
           {{ faq.content }}

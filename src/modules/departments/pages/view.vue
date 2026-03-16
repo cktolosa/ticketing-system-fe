@@ -6,8 +6,8 @@ import * as z from 'zod';
 
 import { FormDialog } from '@/components/dialog';
 import { Input } from '@/components/form';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { UserAvatar } from '@/components/user-avatar';
 
 type Employee = {
   id: number;
@@ -69,15 +69,8 @@ watch(isDialogOpen, (open) => {
 
       <CardContent class="space-y-3">
         <h3 class="font-medium">Members</h3>
-        <div v-for="employee in employees" :key="employee.id" class="flex items-center gap-2">
-          <Avatar class="size-8">
-            <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-            <AvatarFallback>{{ employee.name.charAt(0).toUpperCase() }}</AvatarFallback>
-          </Avatar>
-          <div class="flex flex-col text-sm">
-            <p class="font-medium">{{ employee.name }}</p>
-            <p class="text-muted-foreground">{{ employee.email }}</p>
-          </div>
+        <div v-for="employee in employees" :key="employee.id" class="flex items-center">
+          <UserAvatar :name="employee.name" :subtitle="employee.email" variant="md" />
         </div>
       </CardContent>
     </Card>

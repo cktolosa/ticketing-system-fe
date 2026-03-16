@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/vue-table';
 import { h } from 'vue';
 
 import { ColumnHeader } from '@/components/data-table';
+import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
 
@@ -18,7 +19,7 @@ export const columns: ColumnDef<Faq>[] = [
   {
     accessorKey: 'author',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Author'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('author')),
+    cell: ({ row }) => h(UserAvatar, { name: row.getValue('author') }),
     enableSorting: true,
   },
   {

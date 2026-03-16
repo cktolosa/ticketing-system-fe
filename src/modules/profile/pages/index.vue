@@ -5,7 +5,6 @@ import { ref } from 'vue';
 import * as z from 'zod';
 
 import { Input } from '@/components/form';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -16,6 +15,7 @@ import {
   FieldLabel,
   FieldSet,
 } from '@/components/ui/field';
+import { UserAvatar } from '@/components/user-avatar';
 
 const userSchema = z.object({
   picture: z
@@ -79,16 +79,7 @@ const onSubmit = handleSubmit((data) => {
 
 <template>
   <div class="space-y-4 p-5">
-    <div class="flex items-center gap-2">
-      <Avatar class="size-12">
-        <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-        <AvatarFallback>JD</AvatarFallback>
-      </Avatar>
-      <div class="flex flex-col">
-        <p class="font-medium">Juan Dela Cruz</p>
-        <p class="text-muted-foreground text-sm">juan@email.com</p>
-      </div>
-    </div>
+    <UserAvatar name="Juan Dela Cruz" subtitle="juan@email.com" variant="md" />
     <Card>
       <CardHeader>
         <CardTitle>Personal Information</CardTitle>

@@ -5,10 +5,10 @@ import { computed, ref } from 'vue';
 import * as z from 'zod';
 
 import { Textarea } from '@/components/form';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { FieldDescription, FieldError } from '@/components/ui/field';
 import { ItemGroup } from '@/components/ui/item';
+import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
 
@@ -78,41 +78,29 @@ const hasMore = computed(() => props.comments.length > limit);
 </script>
 
 <template>
-  <div class="space-y-2">
+  <div>
     <h3 class="text-sm font-semibold">Discussion</h3>
-    <form class="space-y-3" @submit="onSubmit">
-      <div class="flex items-start gap-3">
-        <Avatar class="mt-3 size-8 shrink-0">
-          <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-          <AvatarFallback>AB</AvatarFallback>
-        </Avatar>
-        <div class="flex w-full flex-col gap-3">
-          <VeeField v-slot="{ componentField }" name="comment">
-            <Textarea
-              v-bind="componentField"
-              placeholder="Write your comments here..."
-              class="w-full"
-            />
-          </VeeField>
+    <form class="space-y-2" @submit="onSubmit">
+      <VeeField v-slot="{ componentField }" name="comment">
+        <Textarea v-bind="componentField" placeholder="Comment as Juan" class="w-full" />
+      </VeeField>
 
-          <VeeField v-slot="{ componentField, errors }" name="picture">
-            <div class="space-y-1">
-              <input
-                v-bind="componentField"
-                id="picture"
-                ref="fileRef"
-                type="file"
-                accept="application/pdf,image/*,video/*"
-                class="border-input flex h-10 w-full rounded-md border p-3 py-2.5 text-sm file:font-medium"
-              />
-              <FieldDescription>
-                Accepts images, videos, and PDF documents (up to 10MB each).
-              </FieldDescription>
-              <FieldError v-if="errors.length" :errors="errors" />
-            </div>
-          </VeeField>
+      <VeeField v-slot="{ componentField, errors }" name="picture">
+        <div class="space-y-1">
+          <input
+            v-bind="componentField"
+            id="picture"
+            ref="fileRef"
+            type="file"
+            accept="application/pdf,image/*,video/*"
+            class="border-input flex h-10 w-full rounded-md border p-3 py-2.5 text-sm file:font-medium"
+          />
+          <FieldDescription>
+            Accepts images, videos, and PDF documents (up to 10MB each).
+          </FieldDescription>
+          <FieldError v-if="errors.length" :errors="errors" />
         </div>
-      </div>
+      </VeeField>
       <div class="flex justify-end gap-2">
         <Button type="button" variant="outline" @click="handleCancel">Cancel</Button>
         <Button type="submit">Post</Button>
@@ -125,28 +113,18 @@ const hasMore = computed(() => props.comments.length > limit);
         :key="c.id"
         class="border-b pb-4 last:border-b-0 last:pb-0"
       >
-        <div class="flex gap-3">
-          <Avatar class="size-8 shrink-0">
-            <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-            <AvatarFallback>{{ c.author.charAt(0).toUpperCase() }}</AvatarFallback>
-          </Avatar>
-          <div class="flex min-w-0 flex-1 flex-col gap-2">
-            <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-              <span class="text-sm font-medium">{{ c.author }}</span>
-              <span class="text-muted-foreground text-xs">{{ formatDate(c.timestamp) }}</span>
-            </div>
-            <p class="text-sm leading-relaxed whitespace-pre-wrap">
-              {{ c.comment }}
-            </p>
-
-            <ItemGroup v-if="c.attachments?.length" class="gap-y-2">
-              <AttachmentItem
-                v-for="(attachment, index) in c.attachments"
-                :key="index"
-                :attachment
-              />
-            </ItemGroup>
+        <div class="flex min-w-0 flex-1 flex-col gap-2">
+          <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+            <UserAvatar :name="c.author" />
+            <span class="text-muted-foreground text-xs">{{ formatDate(c.timestamp) }}</span>
           </div>
+          <p class="text-sm leading-relaxed whitespace-pre-wrap">
+            {{ c.comment }}
+          </p>
+
+          <ItemGroup v-if="c.attachments?.length" class="gap-y-2">
+            <AttachmentItem v-for="(attachment, index) in c.attachments" :key="index" :attachment />
+          </ItemGroup>
         </div>
       </div>
     </div>
