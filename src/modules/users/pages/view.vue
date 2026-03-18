@@ -6,6 +6,7 @@ import * as z from 'zod';
 
 import { FormDialog } from '@/components/dialog';
 import { Input } from '@/components/form';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Field,
   FieldDescription,
@@ -260,7 +261,10 @@ watch(isDialogOpen, (open) => {
       <div class="space-y-5">
         <div class="space-y-1">
           <p class="text-muted-foreground text-sm">Profile Picture</p>
-          <UserAvatar name="Juan Dela Cruz" variant="md" :show-name="false" />
+          <Avatar class="size-10">
+            <AvatarImage alt="Juan Dela Cruz" />
+            <AvatarFallback> JD </AvatarFallback>
+          </Avatar>
         </div>
 
         <div class="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">

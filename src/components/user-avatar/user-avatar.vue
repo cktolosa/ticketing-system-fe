@@ -9,13 +9,11 @@ const props = withDefaults(
     src?: string;
     subtitle?: string;
     variant?: 'sm' | 'md';
-    showName?: boolean;
   }>(),
   {
     src: undefined,
     subtitle: undefined,
     variant: 'sm',
-    showName: true,
   }
 );
 
@@ -43,8 +41,8 @@ const current = computed(() => map[props.variant]);
       </AvatarFallback>
     </Avatar>
     <div class="flex flex-col text-sm">
-      <span v-if="showName" :class="current.name">{{ name }}</span>
-      <span class="text-muted-foreground">{{ subtitle }}</span>
+      <span :class="current.name">{{ name }}</span>
+      <span class="text-muted-foreground empty:hidden">{{ subtitle }}</span>
     </div>
   </div>
 </template>
