@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ChevronDown } from 'lucide-vue-next';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
 
@@ -48,13 +48,7 @@ const emit = defineEmits<{
       <dl class="space-y-5 text-sm">
         <div class="flex items-start gap-3">
           <dt class="text-muted-foreground min-w-37.5">Assignee</dt>
-          <dd class="flex items-center gap-2">
-            <Avatar class="size-6">
-              <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-              <AvatarFallback>{{ ticket.admin.charAt(0).toUpperCase() }}</AvatarFallback>
-            </Avatar>
-            <span>{{ ticket.admin }}</span>
-          </dd>
+          <UserAvatar :name="ticket.admin" />
         </div>
 
         <div class="flex items-start gap-3">
@@ -64,13 +58,7 @@ const emit = defineEmits<{
 
         <div class="flex items-start gap-3">
           <dt class="text-muted-foreground min-w-37.5">Reporter</dt>
-          <dd class="flex items-center gap-2">
-            <Avatar class="size-6">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>JR</AvatarFallback>
-            </Avatar>
-            <span>Jose Reyes</span>
-          </dd>
+          <UserAvatar name="Jose Reyes" />
         </div>
 
         <div class="flex items-start gap-3">

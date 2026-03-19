@@ -1,30 +1,17 @@
 import type { ColumnDef } from '@tanstack/vue-table';
-import { UserIcon } from 'lucide-vue-next';
 import { h } from 'vue';
 
 import { ColumnHeader } from '@/components/data-table';
+import { UserAvatar } from '@/components/user-avatar';
 
 import { DataAction, StatusBadge } from '@/modules/users/components';
 import type { User, UserStatus } from '@/modules/users/types';
 
 export const columns: ColumnDef<User>[] = [
   {
-    accessorKey: 'profile',
-    header: ({ column }) => h(ColumnHeader, { column }, () => 'Profile Picture'),
-    cell: ({ row }) => {
-      const profile = row.original.profile || UserIcon;
-      return h(
-        'div',
-        { class: 'flex items-center justify-center size-8 rounded-full bg-secondary' },
-        h(profile, { class: 'size-5 text-primary' })
-      );
-    },
-    enableSorting: false,
-  },
-  {
     accessorKey: 'name',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Full Name'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('name')),
+    cell: ({ row }) => h(UserAvatar, { name: row.getValue('name') }),
     enableSorting: true,
   },
   {

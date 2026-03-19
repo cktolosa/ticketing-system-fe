@@ -2,6 +2,7 @@ import type { ColumnDef } from '@tanstack/vue-table';
 import { h } from 'vue';
 
 import { ColumnHeader } from '@/components/data-table';
+import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
 
@@ -47,7 +48,7 @@ export const columns: ColumnDef<Ticket>[] = [
   {
     accessorKey: 'admin',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Admin'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('admin')),
+    cell: ({ row }) => h(UserAvatar, { name: row.getValue('admin') }),
     enableSorting: false,
   },
   {

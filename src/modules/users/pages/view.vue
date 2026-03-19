@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { UserAvatar } from '@/components/user-avatar';
 
 import { cn } from '@/lib/utils';
 
@@ -128,11 +129,7 @@ watch(isDialogOpen, (open) => {
   <div class="space-y-4 p-5">
     <div class="flex justify-between px-2">
       <div class="flex items-center gap-2">
-        <Avatar class="size-6">
-          <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-        <span class="font-medium">Juan Dela Cruz</span>
+        <UserAvatar name="Juan Dela Cruz" variant="lg" />
         <StatusBadge status="active" />
       </div>
 
@@ -264,12 +261,10 @@ watch(isDialogOpen, (open) => {
       <div class="space-y-5">
         <div class="space-y-1">
           <p class="text-muted-foreground text-sm">Profile Picture</p>
-          <div class="flex items-start gap-3">
-            <Avatar class="size-10">
-              <AvatarImage src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-          </div>
+          <Avatar class="size-10">
+            <AvatarImage alt="Juan Dela Cruz" />
+            <AvatarFallback> JD </AvatarFallback>
+          </Avatar>
         </div>
 
         <div class="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
