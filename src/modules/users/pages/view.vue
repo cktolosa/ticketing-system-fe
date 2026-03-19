@@ -129,7 +129,7 @@ watch(isDialogOpen, (open) => {
   <div class="space-y-4 p-5">
     <div class="flex justify-between px-2">
       <div class="flex items-center gap-2">
-        <UserAvatar name="Juan Dela Cruz" variant="md" />
+        <UserAvatar name="Juan Dela Cruz" variant="lg" />
         <StatusBadge status="active" />
       </div>
 

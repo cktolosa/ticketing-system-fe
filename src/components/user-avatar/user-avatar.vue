@@ -8,7 +8,7 @@ const props = withDefaults(
     name: string;
     src?: string;
     subtitle?: string;
-    variant?: 'sm' | 'md';
+    variant?: 'sm' | 'md' | 'lg';
   }>(),
   {
     src: undefined,
@@ -19,7 +19,8 @@ const props = withDefaults(
 
 const map = {
   sm: { avatar: 'size-8', fallback: 'text-xs', name: 'font-normal' },
-  md: { avatar: 'size-10', fallback: 'text-sm', name: 'font-medium' },
+  md: { avatar: 'size-9', fallback: 'text-xs', name: 'font-medium' },
+  lg: { avatar: 'size-10', fallback: 'text-sm', name: 'text-base font-medium' },
 };
 
 const current = computed(() => map[props.variant]);

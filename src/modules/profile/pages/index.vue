@@ -79,7 +79,7 @@ const onSubmit = handleSubmit((data) => {
 
 <template>
   <div class="space-y-4 p-5">
-    <UserAvatar name="Juan Dela Cruz" subtitle="juan@email.com" variant="md" />
+    <UserAvatar name="Juan Dela Cruz" subtitle="juan@email.com" variant="lg" />
     <Card>
       <CardHeader>
         <CardTitle>Personal Information</CardTitle>
