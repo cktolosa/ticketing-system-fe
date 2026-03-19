@@ -54,7 +54,7 @@ watch(isDialogOpen, (open) => {
 <template>
   <div class="w-full p-5">
     <Card>
-      <CardHeader>
+      <CardHeader class="flex items-center justify-between">
         <CardTitle>Team Banana</CardTitle>
         <CardAction>
           <FormDialog v-model:open="isDialogOpen" name="department" @submit="onSubmit">

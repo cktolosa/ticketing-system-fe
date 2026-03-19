@@ -17,19 +17,19 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'email',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Email Address'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('email')),
+    cell: ({ row }) => row.getValue('email'),
     enableSorting: false,
   },
   {
     accessorKey: 'department',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Department'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('department')),
+    cell: ({ row }) => row.getValue('department'),
     enableSorting: false,
   },
   {
     accessorKey: 'role',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Role'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('role')),
+    cell: ({ row }) => row.getValue('role'),
     enableSorting: false,
   },
   {

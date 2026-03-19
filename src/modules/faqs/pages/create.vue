@@ -54,7 +54,7 @@ const onSubmit = handleSubmit((data) => {
   <form class="w-full p-5" @submit="onSubmit">
     <FieldGroup>
       <FieldSet>
-        <FieldLegend>Create a FAQ</FieldLegend>
+        <FieldLegend>Create FAQ</FieldLegend>
         <FieldDescription> Provide the details below to create a new FAQ. </FieldDescription>
 
         <VeeField v-slot="{ componentField }" name="title">

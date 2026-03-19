@@ -71,7 +71,7 @@ const items: MenuItem[] = [
     icon: Files,
     children: [
       {
-        title: 'File Ticket',
+        title: 'Create Ticket',
         url: '/su/tickets/create',
         icon: FilePlus,
       },
@@ -207,7 +207,7 @@ const footer: FooterItem[] = [
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter class="border-t">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>

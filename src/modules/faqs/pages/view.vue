@@ -68,7 +68,7 @@ watch(isDialogOpen, (open) => {
       <CardHeader>
         <CardTitle class="flex flex-row items-center justify-between gap-2">
           <div class="flex flex-col gap-y-1">
-            <span class="leading-relaxed"> {{ faq.title }}</span>
+            <span class="text-xl leading-relaxed"> {{ faq.title }}</span>
             <div class="text-muted-foreground flex items-center gap-1 text-sm">
               <Eye class="size-4" />
               232 views
@@ -107,7 +107,7 @@ watch(isDialogOpen, (open) => {
         <div class="flex items-center gap-2">
           <UserAvatar :name="faq.author" :subtitle="formatDate(faq.updated_at)" variant="md" />
         </div>
-        <p class="leading-relaxed">
+        <p class="text-sm leading-relaxed">
           {{ faq.content }}
         </p>
       </CardContent>

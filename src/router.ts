@@ -27,7 +27,7 @@ const routes = [
         children: [
           {
             path: 'create',
-            name: 'File Ticket',
+            name: 'Create Ticket',
             component: () => import('@/modules/tickets/pages/create.vue'),
           },
           {

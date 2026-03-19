@@ -179,9 +179,8 @@ const description = `I'm unable to log into my account and need help regaining a
     <Card>
       <CardHeader>
         <div class="space-y-1">
-          <CardTitle class="flex flex-row items-center justify-between gap-2">
-            <span class="leading-relaxed"> {{ ticket.title }}</span>
-
+          <CardTitle class="flex items-center justify-between gap-2 text-xl">
+            {{ ticket.title }}
             <FormDialog v-model:open="isDialogOpen" name="ticket" @submit="onSubmit">
               <template #content>
                 <FieldGroup>
@@ -270,8 +269,8 @@ const description = `I'm unable to log into my account and need help regaining a
       </CardHeader>
       <CardContent class="mt-1 space-y-7">
         <div class="space-y-1">
-          <h3 class="mb-2 text-sm font-semibold">Description</h3>
-          <p class="leading-relaxed">{{ description }}</p>
+          <h3 class="font-medium">Description</h3>
+          <p class="text-sm leading-relaxed">{{ description }}</p>
         </div>
         <ItemGroup v-if="attachments.length" class="gap-y-2">
           <AttachmentItem v-for="(attachment, index) in attachments" :key="index" :attachment />

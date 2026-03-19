@@ -80,13 +80,13 @@ watch(isDialogOpen, (open) => {
       <FormDialog
         v-model:open="isDialogOpen"
         name="department"
-        title="Create new department"
+        title="Create Department"
         description="Create a new department by providing a descriptive name. Click create when you are done."
         submit-text="Create"
         @submit="onSubmit"
       >
         <template #trigger>
-          <Button type="button"><Plus />Create New</Button>
+          <Button type="button"><Plus />Create</Button>
         </template>
 
         <template #content>
