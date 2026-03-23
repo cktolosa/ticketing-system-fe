@@ -5,16 +5,10 @@ import { ref, watch } from 'vue';
 import * as z from 'zod';
 
 import { FormDialog } from '@/components/dialog';
+import { Select } from '@/components/form';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Field, FieldError, FieldGroup, FieldLabel, FieldSet } from '@/components/ui/field';
+import { FieldGroup, FieldSet } from '@/components/ui/field';
 import { ItemGroup } from '@/components/ui/item';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 import {
   ActivitySection,
@@ -139,10 +133,10 @@ const admins = ref<Admin[]>([
 ]);
 
 const ticketSchema = z.object({
-  priority_id: z.number().min(1, 'Please select a priority.'),
-  status_id: z.number().min(1, 'Please select a status.'),
-  department_id: z.number().min(1, 'Please select a department.'),
-  admin_id: z.number().min(1, 'Please select an admin'),
+  priority_id: z.coerce.number().min(1, 'Please select a priority.'),
+  status_id: z.coerce.number().min(1, 'Please select a status.'),
+  department_id: z.coerce.number().min(1, 'Please select a department.'),
+  admin_id: z.coerce.number().min(1, 'Please select an admin'),
 });
 
 //sample default values
@@ -188,73 +182,47 @@ const description = `I'm unable to log into my account and need help regaining a
                   <FieldSet>
                     <div class="grid gap-4">
                       <VeeField v-slot="{ field, errors }" name="priority_id">
-                        <Field>
-                          <FieldLabel>Priority</FieldLabel>
-                          <Select :model-value="field.value" @update:model-value="field.onChange">
-                            <SelectTrigger :aria-invalid="!!errors.length">
-                              <SelectValue placeholder="Select a priority" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem v-for="p in priorities" :key="p.id" :value="p.id">
-                                {{ p.name }}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FieldError :errors="errors" />
-                        </Field>
+                        <Select
+                          label="Priority"
+                          :model-value="String(field.value)"
+                          :errors="errors"
+                          :options="priorities"
+                          placeholder="Select a priority"
+                          @update:model-value="field.onChange"
+                        />
                       </VeeField>
 
                       <VeeField v-slot="{ field, errors }" name="status_id">
-                        <Field>
-                          <FieldLabel>Status</FieldLabel>
-                          <Select :model-value="field.value" @update:model-value="field.onChange">
-                            <SelectTrigger :aria-invalid="!!errors.length">
-                              <SelectValue placeholder="Select a status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem v-for="s in statuses" :key="s.id" :value="s.id">
-                                {{ s.name }}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FieldError :errors="errors" />
-                        </Field>
+                        <Select
+                          label="Status"
+                          :model-value="String(field.value)"
+                          :errors="errors"
+                          :options="statuses"
+                          placeholder="Select a status"
+                          @update:model-value="field.onChange"
+                        />
                       </VeeField>
 
                       <VeeField v-slot="{ field, errors }" name="department_id">
-                        <Field>
-                          <FieldLabel>Department</FieldLabel>
-                          <Select :model-value="field.value" @update:model-value="field.onChange">
-                            <SelectTrigger :aria-invalid="!!errors.length">
-                              <SelectValue placeholder="Select a department" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
-                                {{ d.name }}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FieldError :errors="errors" />
-                        </Field>
+                        <Select
+                          label="Department"
+                          :model-value="String(field.value)"
+                          :errors="errors"
+                          :options="departments"
+                          placeholder="Select a department"
+                          @update:model-value="field.onChange"
+                        />
                       </VeeField>
 
                       <VeeField v-slot="{ field, errors }" name="admin_id">
-                        <Field>
-                          <div class="flex justify-between">
-                            <FieldLabel>Admin</FieldLabel>
-                          </div>
-                          <Select :model-value="field.value" @update:model-value="field.onChange">
-                            <SelectTrigger :aria-invalid="!!errors.length">
-                              <SelectValue placeholder="Select an admin" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem v-for="a in admins" :key="a.id" :value="a.id">
-                                {{ a.name }}
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FieldError :errors="errors" />
-                        </Field>
+                        <Select
+                          label="Admin"
+                          :model-value="String(field.value)"
+                          :errors="errors"
+                          :options="admins"
+                          placeholder="Select an admin"
+                          @update:model-value="field.onChange"
+                        />
                       </VeeField>
                     </div>
                   </FieldSet>
