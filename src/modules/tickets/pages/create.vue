@@ -190,7 +190,7 @@ const onSubmit = handleSubmit((data) => {
   <form class="w-full p-5" @submit="onSubmit">
     <FieldGroup>
       <FieldSet>
-        <FieldLegend>File a Ticket</FieldLegend>
+        <FieldLegend>Create Ticket</FieldLegend>
         <FieldDescription>
           Provide the details below and we'll get your issue resolved quickly.
         </FieldDescription>
@@ -353,7 +353,7 @@ const onSubmit = handleSubmit((data) => {
 
         <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="secondary" @click="handleCancel"> Cancel </Button>
-          <Button type="submit">File Ticket</Button>
+          <Button type="submit">Create</Button>
         </div>
       </FieldSet>
     </FieldGroup>

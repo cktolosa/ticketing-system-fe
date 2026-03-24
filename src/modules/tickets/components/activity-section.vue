@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Circle } from 'lucide-vue-next';
 
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { formatDate } from '@/lib/utils';
 
@@ -15,7 +15,7 @@ defineProps<{
 <template>
   <Card class="min-h-100">
     <CardHeader>
-      <h3 class="text-sm font-semibold">Activity</h3>
+      <CardTitle>Activity </CardTitle>
     </CardHeader>
     <CardContent class="max-h-125 space-y-3 overflow-y-auto">
       <div

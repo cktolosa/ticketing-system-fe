@@ -31,8 +31,8 @@ const emit = defineEmits<{
     class="space-y-2 rounded-lg border p-5 shadow-sm"
     @update:open="emit('update:open', $event)"
   >
-    <div class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold">Details</h3>
+    <div class="mb-6 flex items-center justify-between">
+      <h3 class="font-medium">Details</h3>
       <CollapsibleTrigger as-child>
         <Button variant="ghost" size="icon" class="size-8">
           <ChevronDown

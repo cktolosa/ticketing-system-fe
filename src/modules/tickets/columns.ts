@@ -23,26 +23,21 @@ export const columns: ColumnDef<Ticket>[] = [
       const date = row.getValue<Date>('date');
       return h(
         'div',
-        { class: 'text-left tabular-nums' },
-
-        formatDate(new Date(date), {
-          year: 'numeric',
-          month: 'short',
-          day: '2-digit',
-        })
+        { class: 'tabular-nums' },
+        formatDate(date, { month: 'short', hour: undefined, minute: undefined, hour12: undefined })
       );
     },
   },
   {
     accessorKey: 'title',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Title'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('title')),
+    cell: ({ row }) => row.getValue('title'),
     enableSorting: false,
   },
   {
     accessorKey: 'department',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Department'),
-    cell: ({ row }) => h('div', { class: 'text-left' }, row.getValue('department')),
+    cell: ({ row }) => row.getValue('department'),
     enableSorting: false,
   },
   {

@@ -66,7 +66,7 @@ const handleSubmit = () => {
       @interact-outside="(e) => e.preventDefault()"
     >
       <DialogHeader>
-        <DialogTitle>{{ defaultTitle }}</DialogTitle>
+        <DialogTitle class="capitalize">{{ defaultTitle }}</DialogTitle>
         <DialogDescription>
           {{ defaultDescription }}
         </DialogDescription>

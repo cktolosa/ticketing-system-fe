@@ -79,7 +79,7 @@ const hasMore = computed(() => props.comments.length > limit);
 
 <template>
   <div>
-    <h3 class="text-sm font-semibold">Discussion</h3>
+    <h3 class="font-medium">Discussion</h3>
     <form class="space-y-2" @submit="onSubmit">
       <VeeField v-slot="{ componentField }" name="comment">
         <Textarea v-bind="componentField" placeholder="Comment as Juan" class="w-full" />

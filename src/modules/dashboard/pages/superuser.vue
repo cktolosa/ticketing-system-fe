@@ -110,19 +110,19 @@ type PieData = (typeof pie)[number];
 const pieConfig = {
   new: {
     label: 'New',
-    color: 'var(--chart-1)',
+    color: 'var(--color-purple-400)',
   },
   inProgress: {
     label: 'In Progress',
-    color: 'var(--chart-2)',
+    color: 'var(--color-blue-400)',
   },
   resolved: {
     label: 'Resolved',
-    color: 'var(--chart-3)',
+    color: 'var(--color-green-300)',
   },
   closed: {
     label: 'Closed',
-    color: 'var(--chart-4)',
+    color: 'var(--color-gray-400)',
   },
 } satisfies ChartConfig;
 
@@ -173,7 +173,7 @@ const getTrend = (percentage: number) => {
 <template>
   <div class="flex flex-col gap-4 px-4 py-4 md:px-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 class="hidden text-xl font-bold sm:block">Overview</h2>
+      <h3 class="hidden text-xl font-medium sm:block">Overview</h3>
       <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
         <div
           class="text-muted-foreground flex items-center justify-center gap-2 rounded-sm border p-2 text-sm"
@@ -183,7 +183,7 @@ const getTrend = (percentage: number) => {
         </div>
         <Button class="w-full sm:w-auto">
           <Download class="mr-2 size-4" />
-          Download Report
+          Download
         </Button>
       </div>
     </div>
