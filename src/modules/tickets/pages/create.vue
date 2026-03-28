@@ -21,6 +21,8 @@ import {
 import { Label } from '@/components/ui/label';
 import { SelectGroup, SelectItem, SelectLabel } from '@/components/ui/select';
 
+import { transformToSelectOption } from '@/lib/utils';
+
 const getFileIcon = (fileType: string) => {
   if (fileType.startsWith('image/')) return Image;
   if (fileType.startsWith('video/')) return Video;
@@ -196,7 +198,7 @@ const onSubmit = handleSubmit((data) => {
               v-bind="componentField"
               label="Employee"
               placeholder="Select an employee"
-              :options="employees.map((e) => ({ label: e.name, value: e.id }))"
+              :options="transformToSelectOption(employees, { labelKey: 'name', valueKey: 'id' })"
             />
           </VeeField>
 
@@ -205,7 +207,7 @@ const onSubmit = handleSubmit((data) => {
               v-bind="componentField"
               label="Priority"
               placeholder="Select a priority"
-              :options="priorities.map((p) => ({ label: p.name, value: p.id }))"
+              :options="transformToSelectOption(priorities, { labelKey: 'name', valueKey: 'id' })"
             />
           </VeeField>
 
@@ -226,7 +228,7 @@ const onSubmit = handleSubmit((data) => {
                 v-bind="componentField"
                 label="Admin"
                 placeholder="Select an admin"
-                :options="admins.map((a) => ({ label: a.name, value: a.id }))"
+                :options="transformToSelectOption(admins, { labelKey: 'name', valueKey: 'id' })"
                 :disabled="isUnassigned"
               />
             </VeeField>
@@ -303,7 +305,7 @@ const onSubmit = handleSubmit((data) => {
                       </p>
                     </div>
                   </div>
-                  <Button type="button" variant="ghost" @click="removeFile(index, field)">
+                  <Button type="button" variant="ghost" @click="removeFile(+index, field)">
                     <X />
                   </Button>
                 </CardContent>

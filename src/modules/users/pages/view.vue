@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/field';
 import { UserAvatar } from '@/components/user-avatar';
 
-import { cn } from '@/lib/utils';
+import { cn, transformToSelectOption } from '@/lib/utils';
 
 import DetailCard from '../components/detail-card.vue';
 import StatusBadge from '../components/status-badge.vue';
@@ -193,36 +193,34 @@ watch(isDialogOpen, (open) => {
                   />
                 </VeeField>
 
-                <VeeField v-slot="{ field, errors }" name="role_id">
+                <VeeField v-slot="{ componentField }" name="role_id">
                   <Select
+                    v-bind="componentField"
                     label="Role"
-                    :model-value="String(field.value)"
-                    :errors="errors"
-                    :options="roles"
                     placeholder="Select a role"
-                    @update:model-value="field.onChange"
+                    :options="transformToSelectOption(roles, { labelKey: 'name', valueKey: 'id' })"
                   />
                 </VeeField>
 
-                <VeeField v-slot="{ field, errors }" name="department_id">
+                <VeeField v-slot="{ componentField }" name="department_id">
                   <Select
+                    v-bind="componentField"
                     label="Department"
-                    :model-value="String(field.value)"
-                    :errors="errors"
-                    :options="departments"
                     placeholder="Select a department"
-                    @update:model-value="field.onChange"
+                    :options="
+                      transformToSelectOption(departments, { labelKey: 'name', valueKey: 'id' })
+                    "
                   />
                 </VeeField>
 
-                <VeeField v-slot="{ field, errors }" name="status_id">
+                <VeeField v-slot="{ componentField }" name="status_id">
                   <Select
+                    v-bind="componentField"
                     label="Status"
-                    :model-value="String(field.value)"
-                    :errors="errors"
-                    :options="statuses"
                     placeholder="Select a status"
-                    @update:model-value="field.onChange"
+                    :options="
+                      transformToSelectOption(statuses, { labelKey: 'name', valueKey: 'id' })
+                    "
                   />
                 </VeeField>
               </div>

@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { FieldGroup, FieldSet } from '@/components/ui/field';
 import { ItemGroup } from '@/components/ui/item';
 
+import { transformToSelectOption } from '@/lib/utils';
+
 import {
   ActivitySection,
   AttachmentItem,
@@ -180,47 +182,53 @@ const description = `I'm unable to log into my account and need help regaining a
                 <FieldGroup>
                   <FieldSet>
                     <div class="grid gap-4">
-                      <VeeField v-slot="{ field, errors }" name="priority_id">
+                      <VeeField v-slot="{ componentField }" name="priority_id">
                         <Select
+                          v-bind="componentField"
                           label="Priority"
-                          :model-value="String(field.value)"
-                          :errors="errors"
-                          :options="priorities"
                           placeholder="Select a priority"
-                          @update:model-value="field.onChange"
+                          :options="
+                            transformToSelectOption(priorities, {
+                              labelKey: 'name',
+                              valueKey: 'id',
+                            })
+                          "
                         />
                       </VeeField>
 
-                      <VeeField v-slot="{ field, errors }" name="status_id">
+                      <VeeField v-slot="{ componentField }" name="status_id">
                         <Select
+                          v-bind="componentField"
                           label="Status"
-                          :model-value="String(field.value)"
-                          :errors="errors"
-                          :options="statuses"
                           placeholder="Select a status"
-                          @update:model-value="field.onChange"
+                          :options="
+                            transformToSelectOption(statuses, { labelKey: 'name', valueKey: 'id' })
+                          "
                         />
                       </VeeField>
 
-                      <VeeField v-slot="{ field, errors }" name="department_id">
+                      <VeeField v-slot="{ componentField }" name="department_id">
                         <Select
+                          v-bind="componentField"
                           label="Department"
-                          :model-value="String(field.value)"
-                          :errors="errors"
-                          :options="departments"
                           placeholder="Select a department"
-                          @update:model-value="field.onChange"
+                          :options="
+                            transformToSelectOption(departments, {
+                              labelKey: 'name',
+                              valueKey: 'id',
+                            })
+                          "
                         />
                       </VeeField>
 
-                      <VeeField v-slot="{ field, errors }" name="admin_id">
+                      <VeeField v-slot="{ componentField }" name="admin_id">
                         <Select
+                          v-bind="componentField"
                           label="Admin"
-                          :model-value="String(field.value)"
-                          :errors="errors"
-                          :options="admins"
                           placeholder="Select an admin"
-                          @update:model-value="field.onChange"
+                          :options="
+                            transformToSelectOption(admins, { labelKey: 'name', valueKey: 'id' })
+                          "
                         />
                       </VeeField>
                     </div>

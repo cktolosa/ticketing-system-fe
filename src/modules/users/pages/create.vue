@@ -24,6 +24,8 @@ import {
   InputGroupInput,
 } from '@/components/ui/input-group';
 
+import { transformToSelectOption } from '@/lib/utils';
+
 type Department = {
   id: number;
   name: string;
@@ -204,25 +206,21 @@ const onSubmit = handleSubmit((data) => {
             </template>
           </VeeField>
 
-          <VeeField v-slot="{ field, errors }" name="department_id">
+          <VeeField v-slot="{ componentField }" name="department_id">
             <Select
+              v-bind="componentField"
               label="Department"
-              :model-value="String(field.value)"
-              :errors="errors"
-              :options="departments"
               placeholder="Select a department"
-              @update:model-value="field.onChange"
+              :options="transformToSelectOption(departments, { labelKey: 'name', valueKey: 'id' })"
             />
           </VeeField>
 
-          <VeeField v-slot="{ field, errors }" name="role_id">
+          <VeeField v-slot="{ componentField }" name="role_id">
             <Select
+              v-bind="componentField"
               label="Role"
-              :model-value="String(field.value)"
-              :errors="errors"
-              :options="roles"
               placeholder="Select a role"
-              @update:model-value="field.onChange"
+              :options="transformToSelectOption(roles, { labelKey: 'name', valueKey: 'id' })"
             />
           </VeeField>
         </div>
