@@ -12,12 +12,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import type { SelectOption } from '@/lib/types';
+
 const props = defineProps<{
   name: string;
   label: string;
   description?: string;
   placeholder?: string;
-  options?: { label: string; value: string | number }[];
+  options?: SelectOption[];
 }>();
 
 const { errors, meta } = useField(() => props.name);
