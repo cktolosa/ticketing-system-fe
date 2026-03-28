@@ -21,3 +21,19 @@ export const formatDate = (date: Date, opts?: Intl.DateTimeFormatOptions) => {
     ...opts,
   }).format(date);
 };
+
+export function transformToSelectOption<T>(
+  array: T[],
+  {
+    labelKey,
+    valueKey,
+  }: {
+    labelKey: keyof T;
+    valueKey: keyof T;
+  }
+) {
+  return array.map((element) => ({
+    label: element[labelKey],
+    value: element[valueKey],
+  }));
+}

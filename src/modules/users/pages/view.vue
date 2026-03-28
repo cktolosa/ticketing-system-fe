@@ -5,7 +5,7 @@ import { ref, watch } from 'vue';
 import * as z from 'zod';
 
 import { FormDialog } from '@/components/dialog';
-import { Input } from '@/components/form';
+import { Input, Select } from '@/components/form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Field,
@@ -15,16 +15,9 @@ import {
   FieldLabel,
   FieldSet,
 } from '@/components/ui/field';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { UserAvatar } from '@/components/user-avatar';
 
-import { cn } from '@/lib/utils';
+import { cn, transformToSelectOption } from '@/lib/utils';
 
 import DetailCard from '../components/detail-card.vue';
 import StatusBadge from '../components/status-badge.vue';
@@ -78,9 +71,9 @@ const userSchema = z.object({
     .min(2, 'Last name must be at least 2 characters.')
     .max(50, 'Last name must not exceed 50 characters.'),
   email: z.string().email().min(1, 'Email is required.'),
-  department_id: z.number().min(1, 'Please select a department.'),
-  role_id: z.number().min(1, 'Please select a role.'),
-  status_id: z.number().min(1, 'Please select a status.'),
+  department_id: z.coerce.number().min(1, 'Please select a department.'),
+  role_id: z.coerce.number().min(1, 'Please select a role.'),
+  status_id: z.coerce.number().min(1, 'Please select a status.'),
 });
 
 const defaultValues: z.infer<typeof userSchema> = {
@@ -200,55 +193,35 @@ watch(isDialogOpen, (open) => {
                   />
                 </VeeField>
 
-                <VeeField v-slot="{ field, errors }" name="role_id">
-                  <Field>
-                    <FieldLabel>Role</FieldLabel>
-                    <Select :model-value="field.value" @update:model-value="field.onChange">
-                      <SelectTrigger :aria-invalid="!!errors.length">
-                        <SelectValue placeholder="Select a role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem v-for="r in roles" :key="r.id" :value="r.id">
-                          {{ r.name }}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FieldError :errors="errors" />
-                  </Field>
+                <VeeField v-slot="{ componentField }" name="role_id">
+                  <Select
+                    v-bind="componentField"
+                    label="Role"
+                    placeholder="Select a role"
+                    :options="transformToSelectOption(roles, { labelKey: 'name', valueKey: 'id' })"
+                  />
                 </VeeField>
 
-                <VeeField v-slot="{ field, errors }" name="department_id">
-                  <Field>
-                    <FieldLabel>Department</FieldLabel>
-                    <Select :model-value="field.value" @update:model-value="field.onChange">
-                      <SelectTrigger :aria-invalid="!!errors.length">
-                        <SelectValue placeholder="Select a department" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
-                          {{ d.name }}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FieldError :errors="errors" />
-                  </Field>
+                <VeeField v-slot="{ componentField }" name="department_id">
+                  <Select
+                    v-bind="componentField"
+                    label="Department"
+                    placeholder="Select a department"
+                    :options="
+                      transformToSelectOption(departments, { labelKey: 'name', valueKey: 'id' })
+                    "
+                  />
                 </VeeField>
 
-                <VeeField v-slot="{ field, errors }" name="status_id">
-                  <Field>
-                    <FieldLabel>Status</FieldLabel>
-                    <Select :model-value="field.value" @update:model-value="field.onChange">
-                      <SelectTrigger :aria-invalid="!!errors.length">
-                        <SelectValue placeholder="Select a status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem v-for="s in statuses" :key="s.id" :value="s.id">
-                          {{ s.name }}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FieldError :errors="errors" />
-                  </Field>
+                <VeeField v-slot="{ componentField }" name="status_id">
+                  <Select
+                    v-bind="componentField"
+                    label="Status"
+                    placeholder="Select a status"
+                    :options="
+                      transformToSelectOption(statuses, { labelKey: 'name', valueKey: 'id' })
+                    "
+                  />
                 </VeeField>
               </div>
             </FieldSet>

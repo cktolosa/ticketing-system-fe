@@ -5,7 +5,7 @@ import { type FieldBindingObject, useForm, Field as VeeField } from 'vee-validat
 import { ref, watch } from 'vue';
 import * as z from 'zod';
 
-import { Input, Textarea } from '@/components/form';
+import { Input, Select, Textarea } from '@/components/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -19,13 +19,9 @@ import {
   FieldSet,
 } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { SelectGroup, SelectItem, SelectLabel } from '@/components/ui/select';
+
+import { transformToSelectOption } from '@/lib/utils';
 
 const getFileIcon = (fileType: string) => {
   if (fileType.startsWith('image/')) return Image;
@@ -104,10 +100,10 @@ const admins = ref<Admin[]>([
 
 const ticketSchema = z
   .object({
-    employee_id: z.number().min(1, 'Please select an employee.'),
-    priority_id: z.number().min(1, 'Please select a priority.'),
-    department_id: z.number().min(1, 'Please select a department.'),
-    admin_id: z
+    employee_id: z.coerce.number().min(1, 'Please select an employee.'),
+    priority_id: z.coerce.number().min(1, 'Please select a priority.'),
+    department_id: z.coerce.number().min(1, 'Please select a department.'),
+    admin_id: z.coerce
       .number()
       .min(1, 'Please select an admin or check the leave unassigned option.')
       .optional(),
@@ -161,7 +157,7 @@ const defaultValues: z.infer<typeof ticketSchema> = {
   attachments: undefined,
 };
 
-const { handleSubmit, setFieldValue, resetForm } = useForm({
+const { handleSubmit, setFieldValue, resetForm, values } = useForm({
   validationSchema: toTypedSchema(ticketSchema),
   initialValues: defaultValues,
 });
@@ -188,6 +184,7 @@ const onSubmit = handleSubmit((data) => {
 
 <template>
   <form class="w-full p-5" @submit="onSubmit">
+    <pre>{{ values }}</pre>
     <FieldGroup>
       <FieldSet>
         <FieldLegend>Create Ticket</FieldLegend>
@@ -196,83 +193,50 @@ const onSubmit = handleSubmit((data) => {
         </FieldDescription>
 
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <VeeField v-slot="{ field, errors }" name="employee_id">
-            <Field>
-              <FieldLabel>Employee</FieldLabel>
-              <Select :model-value="field.value" @update:model-value="field.onChange">
-                <SelectTrigger :aria-invalid="!!errors.length">
-                  <SelectValue placeholder="Select an employee" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem v-for="e in employees" :key="e.id" :value="e.id">
-                    {{ e.name }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FieldError :errors="errors" />
-            </Field>
+          <VeeField v-slot="{ componentField }" name="employee_id">
+            <Select
+              v-bind="componentField"
+              label="Employee"
+              placeholder="Select an employee"
+              :options="transformToSelectOption(employees, { labelKey: 'name', valueKey: 'id' })"
+            />
           </VeeField>
 
-          <VeeField v-slot="{ field, errors }" name="priority_id">
-            <Field>
-              <FieldLabel>Priority</FieldLabel>
-              <Select :model-value="field.value" @update:model-value="field.onChange">
-                <SelectTrigger :aria-invalid="!!errors.length">
-                  <SelectValue placeholder="Select a priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem v-for="p in priorities" :key="p.id" :value="p.id">
-                    {{ p.name }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FieldError :errors="errors" />
-            </Field>
+          <VeeField v-slot="{ componentField }" name="priority_id">
+            <Select
+              v-bind="componentField"
+              label="Priority"
+              placeholder="Select a priority"
+              :options="transformToSelectOption(priorities, { labelKey: 'name', valueKey: 'id' })"
+            />
           </VeeField>
 
-          <VeeField v-slot="{ field, errors }" name="department_id">
-            <Field>
-              <FieldLabel>Department</FieldLabel>
-              <Select :model-value="field.value" @update:model-value="field.onChange">
-                <SelectTrigger :aria-invalid="!!errors.length">
-                  <SelectValue placeholder="Select a department" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
-                    {{ d.name }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FieldError :errors="errors" />
-            </Field>
+          <VeeField v-slot="{ componentField }" name="department_id">
+            <Select v-bind="componentField" label="Priority" placeholder="Select a department">
+              <SelectGroup>
+                <SelectLabel>Sample Label for Departments Select</SelectLabel>
+                <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
+                  {{ d.name }}
+                </SelectItem>
+              </SelectGroup>
+            </Select>
           </VeeField>
 
-          <VeeField v-slot="{ field, errors }" name="admin_id">
-            <Field>
-              <div class="flex justify-between">
-                <FieldLabel>Admin</FieldLabel>
-                <div class="flex items-center gap-2">
-                  <Checkbox id="unassigned" v-model="isUnassigned" />
-                  <Label for="unassigned">Leave unassigned</Label>
-                </div>
-              </div>
+          <div class="flex flex-col space-y-3">
+            <VeeField v-slot="{ componentField }" name="admin_id">
               <Select
-                :model-value="field.value"
+                v-bind="componentField"
+                label="Admin"
+                placeholder="Select an admin"
+                :options="transformToSelectOption(admins, { labelKey: 'name', valueKey: 'id' })"
                 :disabled="isUnassigned"
-                @update:model-value="field.onChange"
-              >
-                <SelectTrigger :aria-invalid="!!errors.length">
-                  <SelectValue placeholder="Select an admin" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem v-for="a in admins" :key="a.id" :value="a.id">
-                    {{ a.name }}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FieldError :errors="errors" />
-            </Field>
-          </VeeField>
+              />
+            </VeeField>
+            <div class="flex items-center justify-start gap-2 md:justify-end">
+              <Checkbox id="unassigned" v-model="isUnassigned" />
+              <Label for="unassigned">Leave unassigned</Label>
+            </div>
+          </div>
         </div>
 
         <VeeField v-slot="{ componentField }" name="title">
@@ -341,7 +305,7 @@ const onSubmit = handleSubmit((data) => {
                       </p>
                     </div>
                   </div>
-                  <Button type="button" variant="ghost" @click="removeFile(index, field)">
+                  <Button type="button" variant="ghost" @click="removeFile(+index, field)">
                     <X />
                   </Button>
                 </CardContent>
