@@ -2,8 +2,6 @@ import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import type { SelectOption } from './types';
-
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
