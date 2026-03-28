@@ -1,53 +1,51 @@
 <script setup lang="ts">
+import { useField } from 'vee-validate';
 import { computed, useId } from 'vue';
 
 import { Field, FieldDescription, FieldError, FieldLabel } from '@/components/ui/field';
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
 
 const props = defineProps<{
+  name: string;
   label: string;
-  placeholder: string;
-  options: { id: number; name: string }[];
-  errors: string[];
-  modelValue: string | number;
   description?: string;
-  disabled?: boolean;
+  placeholder?: string;
+  options?: { label: string; value: string | number }[];
 }>();
+
+const { errors, meta } = useField(() => props.name);
 
 const id = useId();
 const errorId = `${id}-error`;
 
-const isInvalid = computed(() => !!props.errors?.length);
-
-const emit = defineEmits<{
-  'update:modelValue': [value: string | number];
-}>();
+const isInvalid = computed(() => !!errors.value.length && !meta.valid);
 </script>
 
 <template>
   <Field :data-invalid="isInvalid">
     <FieldLabel :for="id">{{ label }}</FieldLabel>
-    <Select :model-value="modelValue" @update:model-value="emit('update:modelValue', $event)">
-      <SelectTrigger
-        :disabled="disabled"
-        :aria-invalid="isInvalid"
-        :aria-describedby="isInvalid ? errorId : undefined"
-      >
-        <SelectValue :placeholder="placeholder" />
+    <Select v-bind="$attrs">
+      <SelectTrigger>
+        <SelectValue :placeholder />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem v-for="option in options" :key="option.id" :value="String(option.id)">
-          {{ option.name }}
-        </SelectItem>
+        <SelectGroup v-if="options && options.length > 0">
+          <SelectItem v-for="option in options" :key="option.value" :value="option.value">
+            {{ option.label }}
+          </SelectItem>
+        </SelectGroup>
+        <slot v-else />
       </SelectContent>
     </Select>
+
     <FieldDescription v-if="description">{{ description }}</FieldDescription>
-    <FieldError v-if="isInvalid" :id="errorId" :errors="errors" />
+    <FieldError v-if="isInvalid" :id="errorId" :errors />
   </Field>
 </template>

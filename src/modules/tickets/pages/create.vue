@@ -19,6 +19,7 @@ import {
   FieldSet,
 } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
+import { SelectGroup, SelectItem, SelectLabel } from '@/components/ui/select';
 
 const getFileIcon = (fileType: string) => {
   if (fileType.startsWith('image/')) return Image;
@@ -154,7 +155,7 @@ const defaultValues: z.infer<typeof ticketSchema> = {
   attachments: undefined,
 };
 
-const { handleSubmit, setFieldValue, resetForm } = useForm({
+const { handleSubmit, setFieldValue, resetForm, values } = useForm({
   validationSchema: toTypedSchema(ticketSchema),
   initialValues: defaultValues,
 });
@@ -181,6 +182,7 @@ const onSubmit = handleSubmit((data) => {
 
 <template>
   <form class="w-full p-5" @submit="onSubmit">
+    <pre>{{ values }}</pre>
     <FieldGroup>
       <FieldSet>
         <FieldLegend>Create Ticket</FieldLegend>
@@ -189,49 +191,43 @@ const onSubmit = handleSubmit((data) => {
         </FieldDescription>
 
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <VeeField v-slot="{ field, errors }" name="employee_id">
+          <VeeField v-slot="{ componentField }" name="employee_id">
             <Select
+              v-bind="componentField"
               label="Employee"
-              :model-value="String(field.value)"
-              :errors="errors"
-              :options="employees"
               placeholder="Select an employee"
-              @update:model-value="field.onChange"
+              :options="employees.map((e) => ({ label: e.name, value: e.id }))"
             />
           </VeeField>
 
-          <VeeField v-slot="{ field, errors }" name="priority_id">
+          <VeeField v-slot="{ componentField }" name="priority_id">
             <Select
+              v-bind="componentField"
               label="Priority"
-              :model-value="String(field.value)"
-              :errors="errors"
-              :options="priorities"
               placeholder="Select a priority"
-              @update:model-value="field.onChange"
+              :options="priorities.map((p) => ({ label: p.name, value: p.id }))"
             />
           </VeeField>
 
-          <VeeField v-slot="{ field, errors }" name="department_id">
-            <Select
-              label="Department"
-              :model-value="String(field.value)"
-              :errors="errors"
-              :options="departments"
-              placeholder="Select a department"
-              @update:model-value="field.onChange"
-            />
+          <VeeField v-slot="{ componentField }" name="department_id">
+            <Select v-bind="componentField" label="Priority" placeholder="Select a department">
+              <SelectGroup>
+                <SelectLabel>Sample Label for Departments Select</SelectLabel>
+                <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
+                  {{ d.name }}
+                </SelectItem>
+              </SelectGroup>
+            </Select>
           </VeeField>
 
           <div class="flex flex-col space-y-3">
-            <VeeField v-slot="{ field, errors }" name="admin_id">
+            <VeeField v-slot="{ componentField }" name="admin_id">
               <Select
+                v-bind="componentField"
                 label="Admin"
-                :disabled="isUnassigned"
-                :model-value="String(field.value)"
-                :errors="errors"
-                :options="admins"
                 placeholder="Select an admin"
-                @update:model-value="field.onChange"
+                :options="admins.map((a) => ({ label: a.name, value: a.id }))"
+                :disabled="isUnassigned"
               />
             </VeeField>
             <div class="flex items-center justify-start gap-2 md:justify-end">
