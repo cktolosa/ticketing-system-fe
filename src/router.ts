@@ -120,6 +120,45 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/admin',
+    name: 'Admin Dashboard',
+    meta: { title: 'Dashboard' },
+    component: () => import('@/components/layouts/admin.vue'),
+    redirect: '/admin/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/modules/dashboard/pages/admin.vue'),
+      },
+    ],
+  },
+  {
+    path: '/support',
+    name: 'Support Dashboard',
+    meta: { title: 'Dashboard' },
+    component: () => import('@/components/layouts/support.vue'),
+    redirect: '/support/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/modules/dashboard/pages/support.vue'),
+      },
+    ],
+  },
+  {
+    path: '/customer',
+    name: 'Customer Dashboard',
+    meta: { title: 'Dashboard' },
+    component: () => import('@/components/layouts/customer.vue'),
+    redirect: '/customer/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/modules/dashboard/pages/customer.vue'),
+      },
+    ],
+  },
 ];
 
 export const router = createRouter({

@@ -1,5 +1,6 @@
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
+import { TrendingDown, TrendingUp } from 'lucide-vue-next';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -37,3 +38,21 @@ export function transformToSelectOption<T>(
     value: element[valueKey],
   }));
 }
+
+export const formatPercentage = (percentage: number) => {
+  return new Intl.NumberFormat('en-PH', {
+    style: 'percent',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(percentage);
+};
+
+export const getTrend = (percentage: number) => {
+  const isPositive = percentage >= 0;
+  return {
+    trend: isPositive ? 'increased' : 'decreased',
+    icon: isPositive ? TrendingUp : TrendingDown,
+    color: isPositive ? 'text-green-500' : 'text-destructive',
+    border: isPositive ? 'border-green-500' : 'border-destructive',
+  };
+};

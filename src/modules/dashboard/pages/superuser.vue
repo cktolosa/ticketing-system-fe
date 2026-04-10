@@ -1,335 +1,63 @@
 <script setup lang="ts">
-import { Donut } from '@unovis/ts';
-import { VisAxis, VisDonut, VisGroupedBar, VisSingleContainer, VisXYContainer } from '@unovis/vue';
-import { CalendarIcon, Download, TrendingDown, TrendingUp } from 'lucide-vue-next';
-import { computed } from 'vue';
+import { ref, watch } from 'vue';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import type { ChartConfig } from '@/components/ui/chart';
-import {
-  ChartContainer,
-  ChartCrosshair,
-  ChartTooltip,
-  ChartTooltipContent,
-  componentToString,
-} from '@/components/ui/chart';
+import { SU_METRIC_META } from '@/constants/metrics';
+import { BarChart, CardOverview, Header, PieChart } from '@/modules/dashboard/components';
 
-const formatter = new Intl.NumberFormat('en-PH', {
-  style: 'percent',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
+const selectedMonth = ref('');
+const isLoading = ref(false);
+
+watch(selectedMonth, async () => {
+  isLoading.value = true;
+  try {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  } finally {
+    isLoading.value = false;
+  }
 });
 
-interface CardItem {
-  title: string;
-  value: string;
-  percentage: number;
-  description: string;
-  recommendation: string;
-}
-const items: CardItem[] = [
-  {
-    title: 'Resolution Time',
-    value: '2.4 days',
-    percentage: 0.1245,
-    description: 'Average time to close a ticket',
-    recommendation:
-      'Monitor resolution time trends to ensure efficient ticket handling and workflow optimization.',
+const items = {
+  cards: [
+    { key: 'resolution_rate', value: 2, percentage: 0.1245 },
+    { key: 'priority_resolution', value: 10, percentage: 0.12 },
+    { key: 'user_activity', value: 6, percentage: -0.15 },
+    { key: 'faq_views', value: 342, percentage: 0.22 },
+  ],
+  pie: {
+    categories: [
+      { category: 'new', count: 10 },
+      { category: 'in_progress', count: 20 },
+      { category: 'resolved', count: 30 },
+      { category: 'closed', count: 40 },
+    ],
+    total: 100,
+    percentage: -0.012,
   },
-  {
-    title: 'Priority Resolution',
-    value: '10 tickets',
-    percentage: 0.12,
-    description: 'Closed high-urgency tickets',
-    recommendation:
-      'Continue prioritizing high-urgency tickets to maintain smooth operations and user satisfaction.',
+  bar: {
+    categories: [
+      { label: 'AIT', new: 50, closed: 186 },
+      { label: 'QA', new: 30, closed: 120 },
+      { label: 'Development', new: 40, closed: 100 },
+      { label: 'Crowdworks', new: 10, closed: 25 },
+    ],
+    percentage: 0.1625,
   },
-  {
-    title: 'User Activity',
-    value: '6 users',
-    percentage: -0.15,
-    description: 'Users system engagement',
-    recommendation:
-      'Track user engagement patterns to identify opportunities for system improvement and adoption.',
-  },
-  {
-    title: 'FAQ Views',
-    value: '342 views',
-    percentage: 0.22,
-    description: 'Total FAQ page visits',
-    recommendation:
-      'Keep FAQ content updated and accessible to encourage self-service problem resolution.',
-  },
-];
-
-type DonutSegment<T> = T | { data: T };
-type PieCategory = keyof typeof pieConfig;
-interface PieChart {
-  category: PieCategory;
-  tickets: number;
-  fill: string;
-}
-
-const pie: PieChart[] = [
-  {
-    category: 'new',
-    tickets: 275,
-    fill: 'var(--color-new)',
-  },
-  {
-    category: 'inProgress',
-    tickets: 200,
-    fill: 'var(--color-inProgress)',
-  },
-  {
-    category: 'resolved',
-    tickets: 287,
-    fill: 'var(--color-resolved)',
-  },
-  {
-    category: 'closed',
-    tickets: 173,
-    fill: 'var(--color-closed)',
-  },
-];
-
-const totalTickets = computed(() => pie.reduce((acc, curr) => acc + curr.tickets, 0));
-
-type PieData = (typeof pie)[number];
-
-const pieConfig = {
-  new: {
-    label: 'New',
-    color: 'var(--color-purple-400)',
-  },
-  inProgress: {
-    label: 'In Progress',
-    color: 'var(--color-blue-400)',
-  },
-  resolved: {
-    label: 'Resolved',
-    color: 'var(--color-green-300)',
-  },
-  closed: {
-    label: 'Closed',
-    color: 'var(--color-gray-400)',
-  },
-} satisfies ChartConfig;
-
-interface BarChart {
-  date: Date;
-  ait: number;
-  development?: number;
-}
-const bar: BarChart[] = [
-  {
-    date: new Date('2025-10-01'),
-    ait: 186,
-    development: 10,
-  },
-  {
-    date: new Date('2025-11-01'),
-    ait: 305,
-  },
-  {
-    date: new Date('2025-12-01'),
-    ait: 20,
-  },
-];
-
-type BarData = (typeof bar)[number];
-
-const barConfig = {
-  ait: {
-    label: 'AIT',
-    color: 'var(--chart-1)',
-  },
-  development: {
-    label: 'Development',
-    color: 'var(--chart-2)',
-  },
-} satisfies ChartConfig;
-
-const getTrend = (percentage: number) => {
-  const isPositive = percentage >= 0;
-  return {
-    icon: isPositive ? TrendingUp : TrendingDown,
-    color: isPositive ? 'text-green-500' : 'text-destructive',
-    border: isPositive ? 'border-green-500' : 'border-destructive',
-  };
 };
 </script>
 
 <template>
   <div class="flex flex-col gap-4 px-4 py-4 md:px-6">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h3 class="hidden text-xl font-medium sm:block">Overview</h3>
-      <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
-        <div
-          class="text-muted-foreground flex items-center justify-center gap-2 rounded-sm border p-2 text-sm"
-        >
-          <CalendarIcon class="size-4" />
-          <span>October - December 2025</span>
-        </div>
-        <Button class="w-full sm:w-auto">
-          <Download class="mr-2 size-4" />
-          Download
-        </Button>
-      </div>
-    </div>
-    <div
-      class="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card grid auto-rows-min grid-cols-1 gap-4 *:data-[slot=card]:bg-gradient-to-t lg:grid-cols-2 xl:grid-cols-4 @xl/main:grid-cols-2 @5xl/main:grid-cols-4"
-    >
-      <Card
-        v-for="item in items"
-        :key="item.title"
-        class="@container/card row-span-3 grid grid-rows-subgrid"
-      >
-        <CardHeader class="row-start-1">
-          <CardDescription>{{ item.title }}</CardDescription>
-          <CardAction>
-            <Badge variant="outline" :class="getTrend(item.percentage).border">
-              <component
-                :is="getTrend(item.percentage).icon"
-                :class="['size-4', getTrend(item.percentage).color]"
-              />
-              {{ formatter.format(item.percentage) }}
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardTitle class="row-start-2 pl-6 text-xl font-semibold tabular-nums md:text-2xl">
-          {{ item.value }}
-        </CardTitle>
-        <CardFooter class="row-start-3 flex-col items-start gap-2 text-sm">
-          <div class="flex gap-2 font-medium">
-            {{ item.description }}
-            <component
-              :is="getTrend(item.percentage).icon"
-              :class="['size-4', getTrend(item.percentage).color]"
-            />
-          </div>
-          <div class="text-muted-foreground">
-            {{ item.recommendation }}
-          </div>
-        </CardFooter>
-      </Card>
-    </div>
-    <div class="grid auto-rows-min grid-cols-1 gap-4 lg:grid-cols-2">
-      <Card class="row-span-3 grid grid-rows-subgrid">
-        <CardHeader class="row-start-1 items-center">
-          <CardTitle>Ticket Counts</CardTitle>
-        </CardHeader>
-        <CardContent class="row-start-2 flex-1">
-          <ChartContainer
-            :config="pieConfig"
-            class="mx-auto aspect-square max-h-[300px]"
-            :style="{
-              '--vis-donut-central-label-font-size': 'var(--text-3xl)',
-              '--vis-donut-central-label-font-weight': 'var(--font-weight-bold)',
-              '--vis-donut-central-label-text-color': 'var(--foreground)',
-              '--vis-donut-central-sub-label-text-color': 'var(--muted-foreground)',
-            }"
-          >
-            <VisSingleContainer :data="pie" :margin="{ top: 30, bottom: 30 }">
-              <VisDonut
-                :value="(d: PieData) => d.tickets"
-                :color="(d: PieData) => pieConfig[d.category].color"
-                :arc-width="30"
-                :central-label-offset-y="10"
-                :central-label="totalTickets.toLocaleString()"
-                central-sub-label="Tickets"
-              />
-              <ChartTooltip
-                :triggers="{
-                  [Donut.selectors.segment]: (d: DonutSegment<PieChart>) => {
-                    const item: PieChart = 'data' in d ? d.data : d;
-                    return `
-                                            <div class='bg-white text-xs p-2 rounded-full flex flex-row justify-between gap-3'>
-                                                <div class='flex flex-row justify-center items-center gap-1'>
-                                                    <div class='size-3 rounded' style='background-color: ${item.fill}'></div>
-                                                    <div class='font-medium'>${pieConfig[item.category]?.label}</div>
-                                                </div>
-                                                <div class='text-muted-foreground'>${item.tickets} tickets</div>
-                                            </div>`;
-                  },
-                }"
-              />
-            </VisSingleContainer>
-          </ChartContainer>
-        </CardContent>
-        <CardFooter class="row-start-3 flex-col gap-2 text-sm">
-          <div class="flex gap-2 leading-none font-medium">
-            Ticket volume increased by 5.20% <TrendingUp class="size-4 text-green-500" />
-          </div>
-          <div class="text-muted-foreground leading-none">
-            Showing total number of tickets for the last 3 months.
-          </div>
-        </CardFooter>
-      </Card>
+    <Header
+      v-model:selected-month="selectedMonth"
+      download-url="/sample"
+      role="superuser"
+      :loading="isLoading"
+    />
+    <CardOverview :data="items.cards" :meta="SU_METRIC_META" :loading="isLoading" />
 
-      <Card class="row-span-3 grid grid-rows-subgrid">
-        <CardHeader class="row-start-1 items-center">
-          <CardTitle>Ticket Distribution</CardTitle>
-        </CardHeader>
-        <CardContent class="row-start-2 flex-1 overflow-hidden">
-          <ChartContainer :config="barConfig">
-            <VisXYContainer :data="bar" :margin="{ left: -24 }" :y-domain="[0, undefined]">
-              <VisGroupedBar
-                :x="(d: BarData) => d.date"
-                :y="[(d: BarData) => d.ait, (d: BarData) => d.development]"
-                :color="[barConfig.ait.color, barConfig.development.color]"
-                :rounded-corners="10"
-              />
-              <VisAxis
-                type="x"
-                :x="(d: BarData) => d.date"
-                :tick-line="false"
-                :domain-line="false"
-                :grid-line="false"
-                :num-ticks="6"
-                :tick-format="
-                  (d: number) => {
-                    const date = new Date(d);
-                    return date.toLocaleDateString('en-US', {
-                      month: 'short',
-                    });
-                  }
-                "
-                :tick-values="bar.map((d) => d.date)"
-              />
-              <VisAxis type="y" :num-ticks="3" :tick-line="false" :domain-line="false" />
-              <ChartTooltip />
-              <ChartCrosshair
-                :template="
-                  componentToString(barConfig, ChartTooltipContent, {
-                    indicator: 'dashed',
-                    hideLabel: true,
-                  })
-                "
-                color="#0000"
-              />
-            </VisXYContainer>
-          </ChartContainer>
-        </CardContent>
-        <CardFooter class="row-start-3 flex-col gap-2 text-sm">
-          <div class="flex gap-2 leading-none font-medium">
-            AIT department handled -1.20% tickets <TrendingDown class="text-destructive size-4" />
-          </div>
-          <div class="text-muted-foreground leading-none">
-            Showing departments tickets comparison for the last 3 months.
-          </div>
-        </CardFooter>
-      </Card>
+    <div class="grid auto-rows-min grid-cols-1 gap-4 lg:grid-cols-2">
+      <PieChart :data="items.pie" :loading="isLoading" />
+      <BarChart :data="items.bar" :loading="isLoading" />
     </div>
   </div>
 </template>
