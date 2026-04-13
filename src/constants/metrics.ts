@@ -6,14 +6,14 @@ export interface MetricMeta {
 }
 
 export type SUMetricKey = 'resolution_rate' | 'priority_resolution' | 'user_activity' | 'faq_views';
-export type AdminMetricKey = 'open_tickets' | 'resolved_tickets' | 'overdue_tickets' | 'faq_views';
+export type AdminMetricKey = 'new_tickets' | 'resolved_tickets' | 'overdue_tickets' | 'faq_views';
 export type SupportMetricKey =
   | 'new_tickets'
   | 'in_progress_tickets'
   | 'overdue_tickets'
   | 'faq_views';
 export type UserMetricKey =
-  | 'open_tickets'
+  | 'new_tickets'
   | 'in_progress_tickets'
   | 'resolved_tickets'
   | 'closed_tickets';
@@ -46,11 +46,11 @@ export const SU_METRIC_META: Record<SUMetricKey, MetricMeta> = {
 };
 
 export const ADMIN_METRIC_META: Record<AdminMetricKey, MetricMeta> = {
-  open_tickets: {
-    title: 'Open Tickets',
+  new_tickets: {
+    title: 'New Tickets',
     unit: 'tickets',
     description: 'Active unresolved tickets',
-    recommendation: 'Review and assign open tickets promptly to prevent backlogs.',
+    recommendation: 'Review and assign new tickets promptly to prevent backlogs.',
   },
   resolved_tickets: {
     title: 'Resolved Tickets',
@@ -100,11 +100,11 @@ export const SUPPORT_METRIC_META: Record<SupportMetricKey, MetricMeta> = {
 };
 
 export const USER_METRIC_META: Record<UserMetricKey, MetricMeta> = {
-  open_tickets: {
-    title: 'Open Tickets',
+  new_tickets: {
+    title: 'New Tickets',
     unit: 'tickets',
     description: 'Your active unresolved tickets',
-    recommendation: 'Check your open tickets for any updates or required action.',
+    recommendation: 'Check your new tickets for any updates or required action.',
   },
   in_progress_tickets: {
     title: 'In Progress Tickets',

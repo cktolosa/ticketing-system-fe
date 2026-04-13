@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Eye } from 'lucide-vue-next';
+import { useTimeAgo } from '@vueuse/core';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,6 +15,9 @@ defineProps<{
   viewUrl: string;
   loading?: boolean;
 }>();
+
+const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
+
 </script>
 
 <template>
@@ -63,7 +67,7 @@ defineProps<{
                 <PriorityBadge :priority="ticket.priority" />
               </div>
             </div>
-            <p class="text-muted-foreground text-sm">{{ ticket.time }}</p>
+            <p class="text-muted-foreground text-sm">{{ timeAgo(ticket.date) }}</p>
           </a>
           <Separator v-if="index < tickets.length - 1" class="my-2" />
         </CardContent>

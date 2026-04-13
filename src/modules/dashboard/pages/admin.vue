@@ -6,7 +6,7 @@ import { BarChart, CardOverview, Header, PieChart } from '@/modules/dashboard/co
 
 const items = {
   cards: [
-    { key: 'open_tickets', value: 2, percentage: 0.1245 },
+    { key: 'new_tickets', value: 2, percentage: 0.1245 },
     { key: 'resolved_tickets', value: 10, percentage: 0.12 },
     { key: 'overdue_tickets', value: 6, percentage: -0.15 },
     { key: 'faq_views', value: 32, percentage: 0.12 },
