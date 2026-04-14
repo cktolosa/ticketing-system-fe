@@ -23,7 +23,7 @@ interface IBreadcrumb {
 const breadcrumbs = computed<IBreadcrumb[]>(() => {
   const matched = route.matched.filter((record) => record.name);
   return matched.map((record, index) => ({
-    name: record.name?.toString() || '',
+    name: record.meta.title || record.name?.toString(),
     to: record.path,
     isLast: index === matched.length - 1,
   }));

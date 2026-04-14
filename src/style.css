@@ -137,4 +137,11 @@
     height: 0;
     pointer-events: none;
   }
+
+  .donut-chart {
+    --vis-donut-central-label-font-size: var(--text-3xl);
+    --vis-donut-central-label-font-weight: var(--font-weight-medium);
+    --vis-donut-central-label-text-color: var(--foreground);
+    --vis-donut-central-sub-label-text-color: var(--muted-foreground);
+  }
 }

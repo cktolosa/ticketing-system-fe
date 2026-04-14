@@ -1,8 +1,226 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
+import {
+  ChevronRight,
+  ChevronUp,
+  CircleHelp,
+  FilePlus,
+  Files,
+  LayoutDashboard,
+  LogOut,
+  User,
+} from 'lucide-vue-next';
+import type { Component } from 'vue';
+import { RouterView, useRoute } from 'vue-router';
+
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from '@/components/ui/sidebar';
+import { UserAvatar } from '@/components/user-avatar';
+
+import Header from '../header.vue';
+
+const route = useRoute();
+const isChildActive = (item: MenuItem): boolean => {
+  return (
+    item.children?.some((child) => {
+      return route.path === child.url || route.path.startsWith(child.url + '/');
+    }) ?? false
+  );
+};
+
+interface MenuItem {
+  title: string;
+  url?: string;
+  icon: Component;
+  children?: MenuItem[];
+}
+const items: MenuItem[] = [
+  {
+    title: 'Dashboard',
+    url: '/admin/dashboard',
+    icon: LayoutDashboard,
+  },
+  {
+    title: 'Tickets',
+    icon: Files,
+    children: [
+      {
+        title: 'Create Ticket',
+        url: '/admin/tickets/create',
+        icon: FilePlus,
+      },
+      {
+        title: 'My Tickets',
+        url: '/admin/tickets/reported',
+        icon: Files,
+      },
+      {
+        title: 'Assigned Tickets',
+        url: '/admin/tickets/assigned',
+        icon: Files,
+      },
+      {
+        title: 'Department Tickets',
+        url: '/admin/tickets/assigned',
+        icon: Files,
+      },
+    ],
+  },
+  {
+    title: 'FAQs',
+    icon: CircleHelp,
+    children: [
+      {
+        title: 'Create FAQ',
+        url: '/admin/faqs/create',
+        icon: FilePlus,
+      },
+      {
+        title: 'All FAQs',
+        url: '/admin/faqs',
+        icon: Files,
+      },
+    ],
+  },
+];
+
+interface FooterItem {
+  title: string;
+  url: string;
+  icon: Component;
+}
+const footer: FooterItem[] = [
+  {
+    title: 'View Profile',
+    url: '/admin/profile',
+    icon: User,
+  },
+  {
+    title: 'Log Out',
+    url: '/logout',
+    icon: LogOut,
+  },
+];
 </script>
 
 <template>
-  <aside>sidebar for admin</aside>
-  <RouterView />
+  <SidebarProvider>
+    <Sidebar collapsible="icon">
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <template v-for="item in items" :key="item.title">
+                <SidebarMenuItem v-if="!item.children">
+                  <SidebarMenuButton as-child>
+                    <router-link
+                      :to="item.url || ''"
+                      active-class="bg-sidebar-primary text-sidebar-primary-foreground"
+                    >
+                      <component :is="item.icon" />
+                      <span>{{ item.title }}</span>
+                    </router-link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <Collapsible
+                  v-else
+                  :key="route.path"
+                  as-child
+                  class="group/collapsible"
+                  :data-active="isChildActive(item)"
+                  :default-open="isChildActive(item)"
+                >
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger as-child>
+                      <SidebarMenuButton
+                        class="group-data-[active=true]/collapsible:bg-sidebar-primary group-data-[active=true]/collapsible:text-sidebar-primary-foreground"
+                      >
+                        <component :is="item.icon" />
+                        <span>{{ item.title }}</span>
+                        <ChevronRight
+                          class="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                        />
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                        <SidebarMenuSubItem v-for="child in item.children" :key="child.title">
+                          <SidebarMenuSubButton as-child>
+                            <router-link
+                              :to="child.url || ''"
+                              exact-active-class="bg-sidebar-primary text-sidebar-primary-foreground"
+                            >
+                              <component :is="child.icon" />
+                              <span>{{ child.title }}</span>
+                            </router-link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  </SidebarMenuItem>
+                </Collapsible>
+              </template>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <SidebarMenuButton
+                  size="lg"
+                  class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                >
+                  <UserAvatar name="Juan Dela Cruz" subtitle="juan@email.com" variant="md" />
+                  <ChevronUp class="ml-auto size-4" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                class="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                side="bottom"
+                :side-offset="4"
+              >
+                <DropdownMenuItem v-for="item in footer" :key="item.title" as-child>
+                  <router-link
+                    :to="item.url"
+                    class="cursor-pointer"
+                    exact-active-class="bg-sidebar-accent text-sidebar-accent-foreground"
+                  >
+                    <component :is="item.icon" class="mr-2 size-4" />
+                    {{ item.title }}
+                  </router-link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+    </Sidebar>
+    <SidebarInset>
+      <Header />
+      <RouterView />
+    </SidebarInset>
+  </SidebarProvider>
 </template>
