@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Eye } from 'lucide-vue-next';
 import { useTimeAgo } from '@vueuse/core';
+import { Eye } from 'lucide-vue-next';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -17,7 +17,6 @@ defineProps<{
 }>();
 
 const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
-
 </script>
 
 <template>
