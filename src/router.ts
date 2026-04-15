@@ -159,7 +159,8 @@ const routes = [
       },
       {
         path: 'faqs',
-        name: 'FAQs',
+        name: 'Customer FAQS',
+        meta: { title: 'FAQs' },
         component: () => import('@/modules/faqs/pages/customer-view.vue'),
       },
     ],

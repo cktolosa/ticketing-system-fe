@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FolderIcon, SearchIcon } from 'lucide-vue-next';
+import { FolderIcon, SearchIcon, XIcon } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 import {
@@ -8,7 +8,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from '@/components/ui/input-group';
 
 const faqs = [
   {
@@ -101,9 +106,14 @@ const filtered = computed(() => {
 <template>
   <div class="space-y-7 p-5">
     <InputGroup>
-      <InputGroupInput v-model="search" placeholder="Search faqs by title..." />
       <InputGroupAddon>
         <SearchIcon />
+      </InputGroupAddon>
+      <InputGroupInput v-model="search" placeholder="Search faqs by title..." />
+      <InputGroupAddon v-if="search" align="inline-end">
+        <InputGroupButton size="icon-xs" @click="search = ''">
+          <XIcon />
+        </InputGroupButton>
       </InputGroupAddon>
     </InputGroup>
     <div v-for="group in filtered" :key="group.department">
