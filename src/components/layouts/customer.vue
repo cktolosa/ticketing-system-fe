@@ -77,14 +77,8 @@ const items: MenuItem[] = [
   },
   {
     title: 'FAQs',
+    url: '/customer/faqs',
     icon: CircleHelp,
-    children: [
-      {
-        title: 'All FAQs',
-        url: '/customer/faqs',
-        icon: Files,
-      },
-    ],
   },
 ];
 
