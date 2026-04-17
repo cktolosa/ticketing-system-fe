@@ -75,18 +75,25 @@ const routes = [
         ],
       },
       {
-        path: 'departments',
-        name: 'Departments',
-        redirect: '/su/departments',
+        path: 'companies',
+        name: 'Management',
+        redirect: '/su/companies',
         children: [
           {
             path: '',
-            name: 'All Departments',
-            component: () => import('@/modules/departments/pages/index.vue'),
+            name: 'All Companies',
+            component: () => import('@/modules/companies/pages/index.vue'),
           },
           {
             path: 'view',
+            name: 'View Company',
+            meta: { title: 'Adish International Corporation' },
+            component: () => import('@/modules/departments/pages/index.vue'),
+          },
+          {
+            path: 'view/department',
             name: 'View Department',
+            meta: { title: 'Team Banana' },
             component: () => import('@/modules/departments/pages/view.vue'),
           },
         ],

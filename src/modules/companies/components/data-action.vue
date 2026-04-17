@@ -20,7 +20,7 @@ import {
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem as-child>
-        <router-link to="/su/companies/view/department">
+        <router-link to="/su/companies/view">
           <Eye />
           View
         </router-link>
