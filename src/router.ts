@@ -157,6 +157,12 @@ const routes = [
         path: 'dashboard',
         component: () => import('@/modules/dashboard/pages/customer.vue'),
       },
+      {
+        path: 'faqs',
+        name: 'Customer FAQS',
+        meta: { title: 'FAQs' },
+        component: () => import('@/modules/faqs/pages/customer-view.vue'),
+      },
     ],
   },
 ];
