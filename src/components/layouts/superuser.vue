@@ -62,8 +62,8 @@ const items: MenuItem[] = [
     icon: LayoutDashboard,
   },
   {
-    title: 'Departments',
-    url: '/su/departments',
+    title: 'Management',
+    url: '/su/companies',
     icon: Files,
   },
   {
