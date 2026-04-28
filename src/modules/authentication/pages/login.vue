@@ -14,7 +14,7 @@ import { FieldGroup, FieldSeparator } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 
-import { getErrorMessage, getRolePaths } from '@/lib/utils';
+import { getErrorMessage } from '@/lib/utils';
 
 import Google from '@/assets/google.svg';
 import { useAuthStore } from '@/stores/auth';
@@ -44,7 +44,23 @@ const onSubmit = handleSubmit(async (data) => {
   errorMessage.value = '';
   try {
     await auth.login(data.email, data.password, data.remember_me);
-    router.push(getRolePaths[auth.user?.role ?? ''] ?? '/');
+
+    switch (auth.user?.role) {
+      case 'superadmin':
+        router.push('/su/dashboard');
+        break;
+      case 'admin':
+        router.push('/admin/dashboard');
+        break;
+      case 'support':
+        router.push('/support/dashboard');
+        break;
+      case 'customer':
+        router.push('/customer/dashboard');
+        break;
+      default:
+        router.push('/');
+    }
   } catch (error) {
     errorMessage.value = getErrorMessage(error, 'login');
     console.log(error);
