@@ -1,16 +1,6 @@
 <script setup lang="ts">
-import {
-  ChevronRight,
-  ChevronUp,
-  CircleHelp,
-  FilePlus,
-  Files,
-  LayoutDashboard,
-  LogOut,
-  User,
-} from 'lucide-vue-next';
-import type { Component } from 'vue';
-import { RouterView, useRoute } from 'vue-router';
+import { ChevronRight, ChevronUp, LogOut, User } from 'lucide-vue-next';
+import { RouterView, useRoute, useRouter } from 'vue-router';
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import {
@@ -36,73 +26,23 @@ import {
 } from '@/components/ui/sidebar';
 import { UserAvatar } from '@/components/user-avatar';
 
+import { SUPPORT_NAV_ITEMS } from '@/constants/navigation';
+import type { FooterItem, MenuItem } from '@/constants/navigation';
+import { useAuthStore } from '@/stores/auth';
+
 import Header from '../header.vue';
 
 const route = useRoute();
-const isChildActive = (item: MenuItem): boolean => {
-  return (
-    item.children?.some((child) => {
-      return route.path === child.url || route.path.startsWith(child.url + '/');
-    }) ?? false
-  );
-};
+const router = useRouter();
+const auth = useAuthStore();
 
-interface MenuItem {
-  title: string;
-  url?: string;
-  icon: Component;
-  children?: MenuItem[];
+async function handleLogout() {
+  await auth.logout();
+  router.push('/');
 }
-const items: MenuItem[] = [
-  {
-    title: 'Dashboard',
-    url: '/support/dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    title: 'Tickets',
-    icon: Files,
-    children: [
-      {
-        title: 'Create Ticket',
-        url: '/support/tickets/create',
-        icon: FilePlus,
-      },
-      {
-        title: 'My Tickets',
-        url: '/support/tickets/reported',
-        icon: Files,
-      },
-      {
-        title: 'Assigned Tickets',
-        url: '/support/tickets/assigned',
-        icon: Files,
-      },
-    ],
-  },
-  {
-    title: 'FAQs',
-    icon: CircleHelp,
-    children: [
-      {
-        title: 'Create FAQ',
-        url: '/support/faqs/create',
-        icon: FilePlus,
-      },
-      {
-        title: 'All FAQs',
-        url: '/support/faqs',
-        icon: Files,
-      },
-    ],
-  },
-];
 
-interface FooterItem {
-  title: string;
-  url: string;
-  icon: Component;
-}
+const items = SUPPORT_NAV_ITEMS;
+
 const footer: FooterItem[] = [
   {
     title: 'View Profile',
@@ -111,10 +51,18 @@ const footer: FooterItem[] = [
   },
   {
     title: 'Log Out',
-    url: '/logout',
+    action: handleLogout,
     icon: LogOut,
   },
 ];
+
+const isChildActive = (item: MenuItem): boolean => {
+  return (
+    item.children?.some((child) => {
+      return route.path === child.url || route.path.startsWith(child.url + '/');
+    }) ?? false
+  );
+};
 </script>
 
 <template>
@@ -188,7 +136,11 @@ const footer: FooterItem[] = [
                   size="lg"
                   class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
-                  <UserAvatar name="Juan Dela Cruz" subtitle="juan@email.com" variant="md" />
+                  <UserAvatar
+                    :name="auth.user?.name ?? 'Unknown'"
+                    :subtitle="auth.user?.email ?? 'Unknown'"
+                    variant="md"
+                  />
                   <ChevronUp class="ml-auto size-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -198,8 +150,17 @@ const footer: FooterItem[] = [
                 :side-offset="4"
               >
                 <DropdownMenuItem v-for="item in footer" :key="item.title" as-child>
+                  <button
+                    v-if="item.action"
+                    class="flex w-full cursor-pointer items-center"
+                    @click="item.action"
+                  >
+                    <component :is="item.icon" class="mr-2 size-4" />
+                    {{ item.title }}
+                  </button>
                   <router-link
-                    :to="item.url"
+                    v-else
+                    :to="item.url ?? ''"
                     class="cursor-pointer"
                     exact-active-class="bg-sidebar-accent text-sidebar-accent-foreground"
                   >

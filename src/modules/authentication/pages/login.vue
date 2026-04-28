@@ -2,6 +2,8 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { Kanban } from 'lucide-vue-next';
 import { useForm, Field as VeeField } from 'vee-validate';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import * as z from 'zod';
 
 import { Input } from '@/components/form';
@@ -12,28 +14,58 @@ import { FieldGroup, FieldSeparator } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 
+import { getErrorMessage } from '@/lib/utils';
+
 import Google from '@/assets/google.svg';
+import { useAuthStore } from '@/stores/auth';
+
+const auth = useAuthStore();
+const router = useRouter();
+const errorMessage = ref('');
 
 const schema = toTypedSchema(
   z.object({
     email: z.string().email().min(1, 'Email is required'),
     password: z.string().min(1, 'Password is required'),
-    remember: z.boolean().default(false),
+    remember_me: z.boolean().default(false),
   })
 );
 
-const { handleSubmit, isSubmitting } = useForm({
+const { handleSubmit, isSubmitting, resetForm } = useForm({
   validationSchema: schema,
   initialValues: {
     email: '',
     password: '',
+    remember_me: false,
   },
 });
 
 const onSubmit = handleSubmit(async (data) => {
-  await new Promise((r) => setTimeout(r, 5000));
+  errorMessage.value = '';
+  try {
+    await auth.login(data.email, data.password, data.remember_me);
 
-  alert(JSON.stringify(data));
+    switch (auth.user?.role) {
+      case 'superadmin':
+        router.push('/su/dashboard');
+        break;
+      case 'admin':
+        router.push('/admin/dashboard');
+        break;
+      case 'support':
+        router.push('/support/dashboard');
+        break;
+      case 'customer':
+        router.push('/customer/dashboard');
+        break;
+      default:
+        router.push('/');
+    }
+  } catch (error) {
+    errorMessage.value = getErrorMessage(error, 'login');
+    console.log(error);
+    resetForm();
+  }
 });
 </script>
 <template>
@@ -62,6 +94,10 @@ const onSubmit = handleSubmit(async (data) => {
                 Login with Google
               </Button>
               <FieldSeparator> or continue with </FieldSeparator>
+              <p v-if="errorMessage" class="text-destructive text-sm">
+                {{ errorMessage }}
+              </p>
+
               <VeeField v-slot="{ componentField }" name="email">
                 <Input
                   v-bind="componentField"
@@ -80,10 +116,14 @@ const onSubmit = handleSubmit(async (data) => {
               </VeeField>
 
               <div class="text-muted-foreground flex flex-wrap justify-between gap-3">
-                <VeeField v-slot="{ value, handleChange }" name="remember">
+                <VeeField v-slot="{ value, handleChange }" name="remember_me">
                   <div class="flex items-center gap-2">
-                    <Checkbox id="remember" :checked="value" @update:model-value="handleChange" />
-                    <Label for="remember" class="font-normal">Keep me signed in</Label>
+                    <Checkbox
+                      id="remember_me"
+                      :checked="value"
+                      @update:model-value="handleChange"
+                    />
+                    <Label for="remember_me" class="font-normal">Keep me signed in</Label>
                   </div>
                 </VeeField>
                 <a href="#" class="text-sm hover:underline">Forgot your password?</a>

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
 import { TrendingDown, TrendingUp } from 'lucide-vue-next';
@@ -55,4 +56,26 @@ export const getTrend = (percentage: number) => {
     color: isPositive ? 'text-green-500' : 'text-destructive',
     border: isPositive ? 'border-green-500' : 'border-destructive',
   };
+};
+
+export const getErrorMessage = (error: unknown, context?: 'login' | 'default'): string => {
+  if (axios.isAxiosError(error)) {
+    if (!error.response) return 'Network error. Please check your connection.';
+
+    switch (error.response.status) {
+      case 401:
+        return context === 'login'
+          ? 'Invalid credentials. Please try again.'
+          : 'Session expired. Please log in again.';
+      case 403:
+        return error.response.data.message ?? 'You do not have permission to do this.';
+      case 409:
+        return error.response.data.message ?? 'This record already exists.';
+      case 422:
+        return error.response.data.message ?? 'Validation failed. Please check your inputs.';
+      default:
+        return 'Something went wrong. Please try again.';
+    }
+  }
+  return 'Something went wrong. Please try again.';
 };
