@@ -24,7 +24,7 @@ interface PieChart {
 
 const props = withDefaults(
   defineProps<{
-    data: PieChart;
+    data?: PieChart;
     loading?: boolean;
   }>(),
   {

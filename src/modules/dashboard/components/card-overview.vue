@@ -24,7 +24,7 @@ interface CardItem {
 
 const props = withDefaults(
   defineProps<{
-    data: CardItem[];
+    data?: CardItem[];
     meta: Record<string, MetricMeta>;
     loading?: boolean;
   }>(),

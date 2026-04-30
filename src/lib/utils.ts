@@ -79,3 +79,10 @@ export const getErrorMessage = (error: unknown, context?: 'login' | 'default'): 
   }
   return 'Something went wrong. Please try again.';
 };
+
+export const getRolePaths: Record<string, string> = {
+  superadmin: '/su/dashboard',
+  admin: '/admin/dashboard',
+  support: '/support/dashboard',
+  customer: '/customer/dashboard',
+};
