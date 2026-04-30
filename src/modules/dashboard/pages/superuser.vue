@@ -49,8 +49,8 @@ watch(selectedMonth, fetchDashboard, { immediate: true });
       <CardOverview :data="items.cards" :meta="SU_METRIC_META" :loading="isLoading" />
       <div class="grid auto-rows-min grid-cols-1 gap-4 lg:grid-cols-2">
         <PieChart :data="items.pie" :loading="isLoading" />
-        <!-- need to still match FE reqs -->
-        <!-- <BarChart :data="items.bar" :loading="isLoading" /> -->
+        <!-- to check: must display department when ticket exists -->
+        <BarChart :data="items.bar" :loading="isLoading" />
       </div>
     </template>
   </div>
