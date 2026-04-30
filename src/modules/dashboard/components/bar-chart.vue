@@ -25,10 +25,16 @@ interface BarChart {
   percentage: number;
 }
 
-const props = defineProps<{
-  data: BarChart;
-  loading?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    data?: BarChart;
+    loading?: boolean;
+  }>(),
+  {
+    data: () => ({ categories: [], percentage: 0 }),
+    loading: false,
+  }
+);
 
 const barConfig = {
   new: { label: 'New', color: 'var(--color-purple-400)' },
@@ -92,7 +98,7 @@ const barConfig = {
       <CardFooter class="row-start-3 flex-col gap-2 text-sm">
         <div class="flex gap-2 leading-none font-medium">
           Closed ticket volume changed by
-          {{ formatPercentage(data.percentage) }} from last month
+          {{ formatPercentage(data?.percentage ?? '0') }} from last month
           <component
             :is="getTrend(data.percentage).icon"
             :class="['size-4', getTrend(data.percentage).color]"
