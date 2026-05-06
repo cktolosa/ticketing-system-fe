@@ -22,10 +22,16 @@ interface PieChart {
   total: number;
 }
 
-const props = defineProps<{
-  data: PieChart;
-  loading?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    data?: PieChart;
+    loading?: boolean;
+  }>(),
+  {
+    data: () => ({ categories: [], percentage: 0, total: 0 }),
+    loading: false,
+  }
+);
 
 const pieConfig = {
   new: {
@@ -84,7 +90,7 @@ const tooltip = (d: DonutSegment<PieCategory>) => {
               :color="(d: PieCategory) => pieConfig[d.category].color"
               :arc-width="30"
               :central-label-offset-y="10"
-              :central-label="props.data.total.toLocaleString()"
+              :central-label="props.data.total?.toLocaleString() ?? '0'"
               central-sub-label="Tickets"
             />
             <ChartTooltip :triggers="{ [Donut.selectors.segment]: tooltip }" />
@@ -94,7 +100,7 @@ const tooltip = (d: DonutSegment<PieCategory>) => {
       <CardFooter class="row-start-3 flex-col gap-2 text-sm">
         <div class="flex gap-2 leading-none font-medium">
           Ticket volume changed by
-          {{ formatPercentage(data.percentage) }} from last month.
+          {{ formatPercentage(data?.percentage ?? '0') }} from last month.
           <component
             :is="getTrend(data.percentage).icon"
             :class="['size-4', getTrend(data.percentage).color]"

@@ -1,67 +1,47 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
+import { getErrorMessage } from '@/lib/utils';
+
 import { USER_METRIC_META } from '@/constants/metrics';
 import { CardOverview, CardRecent, Header } from '@/modules/dashboard/components';
+import api from '@/services/api';
+import { useAuthStore } from '@/stores/auth';
 
-const items = {
-  cards: [
-    { key: 'new_tickets', value: 2 },
-    { key: 'in_progress_tickets', value: 10 },
-    { key: 'resolved_tickets', value: 6 },
-    { key: 'closed_tickets', value: 32 },
-  ],
-};
+const fetchError = ref('');
+const items = ref('');
+const isLoading = ref(true);
+const auth = useAuthStore();
 
-const tickets = [
-  {
-    title: 'Password reset not sending email',
-    status: 'new',
-    priority: 'high',
-    date: '2026-04-13T13:40:00',
-  },
-  {
-    title: 'VPN connection keeps dropping',
-    status: 'in progress',
-    priority: 'high',
-    date: '2026-04-13T08:00:00',
-  },
-  {
-    title: 'Laptop not detecting external monitor',
-    status: 'new',
-    priority: 'medium',
-    date: '2026-04-12T10:00:00',
-  },
-  {
-    title: 'Unable to access company VPN after update',
-    status: 'in progress',
-    priority: 'high',
-    date: '2026-04-10T10:00:00',
-  },
-  {
-    title: 'Windows update causing slow boot time',
-    status: 'new',
-    priority: 'medium',
-    date: '2026-03-30T10:00:00',
-  },
-];
-
-const isLoading = ref(false);
-
-onMounted(async () => {
+const fetchDashboard = async () => {
   isLoading.value = true;
+  fetchError.value = '';
   try {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const response = await api.get('/dashboard/customer');
+    console.log(response.data);
+    items.value = response.data;
+  } catch (error) {
+    fetchError.value = getErrorMessage(error);
   } finally {
     isLoading.value = false;
   }
-});
+};
+
+onMounted(fetchDashboard);
 </script>
 
 <template>
   <div class="flex flex-col gap-4 px-4 py-4 md:px-6">
-    <Header role="support" :loading="isLoading" download-url="/sample" />
-    <CardOverview :data="items.cards" :meta="USER_METRIC_META" :loading="isLoading" />
-    <CardRecent :tickets="tickets" view-url="/sample" :loading="isLoading" />
+    <Header :role="auth.user?.role" :loading="isLoading" download-url="/sample" />
+    <template v-if="fetchError">
+      <p class="text-destructive text-center text-sm">
+        {{ fetchError }}
+      </p>
+    </template>
+    <template v-else>
+      <!-- shows 403 error -->
+      <!-- <CardOverview :data="items.cards" :meta="USER_METRIC_META" :loading="isLoading" />
+    <CardRecent :tickets="tickets" view-url="/sample" :loading="isLoading" /> -->
+    </template>
   </div>
 </template>

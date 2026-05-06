@@ -22,11 +22,17 @@ interface CardItem {
   percentage?: number;
 }
 
-const props = defineProps<{
-  data: CardItem[];
-  meta: Record<string, MetricMeta>;
-  loading?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    data?: CardItem[];
+    meta: Record<string, MetricMeta>;
+    loading?: boolean;
+  }>(),
+  {
+    data: () => [],
+    loading: false,
+  }
+);
 
 const items = computed(() =>
   props.data.map((data) => ({
@@ -44,7 +50,7 @@ const items = computed(() =>
   >
     <template v-if="loading">
       <Card
-        v-for="n in data.length"
+        v-for="n in data.length || 4"
         :key="n"
         class="@container/card row-span-3 grid grid-rows-subgrid"
       >

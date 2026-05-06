@@ -37,7 +37,7 @@ const props = defineProps<{
   loading?: boolean;
 }>();
 
-const canAccess = computed(() => props.role !== 'user' && props.role !== 'support');
+const canAccess = computed(() => props.role !== 'customer' && props.role !== 'support');
 
 const selectedMonth = ref(`${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`);
 
