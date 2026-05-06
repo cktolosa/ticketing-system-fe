@@ -8,6 +8,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+import type { Company } from '@/modules/companies/types';
+
+defineProps<{
+  company: Company;
+}>();
 </script>
 
 <template>
@@ -20,7 +26,7 @@ import {
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem as-child>
-        <router-link to="/su/companies/view">
+        <router-link :to="`/su/companies/${company.id}`">
           <Eye />
           View
         </router-link>

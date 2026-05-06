@@ -90,9 +90,8 @@ const routes = [
             component: () => import('@/modules/companies/pages/index.vue'),
           },
           {
-            path: 'view',
+            path: ':id',
             name: 'View Company',
-            meta: { title: 'Adish International Corporation' },
             component: () => import('@/modules/departments/pages/index.vue'),
           },
           {

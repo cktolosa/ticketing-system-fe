@@ -19,18 +19,19 @@ import { cn } from '@/lib/utils';
 const props = withDefaults(
   defineProps<{
     name: string;
-    // eslint-disable-next-line vue/require-default-prop
     title?: string;
-    // eslint-disable-next-line vue/require-default-prop
     description?: string;
     open?: boolean;
     submitText?: string;
     contentClass?: string;
+    postError: string;
   }>(),
   {
     open: false,
     submitText: 'Update',
     contentClass: '',
+    title: undefined,
+    description: undefined,
   }
 );
 
@@ -75,6 +76,10 @@ const handleSubmit = () => {
       <form id="dialogForm" @submit.prevent="handleSubmit">
         <slot name="content" />
       </form>
+
+      <p v-if="postError" class="text-destructive text-sm">
+        {{ postError }}
+      </p>
 
       <DialogFooter>
         <DialogClose as-child>
