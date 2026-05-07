@@ -95,9 +95,8 @@ const routes = [
             component: () => import('@/modules/departments/pages/index.vue'),
           },
           {
-            path: 'view/department',
+            path: ':companyId/department/:id',
             name: 'View Department',
-            meta: { title: 'Team Banana' },
             component: () => import('@/modules/departments/pages/view.vue'),
           },
         ],

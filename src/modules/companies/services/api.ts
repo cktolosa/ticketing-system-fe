@@ -14,7 +14,6 @@ export const companiesApi = {
     const response = await api.post<{ data: Company }>('/companies', { name });
     return response.data.data;
   },
-  // returns null values
   update: async (id: string, name: string) => {
     const response = await api.put<{ data: Company }>(`/companies/${id}`, { name });
     return response.data.data;

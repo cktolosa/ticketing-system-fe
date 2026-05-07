@@ -30,7 +30,7 @@ import type { Department } from '@/modules/departments/types';
 
 const route = useRoute();
 const companyId = String(route.params.id);
-const postDeptError = ref('');
+const postError = ref('');
 const isCreateDialogOpen = ref(false);
 
 const company = ref<Company | null>(null);
@@ -54,7 +54,7 @@ onMounted(fetchCompany);
 
 const table = useVueTable({
   get columns() {
-    return columns;
+    return columns(companyId);
   },
   get data() {
     return departments;
@@ -77,29 +77,37 @@ const defaultValues: z.infer<typeof departmentSchema> = {
   department: '',
 };
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, values } = useForm({
   validationSchema: toTypedSchema(departmentSchema),
   initialValues: defaultValues,
 });
 
 const onSubmit = handleSubmit(async (data) => {
-  postDeptError.value = '';
+  postError.value = '';
   try {
     await departmentsApi.create(companyId, data.department);
     isCreateDialogOpen.value = false;
     resetForm();
     await fetchCompany();
   } catch (error) {
-    postDeptError.value = getErrorMessage(error);
+    postError.value = getErrorMessage(error);
   }
 });
+
+//clear server-error
+watch(
+  () => values.department,
+  () => {
+    postError.value = '';
+  }
+);
 
 watch(isCreateDialogOpen, (open) => {
   if (open) {
     resetForm({
       values: defaultValues,
     });
-    postDeptError.value = '';
+    postError.value = '';
   }
 });
 </script>
@@ -121,7 +129,7 @@ watch(isCreateDialogOpen, (open) => {
           title="Create Department"
           description="Create a new department by providing a descriptive name. Click create when you are done."
           submit-text="Create"
-          :post-error="postDeptError"
+          :post-error="postError"
           @submit="onSubmit"
         >
           <template #trigger>
@@ -142,7 +150,7 @@ watch(isCreateDialogOpen, (open) => {
       </div>
       <Card>
         <CardHeader class="flex items-center justify-between">
-          <CardTitle>{{ company?.name }}</CardTitle>
+          <CardTitle>{{ company?.name ?? 'Unknown' }}</CardTitle>
           <CardAction>
             <UpdateCompany :company="company" @updated="fetchCompany" />
           </CardAction>

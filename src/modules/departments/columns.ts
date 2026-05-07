@@ -6,7 +6,7 @@ import { ColumnHeader } from '@/components/data-table';
 import { DataAction } from '@/modules/departments';
 import type { Department } from '@/modules/departments/types';
 
-export const columns: ColumnDef<Department>[] = [
+export const columns = (companyId: string): ColumnDef<Department>[] => [
   {
     accessorKey: 'name',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Name'),
@@ -16,7 +16,7 @@ export const columns: ColumnDef<Department>[] = [
   {
     id: 'actions',
     header: ({ column }) => h(ColumnHeader, { column, '^data-action': true }, () => 'Actions'),
-    cell: ({ row }) => h(DataAction, { department: row.original }),
+    cell: ({ row }) => h(DataAction, { department: row.original, companyId: companyId }),
     enableSorting: false,
   },
 ];

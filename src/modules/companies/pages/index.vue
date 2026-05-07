@@ -64,7 +64,7 @@ const companySchema = z.object({
 const defaultValues: z.infer<typeof companySchema> = {
   company: '',
 };
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, values } = useForm({
   validationSchema: toTypedSchema(companySchema),
   initialValues: defaultValues,
 });
@@ -81,6 +81,14 @@ const onSubmit = handleSubmit(async (data) => {
     postError.value = getErrorMessage(error);
   }
 });
+
+//clear server-error
+watch(
+  () => values.company,
+  () => {
+    postError.value = '';
+  }
+);
 
 // reactive state for dialog
 watch(isDialogOpen, (open) => {
