@@ -18,7 +18,6 @@ const fetchDashboard = async () => {
   fetchError.value = '';
   try {
     const response = await api.get('/dashboard/customer');
-    console.log(response.data);
     items.value = response.data;
   } catch (error) {
     fetchError.value = getErrorMessage(error);
@@ -39,9 +38,8 @@ onMounted(fetchDashboard);
       </p>
     </template>
     <template v-else>
-      <!-- shows 403 error -->
-      <!-- <CardOverview :data="items.cards" :meta="USER_METRIC_META" :loading="isLoading" />
-    <CardRecent :tickets="tickets" view-url="/sample" :loading="isLoading" /> -->
+      <CardOverview :data="items.cards" :meta="USER_METRIC_META" :loading="isLoading" />
+      <CardRecent :tickets="items.recent_tickets" view-url="/sample" :loading="isLoading" />
     </template>
   </div>
 </template>
