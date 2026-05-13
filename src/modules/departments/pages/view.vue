@@ -44,7 +44,7 @@ const isDialogOpen = ref(false);
 const departmentSchema = z.object({
   department: z
     .string()
-    .min(2, 'Department must be at least 2 characters.')
+    .min(3, 'Department must be at least 2 characters.')
     .max(50, 'Department must not exceed 50 characters.'),
 });
 
