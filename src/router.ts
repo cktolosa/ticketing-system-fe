@@ -73,7 +73,7 @@ const routes = [
             component: () => import('@/modules/users/pages/index.vue'),
           },
           {
-            path: 'view',
+            path: ':id',
             name: 'View User',
             component: () => import('@/modules/users/pages/view.vue'),
           },

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
+import { storeToRefs } from 'pinia';
 import { useForm, Field as VeeField } from 'vee-validate';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import * as z from 'zod';
 
 import { FormDialog } from '@/components/dialog';
@@ -15,45 +17,52 @@ import {
   FieldLabel,
   FieldSet,
 } from '@/components/ui/field';
+import { Toggle } from '@/components/ui/toggle';
 import { UserAvatar } from '@/components/user-avatar';
 
 import { cn, transformToSelectOption } from '@/lib/utils';
+import { getErrorMessage } from '@/lib/utils';
 
+import type { Department } from '@/modules/departments/types';
+import { useCompanyStore } from '@/stores/company';
+import { useRoleStore } from '@/stores/roles';
+
+import { usersApi } from '..';
 import DetailCard from '../components/detail-card.vue';
 import StatusBadge from '../components/status-badge.vue';
+import type { User } from '../types';
 
-type Role = {
-  id: number;
-  name: string;
-};
-const roles = ref<Role[]>([
-  { id: 1, name: 'User' },
-  { id: 2, name: 'Support' },
-  { id: 3, name: 'Admin' },
-  { id: 4, name: 'Superuser' },
-]);
+const companyStore = useCompanyStore();
+const roleStore = useRoleStore();
 
-type Department = {
-  id: number;
-  name: string;
-};
-const departments = ref<Department[]>([
-  { id: 1, name: 'Team Banana' },
-  { id: 2, name: 'AIT' },
-  { id: 3, name: 'HRAD' },
-  { id: 4, name: 'Equinox' },
-  { id: 5, name: 'QA' },
-  { id: 6, name: 'Crowd Works' },
-]);
+const { companies } = storeToRefs(companyStore);
+//currently undefined
+const { roles } = storeToRefs(roleStore);
+const departments = ref<Department[]>([]);
 
-type Status = {
-  id: number;
-  name: string;
+const route = useRoute();
+const userId = String(route.params.id);
+
+const user = ref<User | null>(null);
+const fetchError = ref('');
+const postError = ref('');
+const fetchUser = async () => {
+  fetchError.value = '';
+  try {
+    const response = await usersApi.getById(userId);
+    console.log(response);
+    user.value = response;
+  } catch (error) {
+    fetchError.value = getErrorMessage(error);
+    user.value = null;
+  }
 };
-const statuses = ref<Status[]>([
-  { id: 1, name: 'Active' },
-  { id: 2, name: 'Inactive' },
-]);
+
+onMounted(async () => {
+  await Promise.all([companyStore.fetchCompanies(), roleStore.fetchRoles()]);
+});
+
+onMounted(fetchUser);
 
 const userSchema = z.object({
   picture: z
@@ -61,38 +70,36 @@ const userSchema = z.object({
     .refine((file) => file.size <= 10_485_760, 'File must be less than 10MB.')
     .refine((file) => file.type.startsWith('image/'), 'Only image files are allowed.')
     .optional(),
-  first_name: z
+  name: z
     .string()
-    .min(2, 'First name must be at least 2 characters.')
-    .max(50, 'First name must not exceed 50 characters.'),
-  middle_name: z.string().max(50, 'Middle name must not exceed 50 characters.').optional(),
-  last_name: z
-    .string()
-    .min(2, 'Last name must be at least 2 characters.')
-    .max(50, 'Last name must not exceed 50 characters.'),
-  email: z.string().email().min(1, 'Email is required.'),
+    .min(2, 'Name must be at least 2 characters.')
+    .max(255, 'Name must not exceed 255 characters.'),
+  email: z.string().email('Email is required.'),
   department_id: z.coerce.number().min(1, 'Please select a department.'),
   role_id: z.coerce.number().min(1, 'Please select a role.'),
-  status_id: z.coerce.number().min(1, 'Please select a status.'),
+  is_active: z.boolean(),
 });
 
 const defaultValues: z.infer<typeof userSchema> = {
   picture: undefined,
-  first_name: 'Juan',
-  middle_name: '',
-  last_name: 'Dela Cruz',
-  email: 'juan@email.com',
-  department_id: 2,
-  role_id: 3,
-  status_id: 1,
+  name: '',
+  email: '',
+  department_id: 0,
+  role_id: 0,
+  is_active: true,
 };
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, values } = useForm({
   validationSchema: toTypedSchema(userSchema),
   initialValues: defaultValues,
 });
 
-const isDialogOpen = ref(false);
+async function onCompanyChange(companyId: string) {
+  const company = await companyStore.fetchCompanybyId(companyId);
+  departments.value = company.departments ?? [];
+}
 
+const isDialogOpen = ref(false);
+// to handle submission
 const onSubmit = handleSubmit((data) => {
   alert(
     JSON.stringify({
@@ -112,7 +119,14 @@ const onSubmit = handleSubmit((data) => {
 watch(isDialogOpen, (open) => {
   if (open) {
     resetForm({
-      values: defaultValues,
+      values: {
+        picture: undefined,
+        name: user.value?.name ?? '',
+        email: user.value?.email,
+        department_id: 0,
+        role_id: 0,
+        is_active: true,
+      },
     });
   }
 });
@@ -122,19 +136,21 @@ watch(isDialogOpen, (open) => {
   <div class="space-y-4 p-5">
     <div class="flex justify-between px-2">
       <div class="flex items-center gap-2">
-        <UserAvatar name="Juan Dela Cruz" variant="lg" />
-        <StatusBadge status="active" />
+        <UserAvatar :name="user?.name ?? ''" variant="lg" />
+        <StatusBadge :status="user?.status" />
       </div>
 
       <FormDialog
         v-model:open="isDialogOpen"
         name="user"
         content-class="max-h-[90vh] overflow-y-auto md:max-w-4xl"
+        :post-error="postError"
         @submit="onSubmit"
       >
         <template #content>
           <FieldGroup>
             <FieldSet>
+              <pre>{{ values }}</pre>
               <div class="grid gap-4 md:grid-cols-2">
                 <VeeField v-slot="{ componentField, errors }" name="picture">
                   <Field>
@@ -157,30 +173,12 @@ watch(isDialogOpen, (open) => {
                   </Field>
                 </VeeField>
 
-                <VeeField v-slot="{ componentField }" name="first_name">
+                <VeeField v-slot="{ componentField }" name="name">
                   <Input
                     v-bind="componentField"
-                    label="First Name"
+                    label="Name"
                     type="text"
-                    placeholder="Enter the first name"
-                  />
-                </VeeField>
-
-                <VeeField v-slot="{ componentField }" name="middle_name">
-                  <Input
-                    v-bind="componentField"
-                    label="Middle Name"
-                    type="text"
-                    placeholder="Enter the middle name"
-                  />
-                </VeeField>
-
-                <VeeField v-slot="{ componentField }" name="last_name">
-                  <Input
-                    v-bind="componentField"
-                    label="Last Name"
-                    type="text"
-                    placeholder="Enter the last name"
+                    placeholder="Enter the full name"
                   />
                 </VeeField>
 
@@ -193,12 +191,27 @@ watch(isDialogOpen, (open) => {
                   />
                 </VeeField>
 
+                <!-- undefined -->
                 <VeeField v-slot="{ componentField }" name="role_id">
                   <Select
                     v-bind="componentField"
                     label="Role"
                     placeholder="Select a role"
-                    :options="transformToSelectOption(roles, { labelKey: 'name', valueKey: 'id' })"
+                    :options="
+                      transformToSelectOption(companies, { labelKey: 'name', valueKey: 'id' })
+                    "
+                  />
+                </VeeField>
+
+                <VeeField v-slot="{ componentField }" name="company_id">
+                  <Select
+                    v-bind="componentField"
+                    label="Company"
+                    placeholder="Select a company"
+                    :options="
+                      transformToSelectOption(companies, { labelKey: 'name', valueKey: 'id' })
+                    "
+                    @update:model-value="onCompanyChange"
                   />
                 </VeeField>
 
@@ -207,23 +220,22 @@ watch(isDialogOpen, (open) => {
                     v-bind="componentField"
                     label="Department"
                     placeholder="Select a department"
+                    :disabled="!departments.length"
                     :options="
                       transformToSelectOption(departments, { labelKey: 'name', valueKey: 'id' })
                     "
                   />
                 </VeeField>
-
-                <VeeField v-slot="{ componentField }" name="status_id">
-                  <Select
-                    v-bind="componentField"
-                    label="Status"
-                    placeholder="Select a status"
-                    :options="
-                      transformToSelectOption(statuses, { labelKey: 'name', valueKey: 'id' })
-                    "
-                  />
-                </VeeField>
               </div>
+              <VeeField v-slot="{ value, handleChange, errors }" name="is_active">
+                <Field>
+                  <FieldLabel for="is_active">Status</FieldLabel>
+                  <Toggle variant="outline" :pressed="value" @click="handleChange(!value)">
+                    {{ value ? 'Set as Inactive' : 'Set as Active' }}
+                  </Toggle>
+                  <FieldError v-if="errors.length" :errors="errors" />
+                </Field>
+              </VeeField>
             </FieldSet>
           </FieldGroup>
         </template>
@@ -231,32 +243,33 @@ watch(isDialogOpen, (open) => {
     </div>
 
     <DetailCard title="Personal Information">
-      <div class="space-y-5">
+      <div class="space-y-5 text-sm">
         <div class="space-y-1">
-          <p class="text-muted-foreground text-sm">Profile Picture</p>
+          <p class="text-muted-foreground">Profile Picture</p>
           <Avatar class="size-10">
-            <AvatarImage alt="Juan Dela Cruz" />
-            <AvatarFallback> JD </AvatarFallback>
+            <AvatarImage :src="user?.avatar" :alt="user?.name" />
+            <AvatarFallback>
+              {{
+                user?.name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .join('')
+                  .slice(0, 2)
+                  .toUpperCase()
+              }}
+            </AvatarFallback>
           </Avatar>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div>
-            <p class="text-muted-foreground text-sm">First Name</p>
-            <p>Juan</p>
+            <p class="text-muted-foreground">Full Name</p>
+            <p>{{ user?.name }}</p>
           </div>
           <div>
-            <p class="text-muted-foreground text-sm">Middle Name</p>
-            <p>No middle name</p>
-          </div>
-          <div>
-            <p class="text-muted-foreground text-sm">Last Name</p>
-            <p>Dela Cruz</p>
-          </div>
-          <div>
-            <p class="text-muted-foreground text-sm">Email Address</p>
+            <p class="text-muted-foreground">Email Address</p>
             <div class="flex flex-col items-start gap-x-2 lg:flex-row">
-              <p>juandelacruz@email.com</p>
+              <p>{{ user?.email }}</p>
               <a href="#" class="text-primary font-medium hover:underline"
                 >Generate reset password link</a
               >
@@ -271,20 +284,26 @@ watch(isDialogOpen, (open) => {
       description="Changing a user’s role will immediately update their permissions and access across the system."
       show-warning
     >
-      <div class="space-y-1 text-sm">
+      <div class="space-y-1 text-sm capitalize">
         <p class="text-muted-foreground text-sm">Role</p>
-        <p>Admin</p>
+        <p>{{ user?.role }}</p>
       </div>
     </DetailCard>
 
     <DetailCard
-      title="Department Assignment"
-      description="Changing the department may affect data visibility, reporting structure, and workflow assignments."
+      title="Management Assignment"
+      description="Changing the company or department may affect data visibility, reporting structure, and workflow assignments."
       show-warning
     >
-      <div class="space-y-1 text-sm">
-        <p class="text-muted-foreground text-sm">Department</p>
-        <p>AIT</p>
+      <div class="grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
+        <div>
+          <p class="text-muted-foreground">Company</p>
+          <p>{{ user?.company }}</p>
+        </div>
+        <div>
+          <p class="text-muted-foreground">Department</p>
+          <p>{{ user?.department }}</p>
+        </div>
       </div>
     </DetailCard>
 
@@ -295,7 +314,7 @@ watch(isDialogOpen, (open) => {
     >
       <div class="space-y-1 text-sm">
         <p class="text-muted-foreground text-sm">Status</p>
-        <StatusBadge status="active" />
+        <StatusBadge :status="user?.status" />
       </div>
     </DetailCard>
   </div>

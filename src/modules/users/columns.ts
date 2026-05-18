@@ -4,7 +4,7 @@ import { h } from 'vue';
 import { ColumnHeader } from '@/components/data-table';
 import { UserAvatar } from '@/components/user-avatar';
 
-import { DataAction, StatusBadge } from '@/modules/users/components';
+import { DataAction, StatusBadge } from '@/modules/users';
 import type { User, UserStatus } from '@/modules/users/types';
 
 export const columns: ColumnDef<User>[] = [
@@ -21,16 +21,22 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: false,
   },
   {
+    accessorKey: 'company',
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Company'),
+    cell: ({ row }) => row.getValue('company'),
+    enableSorting: true,
+  },
+  {
     accessorKey: 'department',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Department'),
     cell: ({ row }) => row.getValue('department'),
-    enableSorting: false,
+    enableSorting: true,
   },
   {
     accessorKey: 'role',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Role'),
-    cell: ({ row }) => row.getValue('role'),
-    enableSorting: false,
+    cell: ({ row }) => h('span', { class: 'capitalize' }, row.getValue('role')),
+    enableSorting: true,
   },
   {
     accessorKey: 'status',
@@ -44,7 +50,7 @@ export const columns: ColumnDef<User>[] = [
   {
     id: 'actions',
     header: ({ column }) => h(ColumnHeader, { column, '^data-action': true }, () => 'Actions'),
-    cell: ({ row }) => h(DataAction, { link: `/su/users/view`, user: row.original }),
+    cell: ({ row }) => h(DataAction, { user: row.original }),
     enableSorting: false,
   },
 ];
