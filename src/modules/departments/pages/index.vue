@@ -70,7 +70,7 @@ const departmentSchema = z.object({
   department: z
     .string()
     .min(3, 'Department must be at least 3 characters.')
-    .max(50, 'Department must not exceed 50 characters.'),
+    .max(100, 'Department must not exceed 100 characters.'),
 });
 
 const defaultValues: z.infer<typeof departmentSchema> = {

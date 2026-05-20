@@ -59,7 +59,7 @@ const companySchema = z.object({
   company: z
     .string()
     .min(10, 'Company name must be at least 10 characters.')
-    .max(50, 'Company name must not exceed 50 characters.'),
+    .max(100, 'Company name must not exceed 100 characters.'),
 });
 const defaultValues: z.infer<typeof companySchema> = {
   company: '',
