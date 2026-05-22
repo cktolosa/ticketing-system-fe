@@ -10,11 +10,17 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { PriorityBadge, StatusBadge } from '@/modules/tickets/components';
 import type { Ticket } from '@/modules/tickets/types';
 
-defineProps<{
-  tickets: Ticket[];
-  viewUrl: string;
-  loading?: boolean;
-}>();
+withDefaults(
+  defineProps<{
+    tickets?: Ticket[];
+    viewUrl: string;
+    loading?: boolean;
+  }>(),
+  {
+    tickets: () => [],
+    loading: false,
+  }
+);
 
 const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
 </script>
