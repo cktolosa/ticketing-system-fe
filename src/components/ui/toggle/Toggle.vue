@@ -18,6 +18,7 @@ const props = withDefaults(
     }
   >(),
   {
+    class: undefined,
     variant: 'default',
     size: 'default',
     disabled: false,

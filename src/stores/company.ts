@@ -8,7 +8,6 @@ export const useCompanyStore = defineStore('company', () => {
   const companies = ref<Company[]>([]);
 
   async function fetchCompanies() {
-    if (companies.value.length) return;
     const response = await api.get('companies');
     companies.value = response.data.data;
   }

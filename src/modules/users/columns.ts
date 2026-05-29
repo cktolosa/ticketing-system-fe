@@ -6,12 +6,17 @@ import { UserAvatar } from '@/components/user-avatar';
 
 import { DataAction, StatusBadge } from '@/modules/users';
 import type { User, UserStatus } from '@/modules/users/types';
+import type { Role } from '@/stores/roles';
+
+import type { Company } from '../companies/types';
+import type { Department } from '../departments/types';
 
 export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Full Name'),
-    cell: ({ row }) => h(UserAvatar, { name: row.getValue('name') }),
+    cell: ({ row }) =>
+      h(UserAvatar, { name: row.getValue('name'), src: row.original.avatar?.urls?.full }),
     enableSorting: true,
   },
   {
@@ -23,19 +28,19 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'company',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Company'),
-    cell: ({ row }) => row.getValue('company'),
+    cell: ({ row }) => row.getValue<Company>('company')?.name,
     enableSorting: true,
   },
   {
     accessorKey: 'department',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Department'),
-    cell: ({ row }) => row.getValue('department'),
+    cell: ({ row }) => row.getValue<Department>('department')?.name,
     enableSorting: true,
   },
   {
     accessorKey: 'role',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Role'),
-    cell: ({ row }) => h('span', { class: 'capitalize' }, row.getValue('role')),
+    cell: ({ row }) => h('span', { class: 'capitalize' }, row.getValue<Role>('role')?.name),
     enableSorting: true,
   },
   {

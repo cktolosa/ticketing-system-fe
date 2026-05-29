@@ -5,6 +5,7 @@ import { CheckIcon, CopyIcon } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import * as z from 'zod';
 
 import { Input, Select } from '@/components/form';
@@ -25,11 +26,13 @@ import {
   InputGroupInput,
 } from '@/components/ui/input-group';
 
-import { transformToSelectOption } from '@/lib/utils';
+import { getErrorMessage, transformToSelectOption } from '@/lib/utils';
 
 import type { Department } from '@/modules/departments/types';
 import { useCompanyStore } from '@/stores/company';
 import { useRoleStore } from '@/stores/roles';
+
+import { usersApi } from '..';
 
 const companyStore = useCompanyStore();
 const roleStore = useRoleStore();
@@ -37,6 +40,8 @@ const roleStore = useRoleStore();
 const { companies } = storeToRefs(companyStore);
 const { roles } = storeToRefs(roleStore);
 const departments = ref<Department[]>([]);
+const postError = ref('');
+const router = useRouter();
 
 onMounted(async () => {
   await Promise.all([companyStore.fetchCompanies(), roleStore.fetchRoles()]);
@@ -49,10 +54,13 @@ const generatedPassword = ref(generatePassword());
 const { copy, copied } = useClipboard({ source: generatedPassword });
 
 const userSchema = z.object({
-  picture: z
+  avatar: z
     .instanceof(File)
-    .refine((file) => file.size <= 10_485_760, 'File must be less than 10MB.')
-    .refine((file) => file.type.startsWith('image/'), 'Only image files are allowed.')
+    .refine((file) => file.size <= 2_097_152, 'File must be less than 2MB.')
+    .refine(
+      (file) => ['image/jpeg', 'image/png', 'image/webp'].includes(file.type),
+      'Only JPEG, PNG, or WEBP files are allowed.'
+    )
     .optional(),
   name: z
     .string()
@@ -66,7 +74,7 @@ const userSchema = z.object({
 });
 
 const defaultValues: z.infer<typeof userSchema> = {
-  picture: undefined,
+  avatar: undefined,
   name: '',
   email: '',
   password: generatedPassword.value,
@@ -101,21 +109,15 @@ const handleCancel = () => {
   });
 };
 
-// still need to fix once roles are not undefined
-const onSubmit = handleSubmit((data) => {
-  alert(
-    JSON.stringify({
-      ...data,
-      picture: data.picture
-        ? {
-            name: data.picture.name,
-            size: data.picture.size,
-            type: data.picture.type,
-          }
-        : undefined,
-    })
-  );
-  handleCancel();
+const onSubmit = handleSubmit(async (data) => {
+  postError.value = '';
+  try {
+    await usersApi.create(data);
+    router.push('/users');
+  } catch (error) {
+    postError.value = getErrorMessage(error);
+    handleCancel();
+  }
 });
 </script>
 
@@ -125,23 +127,22 @@ const onSubmit = handleSubmit((data) => {
       <FieldSet>
         <FieldLegend>Create User</FieldLegend>
         <FieldDescription> Provide the details below to create a new user. </FieldDescription>
-
-        <!-- no avatar field yet -->
-        <VeeField v-slot="{ componentField, errors }" name="picture">
+        <FieldError v-if="postError">{{ postError }}</FieldError>
+        <VeeField v-slot="{ handleChange, errors }" name="avatar">
           <Field>
-            <FieldLabel for="picture">Profile Picture</FieldLabel>
+            <FieldLabel for="avatar">Profile Picture</FieldLabel>
             <input
-              v-bind="componentField"
-              id="picture"
+              id="avatar"
               ref="fileRef"
               type="file"
-              accept="image/*"
+              accept="image/jpeg, image/png, image/webp"
               :class="[
                 'bg-background flex w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium',
                 errors.length ? 'border-destructive' : 'border-input',
               ]"
+              @change="(e: Event) => handleChange((e.target as HTMLInputElement).files?.[0])"
             />
-            <FieldDescription>Accepts images up to 10MB.</FieldDescription>
+            <FieldDescription>Accepts images up to 2MB.</FieldDescription>
             <FieldError v-if="errors.length" :errors="errors" />
           </Field>
         </VeeField>
@@ -156,7 +157,6 @@ const onSubmit = handleSubmit((data) => {
             />
           </VeeField>
 
-          <!-- returning null values -->
           <VeeField v-slot="{ componentField }" name="role_id">
             <Select
               v-bind="componentField"
@@ -175,7 +175,7 @@ const onSubmit = handleSubmit((data) => {
             />
           </VeeField>
 
-          <VeeField name="password" :value="generatedPassword">
+          <VeeField name="password">
             <template #default="{ componentField }">
               <Field>
                 <FieldLabel>Generated Password</FieldLabel>

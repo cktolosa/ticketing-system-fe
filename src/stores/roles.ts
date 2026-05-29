@@ -3,7 +3,7 @@ import { ref } from 'vue';
 
 import api from '@/services/api';
 
-type Role = {
+export type Role = {
   id: number;
   role: string;
 };
@@ -14,8 +14,7 @@ export const useRoleStore = defineStore('role', () => {
   async function fetchRoles() {
     if (roles.value.length) return;
     const response = await api.get('roles');
-    console.log(response.data.data);
-    roles.value = response.data;
+    roles.value = response.data.data;
   }
 
   return { roles, fetchRoles };

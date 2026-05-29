@@ -22,17 +22,18 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/componen
 import { getErrorMessage } from '@/lib/utils';
 
 import UpdateCompany from '@/modules/companies/components/update-company.vue';
-import { companiesApi } from '@/modules/companies/services/api';
 import type { Company } from '@/modules/companies/types';
 import { columns } from '@/modules/departments/columns';
 import { departmentsApi } from '@/modules/departments/services/api';
 import type { Department } from '@/modules/departments/types';
+import { useCompanyStore } from '@/stores/company';
 
 const route = useRoute();
 const companyId = String(route.params.id);
 const postError = ref('');
 const isCreateDialogOpen = ref(false);
 
+const companyStore = useCompanyStore();
 const company = ref<Company | null>(null);
 const departments = ref<Department[]>([]);
 const fetchError = ref('');
@@ -40,7 +41,7 @@ const fetchError = ref('');
 const fetchCompany = async () => {
   fetchError.value = '';
   try {
-    const response = await companiesApi.getById(companyId);
+    const response = await companyStore.fetchCompanybyId(companyId);
     company.value = response;
     departments.value = response.departments;
   } catch (error) {
