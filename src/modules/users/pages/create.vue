@@ -25,6 +25,7 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group';
+import { Spinner } from '@/components/ui/spinner';
 
 import { getErrorMessage, transformToSelectOption } from '@/lib/utils';
 
@@ -83,7 +84,7 @@ const defaultValues: z.infer<typeof userSchema> = {
   role_id: 0,
 };
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(userSchema),
   initialValues: defaultValues,
 });
@@ -113,7 +114,7 @@ const onSubmit = handleSubmit(async (data) => {
   postError.value = '';
   try {
     await usersApi.create(data);
-    router.push('/users');
+    router.push('/su/users');
   } catch (error) {
     postError.value = getErrorMessage(error);
     handleCancel();
@@ -215,7 +216,10 @@ const onSubmit = handleSubmit(async (data) => {
 
         <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="secondary" @click="handleCancel"> Cancel </Button>
-          <Button type="submit">Create</Button>
+          <Button type="submit" :disabled="isSubmitting">
+            <Spinner v-if="isSubmitting" />
+            {{ isSubmitting ? 'Creating' : 'Create' }}
+          </Button>
         </div>
       </FieldSet>
     </FieldGroup>

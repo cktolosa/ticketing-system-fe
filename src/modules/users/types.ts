@@ -1,4 +1,5 @@
 import type { Role } from '@/stores/roles';
+
 import type { Company } from '../companies/types';
 import type { Department } from '../departments/types';
 
