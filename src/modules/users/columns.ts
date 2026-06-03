@@ -4,14 +4,19 @@ import { h } from 'vue';
 import { ColumnHeader } from '@/components/data-table';
 import { UserAvatar } from '@/components/user-avatar';
 
-import { DataAction, StatusBadge } from '@/modules/users/components';
+import { DataAction, StatusBadge } from '@/modules/users';
 import type { User, UserStatus } from '@/modules/users/types';
+import type { Role } from '@/stores/roles';
+
+import type { Company } from '../companies/types';
+import type { Department } from '../departments/types';
 
 export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'name',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Full Name'),
-    cell: ({ row }) => h(UserAvatar, { name: row.getValue('name') }),
+    cell: ({ row }) =>
+      h(UserAvatar, { name: row.getValue('name'), src: row.original.avatar?.urls?.full }),
     enableSorting: true,
   },
   {
@@ -21,16 +26,22 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: false,
   },
   {
+    accessorKey: 'company',
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Company'),
+    cell: ({ row }) => row.getValue<Company>('company')?.name,
+    enableSorting: true,
+  },
+  {
     accessorKey: 'department',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Department'),
-    cell: ({ row }) => row.getValue('department'),
-    enableSorting: false,
+    cell: ({ row }) => row.getValue<Department>('department')?.name,
+    enableSorting: true,
   },
   {
     accessorKey: 'role',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Role'),
-    cell: ({ row }) => row.getValue('role'),
-    enableSorting: false,
+    cell: ({ row }) => h('span', { class: 'capitalize' }, row.getValue<Role>('role')?.name),
+    enableSorting: true,
   },
   {
     accessorKey: 'status',
@@ -44,7 +55,7 @@ export const columns: ColumnDef<User>[] = [
   {
     id: 'actions',
     header: ({ column }) => h(ColumnHeader, { column, '^data-action': true }, () => 'Actions'),
-    cell: ({ row }) => h(DataAction, { link: `/su/users/view`, user: row.original }),
+    cell: ({ row }) => h(DataAction, { user: row.original }),
     enableSorting: false,
   },
 ];

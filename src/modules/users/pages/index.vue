@@ -6,35 +6,31 @@ import {
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table';
+import { onMounted, ref } from 'vue';
 
 import { DataTable, Pagination, Search } from '@/components/data-table';
 
+import { getErrorMessage } from '@/lib/utils';
+
 import { columns } from '@/modules/users/columns';
+import { usersApi } from '@/modules/users/services/api';
 import type { User } from '@/modules/users/types';
 
-const users: User[] = [
-  {
-    name: 'Juan Dela Cruz',
-    email: 'juan@email.com',
-    department: 'AIT',
-    role: 'Admin',
-    status: 'active',
-  },
-  {
-    name: 'Carlos Mendoza',
-    email: 'carlos@email.com',
-    department: 'Team Banana',
-    role: 'User',
-    status: 'active',
-  },
-  {
-    name: 'Ana Marie Garcia',
-    email: 'ana@email.com',
-    department: 'AIT',
-    role: 'Support',
-    status: 'inactive',
-  },
-];
+const users = ref<User[]>([]);
+const fetchError = ref('');
+
+const fetchUsers = async () => {
+  fetchError.value = '';
+  try {
+    const response = await usersApi.getAll();
+    users.value = response;
+  } catch (error) {
+    fetchError.value = getErrorMessage(error);
+    users.value = [];
+  }
+};
+
+onMounted(fetchUsers);
 
 const table = useVueTable({
   get columns() {
@@ -51,9 +47,16 @@ const table = useVueTable({
 </script>
 
 <template>
-  <main class="flex flex-col gap-y-4 p-4">
-    <Search :table column="name" model="users" />
-    <DataTable :table />
-    <Pagination :table />
-  </main>
+  <template v-if="fetchError">
+    <p class="text-destructive py-5 text-center text-sm">
+      {{ fetchError }}
+    </p>
+  </template>
+  <template v-else>
+    <main class="flex flex-col gap-y-4 p-4">
+      <Search :table column="name" model="users" />
+      <DataTable :table />
+      <Pagination :table />
+    </main>
+  </template>
 </template>

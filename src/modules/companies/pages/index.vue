@@ -8,6 +8,7 @@ import {
 } from '@tanstack/vue-table';
 import { toTypedSchema } from '@vee-validate/zod';
 import { Plus } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { onMounted, ref, watch } from 'vue';
 import * as z from 'zod';
@@ -21,24 +22,22 @@ import { getErrorMessage } from '@/lib/utils';
 
 import { columns } from '@/modules/companies/columns';
 import { companiesApi } from '@/modules/companies/services/api';
-import type { Company } from '@/modules/companies/types';
+import { useCompanyStore } from '@/stores/company';
 
-const companies = ref<Company[]>([]);
+const companyStore = useCompanyStore();
+const { companies } = storeToRefs(companyStore);
 const postError = ref('');
 const fetchError = ref('');
 const isDialogOpen = ref(false);
 
-// fetching all companies
-const fetchCompanies = async () => {
+onMounted(async () => {
   fetchError.value = '';
   try {
-    companies.value = await companiesApi.getAll();
+    await companyStore.fetchCompanies();
   } catch (error) {
     fetchError.value = getErrorMessage(error);
-    companies.value = [];
   }
-};
-onMounted(fetchCompanies);
+});
 
 // table configuration
 const table = useVueTable({
@@ -76,7 +75,7 @@ const onSubmit = handleSubmit(async (data) => {
     await companiesApi.create(data.company);
     isDialogOpen.value = false;
     resetForm();
-    await fetchCompanies();
+    await companyStore.fetchCompanies();
   } catch (error) {
     postError.value = getErrorMessage(error);
   }
