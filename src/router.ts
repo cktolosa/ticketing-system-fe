@@ -103,22 +103,26 @@ const routes = [
       },
       {
         path: 'faqs',
-        name: 'FAQs',
+        name: 'SU FAQs',
+        meta: { title: 'FAQs' },
         redirect: '/su/faqs',
         children: [
           {
             path: 'create',
-            name: 'Create FAQ',
+            name: 'SU Create FAQ',
+            meta: { title: 'Create FAQ' },
             component: () => import('@/modules/faqs/pages/create.vue'),
           },
           {
             path: '',
-            name: 'All FAQs',
+            name: 'SU All FAQs',
+            meta: { title: 'All FAQs' },
             component: () => import('@/modules/faqs/pages/index.vue'),
           },
           {
-            path: 'view',
-            name: 'View FAQ',
+            path: ':id',
+            name: 'SU View FAQ',
+            meta: { title: 'View FAQ' },
             component: () => import('@/modules/faqs/pages/view.vue'),
           },
         ],
@@ -141,6 +145,32 @@ const routes = [
         path: 'dashboard',
         component: () => import('@/modules/dashboard/pages/admin.vue'),
       },
+      {
+        path: 'faqs',
+        name: 'Admin FAQs',
+        meta: { title: 'FAQs' },
+        redirect: '/admin/faqs',
+        children: [
+          {
+            path: 'create',
+            name: 'Admin Create FAQ',
+            meta: { title: 'Create FAQ' },
+            component: () => import('@/modules/faqs/pages/create.vue'),
+          },
+          {
+            path: '',
+            name: 'Admin My FAQs',
+            meta: { title: 'My FAQs' },
+            component: () => import('@/modules/faqs/pages/index.vue'),
+          },
+          {
+            path: ':id',
+            name: 'Admin View FAQ',
+            meta: { title: 'View FAQ' },
+            component: () => import('@/modules/faqs/pages/view.vue'),
+          },
+        ],
+      },
     ],
   },
   {
@@ -153,6 +183,32 @@ const routes = [
       {
         path: 'dashboard',
         component: () => import('@/modules/dashboard/pages/support.vue'),
+      },
+      {
+        path: 'faqs',
+        name: 'Support FAQs',
+        meta: { title: 'FAQs' },
+        redirect: '/support/faqs',
+        children: [
+          {
+            path: 'create',
+            name: 'Support Create FAQ',
+            meta: { title: 'Create FAQ' },
+            component: () => import('@/modules/faqs/pages/create.vue'),
+          },
+          {
+            path: '',
+            name: 'Support My FAQs',
+            meta: { title: 'My FAQs' },
+            component: () => import('@/modules/faqs/pages/index.vue'),
+          },
+          {
+            path: ':id',
+            name: 'Support View FAQ',
+            meta: { title: 'View FAQ' },
+            component: () => import('@/modules/faqs/pages/view.vue'),
+          },
+        ],
       },
     ],
   },

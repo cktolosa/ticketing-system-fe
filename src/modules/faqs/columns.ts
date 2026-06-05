@@ -6,8 +6,10 @@ import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
 
-import { DataAction } from '@/modules/faqs/components';
+import { DataAction } from '@/modules/faqs';
 import type { Faq } from '@/modules/faqs/types';
+
+import type { User } from '../users/types';
 
 export const columns: ColumnDef<Faq>[] = [
   {
@@ -19,7 +21,7 @@ export const columns: ColumnDef<Faq>[] = [
   {
     accessorKey: 'author',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Author'),
-    cell: ({ row }) => h(UserAvatar, { name: row.getValue('author') }),
+    cell: ({ row }) => h(UserAvatar, { name: row.getValue<User>('author')?.name }),
     enableSorting: true,
   },
   {

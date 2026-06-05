@@ -81,8 +81,8 @@ export const getErrorMessage = (error: unknown, context?: 'login' | 'default'): 
 };
 
 export const getRolePaths: Record<string, string> = {
-  superadmin: '/su/dashboard',
-  admin: '/admin/dashboard',
-  support: '/support/dashboard',
-  customer: '/customer/dashboard',
+  superadmin: '/su',
+  admin: '/admin',
+  support: '/support',
+  customer: '/customer',
 };

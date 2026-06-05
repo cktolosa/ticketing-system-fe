@@ -2,33 +2,38 @@
 import {
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table';
+import { onMounted, ref } from 'vue';
 
 import { DataTable, Pagination, Search } from '@/components/data-table';
 
-import { columns } from '@/modules/faqs/columns';
-import type { Faq } from '@/modules/faqs/types';
+import { getErrorMessage } from '@/lib/utils';
 
-const faqs: Faq[] = [
-  {
-    updated_at: new Date('2025-12-02'),
-    author: 'Juan Dela Cruz',
-    title: 'How to Maximize SIL',
-  },
-  {
-    updated_at: new Date('2025-12-03'),
-    author: 'Carlos Mendoza',
-    title: 'AIT Audit Monthly Schedule Process',
-  },
-  {
-    updated_at: new Date('2025-12-04'),
-    author: 'Ana Marie Garcia',
-    title: 'Basic Troubleshooting',
-  },
-];
+import { columns } from '@/modules/faqs/columns';
+import type { Meta } from '@/modules/types';
+
+import { faqsApi } from '..';
+import type { Faq } from '../types';
+
+const faqs = ref<Faq[]>([]);
+const meta = ref<Meta | null>(null);
+const fetchError = ref('');
+
+const fetchFaqs = async (page = 1) => {
+  fetchError.value = '';
+  try {
+    const response = await faqsApi.getAll(page);
+    faqs.value = response.data;
+    meta.value = response.meta;
+  } catch (error) {
+    fetchError.value = getErrorMessage(error);
+    faqs.value = [];
+  }
+};
+
+onMounted(fetchFaqs);
 
 const table = useVueTable({
   get columns() {
@@ -38,16 +43,23 @@ const table = useVueTable({
     return faqs;
   },
   getCoreRowModel: getCoreRowModel(),
-  getPaginationRowModel: getPaginationRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
   getSortedRowModel: getSortedRowModel(),
+  manualPagination: true,
 });
 </script>
 
 <template>
-  <main class="flex flex-col gap-y-4 p-4">
-    <Search :table column="title" model="faqs" />
-    <DataTable :table />
-    <Pagination :table />
-  </main>
+  <template v-if="fetchError">
+    <p class="text-destructive py-5 text-center text-sm">
+      {{ fetchError }}
+    </p>
+  </template>
+  <template v-else>
+    <main class="flex flex-col gap-y-4 p-4">
+      <Search :table column="title" model="faqs" />
+      <DataTable :table />
+      <Pagination :table :meta @change="fetchFaqs" />
+    </main>
+  </template>
 </template>

@@ -4,11 +4,26 @@ import { computed } from 'vue';
 
 import { Button } from '@/components/ui/button';
 
+import type { Meta } from '@/modules/types';
+
 const props = defineProps<{
   table: Table<T>;
+  meta?: Meta | null;
+}>();
+
+const emit = defineEmits<{
+  change: [page: number];
 }>();
 
 const range = computed(() => {
+  if (props.meta) {
+    return {
+      start: props.meta.from,
+      end: props.meta.to,
+      totalRows: props.meta.total,
+    };
+  }
+
   const { pageIndex, pageSize } = props.table.getState().pagination;
 
   const totalRows = props.table.getFilteredRowModel().rows.length;
@@ -19,6 +34,28 @@ const range = computed(() => {
     totalRows,
   };
 });
+
+const canPrev = computed(() =>
+  props.meta ? props.meta?.current_page > 1 : props.table.getCanPreviousPage()
+);
+const handlePrev = () => {
+  if (props.meta) {
+    emit('change', props.meta.current_page - 1);
+  } else {
+    props.table.previousPage();
+  }
+};
+
+const canNext = computed(() =>
+  props.meta ? props.meta?.current_page < props.meta?.last_page : props.table.getCanNextPage()
+);
+const handleNext = () => {
+  if (props.meta) {
+    emit('change', props.meta.current_page + 1);
+  } else {
+    props.table.nextPage();
+  }
+};
 </script>
 
 <template>
@@ -27,22 +64,10 @@ const range = computed(() => {
       Showing {{ range.start }} - {{ range.end }} of {{ range.totalRows }} row(s)
     </span>
     <div class="flex items-center gap-x-2">
-      <Button
-        variant="outline"
-        size="sm"
-        :disabled="!table.getCanPreviousPage()"
-        @click="table.previousPage"
-      >
+      <Button variant="outline" size="sm" :disabled="!canPrev" @click="handlePrev">
         Previous
       </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        :disabled="!table.getCanNextPage()"
-        @click="table.nextPage"
-      >
-        Next
-      </Button>
+      <Button variant="outline" size="sm" :disabled="!canNext" @click="handleNext"> Next </Button>
     </div>
   </section>
 </template>

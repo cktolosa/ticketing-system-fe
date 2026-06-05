@@ -123,7 +123,7 @@ export const SUPPORT_NAV_ITEMS: MenuItem[] = [
         icon: FilePlus,
       },
       {
-        title: 'All FAQs',
+        title: 'My FAQs',
         url: '/support/faqs',
         icon: Files,
       },
@@ -173,7 +173,7 @@ export const ADMIN_NAV_ITEMS: MenuItem[] = [
         icon: FilePlus,
       },
       {
-        title: 'All FAQs',
+        title: 'My FAQs',
         url: '/admin/faqs',
         icon: Files,
       },
