@@ -109,7 +109,7 @@ const groupedFaqs = computed(() => {
             </AccordionTrigger>
             <AccordionContent>
               <div class="relative max-h-24 overflow-hidden">
-                <div class="prose prose-sm w-full max-w-none" v-html="faq.content" />
+                <div v-dompurify-html="faq.content" class="prose prose-sm w-full max-w-none" />
 
                 <div
                   class="from-background absolute right-0 bottom-0 left-0 h-10 bg-gradient-to-t"

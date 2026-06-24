@@ -148,7 +148,7 @@ watch(isDialogOpen, (open) => {
               variant="md"
             />
           </div>
-          <div class="prose prose-sm max-w-none" v-html="faq?.content" />
+          <div v-dompurify-html="faq?.content" class="prose prose-sm max-w-none" />
         </CardContent>
       </Card>
     </div>

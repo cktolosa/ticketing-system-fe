@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
 
-import type { User } from '@/modules/users/types';
+import type { AuthUser } from '@/modules/users/types';
 import api from '@/services/api';
 
 interface AuthState {
   token: string | null;
-  user: User | null;
+  user: AuthUser | null;
 }
 
 export const useAuthStore = defineStore('auth', {
