@@ -1,3 +1,4 @@
+import type { Department } from '../departments/types';
 import type { User } from '../users/types';
 
 export type FaqPayload = {
@@ -13,4 +14,6 @@ export type Faq = {
   author: User;
   title: string;
   content: string;
+  department_id: Department;
+  faq_views: number;
 };

@@ -15,13 +15,19 @@ import {
   InputGroupInput,
 } from '@/components/ui/input-group';
 
-import { getErrorMessage } from '@/lib/utils';
+import { getErrorMessage, getRolePaths } from '@/lib/utils';
+
+// need for department object
+// import type { Department } from '@/modules/departments/types';
+import { useAuthStore } from '@/stores/auth';
 
 import { faqsApi } from '..';
 import type { Faq } from '../types';
 
 const faqs = ref<Faq[]>([]);
 const fetchError = ref('');
+const auth = useAuthStore();
+const basePath = getRolePaths[auth.user?.role ?? ''];
 
 const fetchFaqs = async (page = 1) => {
   fetchError.value = '';
@@ -41,14 +47,34 @@ const search = ref('');
 const filtered = computed(() => {
   const query = search.value.trim().toLowerCase();
 
-  if (!query) return faqs;
+  if (!query) return faqs.value;
 
-  return faqs.value
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((faq) => faq.title.toLowerCase().includes(query)),
-    }))
-    .filter((group) => group.items.length > 0);
+  return faqs.value.filter((faq) => faq.title.toLowerCase().includes(query));
+});
+
+const groupedFaqs = computed(() => {
+  return Object.values(
+    filtered.value.reduce(
+      (groups, faq) => {
+        // will change to department object
+        const department = faq.department_id;
+
+        (groups[department] ??= {
+          department_id: department,
+          items: [],
+        }).items.push(faq);
+
+        return groups;
+      },
+      {} as Record<
+        number,
+        {
+          department_id: number;
+          items: Faq[];
+        }
+      >
+    )
+  );
 });
 </script>
 
@@ -71,22 +97,37 @@ const filtered = computed(() => {
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
-      <div v-for="group in filtered" :key="group.department">
+      <div v-for="group in groupedFaqs" :key="group.department_id">
         <div class="text-muted-foreground flex items-center gap-2 text-sm font-medium">
           <FolderIcon />
-          <p>{{ group.department }} Department</p>
+          <p>{{ group.department_id }} Department</p>
         </div>
         <Accordion type="single" collapsible>
-          <AccordionItem v-for="faq in group.items" :key="faq.id" :value="faq.id">
-            <AccordionTrigger>{{ faq.title }}</AccordionTrigger>
+          <AccordionItem v-for="faq in group.items" :key="faq.id" :value="String(faq.id)">
+            <AccordionTrigger>
+              {{ faq.title }}
+            </AccordionTrigger>
             <AccordionContent>
-              {{ faq.content }}
+              <div class="relative max-h-24 overflow-hidden">
+                <div class="prose prose-sm w-full max-w-none" v-html="faq.content" />
+
+                <div
+                  class="from-background absolute right-0 bottom-0 left-0 h-10 bg-gradient-to-t"
+                />
+              </div>
+
+              <router-link
+                class="text-primary mt-2 inline-block text-sm underline"
+                :to="`${basePath}/faqs/${faq.id}`"
+              >
+                View full article
+              </router-link>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
       </div>
 
-      <p v-if="filtered.length === 0" class="text-muted-foreground py-5 text-center text-sm">
+      <p v-if="groupedFaqs.length === 0" class="text-muted-foreground py-5 text-center text-sm">
         No FAQs found.
       </p>
     </div>

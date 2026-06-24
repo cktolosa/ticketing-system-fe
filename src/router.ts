@@ -225,9 +225,23 @@ const routes = [
       },
       {
         path: 'faqs',
-        name: 'Customer FAQS',
+        name: 'Customer FAQs',
         meta: { title: 'FAQs' },
-        component: () => import('@/modules/faqs/pages/customer-view.vue'),
+        redirect: '/customer/faqs',
+        children: [
+          {
+            path: '',
+            name: 'Customer FAQS',
+            meta: { title: 'FAQs' },
+            component: () => import('@/modules/faqs/pages/customer-view.vue'),
+          },
+          {
+            path: ':id',
+            name: 'Customer View FAQ',
+            meta: { title: 'View FAQ' },
+            component: () => import('@/modules/faqs/pages/view.vue'),
+          },
+        ],
       },
     ],
   },

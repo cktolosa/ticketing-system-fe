@@ -40,7 +40,7 @@ const defaultValues: z.infer<typeof faqSchema> = {
   content: '',
 };
 
-const { handleSubmit, resetForm, values } = useForm({
+const { handleSubmit, resetForm } = useForm({
   validationSchema: toTypedSchema(faqSchema),
   initialValues: defaultValues,
 });
@@ -74,7 +74,6 @@ const onSubmit = handleSubmit(async (data) => {
         <FieldLegend>Create FAQ</FieldLegend>
         <FieldDescription> Provide the details below to create a new FAQ. </FieldDescription>
         <FieldError v-if="postError">{{ postError }}</FieldError>
-        <pre>{{ values }}</pre>
         <VeeField v-slot="{ componentField }" name="title">
           <Input
             v-bind="componentField"

@@ -15,8 +15,11 @@ import { UserAvatar } from '@/components/user-avatar';
 import { formatDate, getErrorMessage } from '@/lib/utils';
 
 import type { Faq } from '@/modules/faqs/types';
+import { useAuthStore } from '@/stores/auth';
 
 import { faqsApi, Tiptap } from '..';
+
+const auth = useAuthStore();
 
 const route = useRoute();
 const faqId = String(route.params.id);
@@ -103,12 +106,13 @@ watch(isDialogOpen, (open) => {
               <span class="text-xl leading-relaxed"> {{ faq?.title }}</span>
               <div class="text-muted-foreground flex items-center gap-1 text-sm">
                 <Eye class="size-4" />
-                232 views
+                {{ faq?.faq_views }} {{ faq?.faq_views === 1 ? 'view' : 'views' }}
               </div>
             </div>
           </CardTitle>
           <CardAction>
             <FormDialog
+              v-if="auth.user?.role !== 'customer'"
               v-model:open="isDialogOpen"
               name="FAQ"
               content-class="max-h-[90vh] overflow-y-auto md:max-w-4xl"
@@ -138,7 +142,6 @@ watch(isDialogOpen, (open) => {
 
         <CardContent class="flex flex-col gap-y-4">
           <div class="flex items-center gap-2">
-            <!-- to fix: error when reloads -->
             <UserAvatar
               :name="faq?.author?.name ?? ''"
               :subtitle="formatDate(faq?.updated_at) ?? ''"
