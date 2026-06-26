@@ -14,6 +14,6 @@ export type Faq = {
   author: User;
   title: string;
   content: string;
-  department_id: Department;
+  department: Department;
   faq_views: number;
 };

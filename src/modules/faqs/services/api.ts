@@ -8,12 +8,16 @@ export const faqsApi = {
     const response = await api.get<{ data: Faq[]; meta: Meta }>('/articles', {
       params: { page },
     });
-    console.log(response.data.data);
+    return response.data;
+  },
+  getByUser: async (page = 1) => {
+    const response = await api.get<{ data: Faq[]; meta: Meta }>('/articles/my', {
+      params: { page },
+    });
     return response.data;
   },
   getById: async (id: string) => {
     const response = await api.get<{ data: Faq }>(`/articles/${id}`);
-    console.log(response.data.data);
     return response.data.data;
   },
   create: async (data: { title: string; content: string; content_text: string }) => {

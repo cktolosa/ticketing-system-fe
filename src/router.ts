@@ -159,8 +159,8 @@ const routes = [
           },
           {
             path: '',
-            name: 'Admin My FAQs',
-            meta: { title: 'My FAQs' },
+            name: 'Admin Department FAQs',
+            meta: { title: 'Department FAQs' },
             component: () => import('@/modules/faqs/pages/index.vue'),
           },
           {

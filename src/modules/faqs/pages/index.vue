@@ -13,6 +13,7 @@ import { getErrorMessage } from '@/lib/utils';
 
 import { columns } from '@/modules/faqs/columns';
 import type { Meta } from '@/modules/types';
+import { useAuthStore } from '@/stores/auth';
 
 import { faqsApi } from '..';
 import type { Faq } from '../types';
@@ -20,11 +21,14 @@ import type { Faq } from '../types';
 const faqs = ref<Faq[]>([]);
 const meta = ref<Meta | null>(null);
 const fetchError = ref('');
+const auth = useAuthStore();
 
 const fetchFaqs = async (page = 1) => {
   fetchError.value = '';
   try {
-    const response = await faqsApi.getAll(page);
+    const hasAccessToAll = ['superadmin', 'customer'].includes(auth.user?.role ?? '');
+    const response = hasAccessToAll ? await faqsApi.getAll(page) : await faqsApi.getByUser(page);
+
     faqs.value = response.data;
     meta.value = response.meta;
   } catch (error) {

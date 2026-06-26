@@ -144,7 +144,7 @@ watch(isDialogOpen, (open) => {
           <div class="flex items-center gap-2">
             <UserAvatar
               :name="faq?.author?.name ?? ''"
-              :subtitle="formatDate(faq?.updated_at) ?? ''"
+              :subtitle="faq?.updated_at ? formatDate(faq?.updated_at) : ''"
               variant="md"
             />
           </div>

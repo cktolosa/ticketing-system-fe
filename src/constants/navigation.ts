@@ -173,7 +173,7 @@ export const ADMIN_NAV_ITEMS: MenuItem[] = [
         icon: FilePlus,
       },
       {
-        title: 'My FAQs',
+        title: 'Department FAQs',
         url: '/admin/faqs',
         icon: Files,
       },

@@ -17,8 +17,7 @@ import {
 
 import { getErrorMessage, getRolePaths } from '@/lib/utils';
 
-// need for department object
-// import type { Department } from '@/modules/departments/types';
+import type { Department } from '@/modules/departments/types';
 import { useAuthStore } from '@/stores/auth';
 
 import { faqsApi } from '..';
@@ -56,11 +55,10 @@ const groupedFaqs = computed(() => {
   return Object.values(
     filtered.value.reduce(
       (groups, faq) => {
-        // will change to department object
-        const department = faq.department_id;
+        const department = faq.department;
 
-        (groups[department] ??= {
-          department_id: department,
+        (groups[department.id] ??= {
+          department,
           items: [],
         }).items.push(faq);
 
@@ -69,7 +67,7 @@ const groupedFaqs = computed(() => {
       {} as Record<
         number,
         {
-          department_id: number;
+          department: Department;
           items: Faq[];
         }
       >
@@ -100,7 +98,7 @@ const groupedFaqs = computed(() => {
       <div v-for="group in groupedFaqs" :key="group.department_id">
         <div class="text-muted-foreground flex items-center gap-2 text-sm font-medium">
           <FolderIcon />
-          <p>{{ group.department_id }} Department</p>
+          <p>{{ group.department.name }}</p>
         </div>
         <Accordion type="single" collapsible>
           <AccordionItem v-for="faq in group.items" :key="faq.id" :value="String(faq.id)">
