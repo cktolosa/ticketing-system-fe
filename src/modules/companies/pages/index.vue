@@ -20,10 +20,10 @@ import { Button } from '@/components/ui/button';
 
 import { getErrorMessage } from '@/lib/utils';
 
+import { useFormDialog } from '@/composables/useFormDialog';
 import { columns } from '@/modules/companies';
 import { companiesApi } from '@/modules/companies/services';
 import { useCompanyStore } from '@/stores/company';
-import { useFormDialog } from '@/composables/useFormDialog';
 
 const companyStore = useCompanyStore();
 const { companies } = storeToRefs(companyStore);

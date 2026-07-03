@@ -1,6 +1,5 @@
-import api from '@/services/api';
-
 import type { User, UserPayload } from '@/modules/users';
+import api from '@/services/api';
 
 const userFormData = (data: Partial<UserPayload>, method: 'POST' | 'PUT' = 'POST'): FormData => {
   const formData = new FormData();

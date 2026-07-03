@@ -30,10 +30,9 @@ import { Spinner } from '@/components/ui/spinner';
 import { getErrorMessage, transformToSelectOption } from '@/lib/utils';
 
 import type { Department } from '@/modules/departments';
+import { usersApi } from '@/modules/users/services';
 import { useCompanyStore } from '@/stores/company';
 import { useRoleStore } from '@/stores/roles';
-
-import { usersApi } from '@/modules/users/services';
 
 const companyStore = useCompanyStore();
 const roleStore = useRoleStore();

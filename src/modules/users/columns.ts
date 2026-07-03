@@ -4,12 +4,11 @@ import { h } from 'vue';
 import { ColumnHeader } from '@/components/data-table';
 import { UserAvatar } from '@/components/user-avatar';
 
-import { DataAction, StatusBadge } from '@/modules/users/components';
-import type { User, UserStatus } from '@/modules/users';
-import type { Role } from '@/stores/roles';
-
 import type { Company } from '@/modules/companies';
 import type { Department } from '@/modules/departments';
+import type { User, UserStatus } from '@/modules/users';
+import { DataAction, StatusBadge } from '@/modules/users/components';
+import type { Role } from '@/stores/roles';
 
 export const columns: ColumnDef<User>[] = [
   {

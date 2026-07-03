@@ -10,9 +10,9 @@ import { Input } from '@/components/form';
 
 import { getErrorMessage } from '@/lib/utils';
 
+import { useFormDialog } from '@/composables/useFormDialog';
 import type { Company } from '@/modules/companies';
 import { companiesApi } from '@/modules/companies/services';
-import { useFormDialog } from '@/composables/useFormDialog';
 
 const route = useRoute();
 const companyId = String(route.params.id);
@@ -59,7 +59,6 @@ const onSubmit = handleSubmit(async (data) => {
 useFormDialog(isEditDialogOpen, resetForm, () => ({
   company: props.company?.name ?? '',
 }));
-
 </script>
 
 <template>

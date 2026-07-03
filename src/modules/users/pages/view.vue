@@ -23,12 +23,11 @@ import { UserAvatar } from '@/components/user-avatar';
 import { cn, getErrorMessage, transformToSelectOption } from '@/lib/utils';
 
 import type { Department } from '@/modules/departments';
+import type { User } from '@/modules/users';
+import { DetailCard, StatusBadge } from '@/modules/users/components';
+import { usersApi } from '@/modules/users/services';
 import { useCompanyStore } from '@/stores/company';
 import { useRoleStore } from '@/stores/roles';
-
-import { usersApi } from '@/modules/users/services';
-import { DetailCard, StatusBadge } from '@/modules/users/components';
-import type { User } from '@/modules/users';
 
 const companyStore = useCompanyStore();
 const roleStore = useRoleStore();

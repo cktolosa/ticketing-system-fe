@@ -21,15 +21,12 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/componen
 
 import { getErrorMessage } from '@/lib/utils';
 
+import { useFormDialog } from '@/composables/useFormDialog';
 import type { Company } from '@/modules/companies';
-
 import { UpdateCompanyForm } from '@/modules/companies/components';
-
 import { columns, type Department } from '@/modules/departments';
 import { departmentsApi } from '@/modules/departments/services';
-
 import { useCompanyStore } from '@/stores/company';
-import { useFormDialog } from '@/composables/useFormDialog';
 
 const route = useRoute();
 const companyId = String(route.params.id);

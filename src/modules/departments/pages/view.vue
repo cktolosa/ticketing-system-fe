@@ -12,10 +12,10 @@ import { UserAvatar } from '@/components/user-avatar';
 
 import { getErrorMessage } from '@/lib/utils';
 
-import { departmentsApi } from '@/modules/departments/services';
-import type { Department } from '@/modules/departments';
-import type { User } from '@/modules/users';
 import { useFormDialog } from '@/composables/useFormDialog';
+import type { Department } from '@/modules/departments';
+import { departmentsApi } from '@/modules/departments/services';
+import type { User } from '@/modules/users';
 
 const route = useRoute();
 const companyId = String(route.params.companyId);
