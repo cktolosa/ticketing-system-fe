@@ -12,10 +12,10 @@ import { UserAvatar } from '@/components/user-avatar';
 
 import { getErrorMessage } from '@/lib/utils';
 
-import type { User } from '@/modules/users/types';
-
-import { departmentsApi } from '..';
-import type { Department } from '../types';
+import { departmentsApi } from '@/modules/departments/services';
+import type { Department } from '@/modules/departments';
+import type { User } from '@/modules/users';
+import { useFormDialog } from '@/composables/useFormDialog';
 
 const route = useRoute();
 const companyId = String(route.params.companyId);
@@ -52,7 +52,7 @@ const defaultValues: z.infer<typeof departmentSchema> = {
   department: '',
 };
 
-const { handleSubmit, resetForm, values } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(departmentSchema),
   initialValues: defaultValues,
 });
@@ -69,13 +69,9 @@ const onSubmit = handleSubmit(async (data) => {
   }
 });
 
-//clear server-error
-watch(
-  () => values.department,
-  () => {
-    postError.value = '';
-  }
-);
+useFormDialog(isDialogOpen, resetForm, () => ({
+  department: department.value?.name ?? '',
+}));
 
 watch(isDialogOpen, (open) => {
   if (open) {
@@ -104,7 +100,9 @@ watch(isDialogOpen, (open) => {
               v-model:open="isDialogOpen"
               name="department"
               :post-error="postError"
+              :is-submitting="isSubmitting"
               @submit="onSubmit"
+              @clear-error="postError = ''"
             >
               <template #content>
                 <VeeField v-slot="{ componentField }" name="department">

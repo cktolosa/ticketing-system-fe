@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import type { Company } from '@/modules/companies/types';
+import type { Company } from '@/modules/companies';
 
 defineProps<{
   company: Company;

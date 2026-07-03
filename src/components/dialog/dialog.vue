@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Spinner } from '@/components/ui/spinner';
 
 import { cn } from '@/lib/utils';
 
@@ -25,6 +26,7 @@ const props = withDefaults(
     submitText?: string;
     contentClass?: string;
     postError: string;
+    isSubmitting: boolean;
   }>(),
   {
     open: false,
@@ -45,6 +47,7 @@ const defaultDescription = computed(
 const emit = defineEmits<{
   submit: [];
   'update:open': [value: boolean];
+  'clear-error': [];
 }>();
 
 const handleSubmit = () => {
@@ -73,7 +76,7 @@ const handleSubmit = () => {
         </DialogDescription>
       </DialogHeader>
 
-      <form id="dialogForm" @submit.prevent="handleSubmit">
+      <form id="dialogForm" @submit.prevent="handleSubmit" @input="emit('clear-error')">
         <slot name="content" />
       </form>
 
@@ -85,7 +88,10 @@ const handleSubmit = () => {
         <DialogClose as-child>
           <Button type="button" variant="outline"> Cancel </Button>
         </DialogClose>
-        <Button type="submit" form="dialogForm"> {{ submitText }} </Button>
+        <Button :disabled="isSubmitting" type="submit" form="dialogForm">
+          <Spinner v-if="isSubmitting" />
+          {{ isSubmitting ? 'Saving' : submitText }}
+        </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

@@ -10,7 +10,7 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { Plus } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { useForm, Field as VeeField } from 'vee-validate';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import * as z from 'zod';
 
 import { DataTable, Pagination, Search } from '@/components/data-table';
@@ -20,9 +20,10 @@ import { Button } from '@/components/ui/button';
 
 import { getErrorMessage } from '@/lib/utils';
 
-import { columns } from '@/modules/companies/columns';
-import { companiesApi } from '@/modules/companies/services/api';
+import { columns } from '@/modules/companies';
+import { companiesApi } from '@/modules/companies/services';
 import { useCompanyStore } from '@/stores/company';
+import { useFormDialog } from '@/composables/useFormDialog';
 
 const companyStore = useCompanyStore();
 const { companies } = storeToRefs(companyStore);
@@ -63,7 +64,7 @@ const companySchema = z.object({
 const defaultValues: z.infer<typeof companySchema> = {
   company: '',
 };
-const { handleSubmit, resetForm, values } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(companySchema),
   initialValues: defaultValues,
 });
@@ -81,23 +82,8 @@ const onSubmit = handleSubmit(async (data) => {
   }
 });
 
-//clear server-error
-watch(
-  () => values.company,
-  () => {
-    postError.value = '';
-  }
-);
-
 // reactive state for dialog
-watch(isDialogOpen, (open) => {
-  if (open) {
-    resetForm({
-      values: defaultValues,
-    });
-    postError.value = '';
-  }
-});
+useFormDialog(isDialogOpen, resetForm, () => defaultValues);
 </script>
 
 <template>
@@ -115,7 +101,9 @@ watch(isDialogOpen, (open) => {
           description="Create a new company by providing a descriptive name. Click create when you are done."
           submit-text="Create"
           :post-error="postError"
+          :is-submitting="isSubmitting"
           @submit="onSubmit"
+          @clear-error="postError = ''"
         >
           <template #trigger>
             <Button type="button"><Plus />Create</Button>

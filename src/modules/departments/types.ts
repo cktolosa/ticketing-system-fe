@@ -1,5 +1,5 @@
-import type { Company } from '../companies/types';
-import type { User } from '../users/types';
+import type { Company } from '@/modules/companies';
+import type { User } from '@/modules/users';
 
 export type Department = {
   id: number;
@@ -9,7 +9,6 @@ export type Department = {
 };
 
 export type DepartmentPayload = {
-  id: number;
   company_id: string;
   name: string;
 };

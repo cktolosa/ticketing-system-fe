@@ -22,14 +22,13 @@ import { UserAvatar } from '@/components/user-avatar';
 
 import { cn, getErrorMessage, transformToSelectOption } from '@/lib/utils';
 
-import type { Department } from '@/modules/departments/types';
+import type { Department } from '@/modules/departments';
 import { useCompanyStore } from '@/stores/company';
 import { useRoleStore } from '@/stores/roles';
 
-import { usersApi } from '..';
-import DetailCard from '../components/detail-card.vue';
-import StatusBadge from '../components/status-badge.vue';
-import type { User } from '../types';
+import { usersApi } from '@/modules/users/services';
+import { DetailCard, StatusBadge } from '@/modules/users/components';
+import type { User } from '@/modules/users';
 
 const companyStore = useCompanyStore();
 const roleStore = useRoleStore();
@@ -89,7 +88,7 @@ const defaultValues: z.infer<typeof userSchema> = {
   role_id: 0,
   is_active: true,
 };
-const { handleSubmit, resetForm, setFieldValue } = useForm({
+const { handleSubmit, resetForm, setFieldValue, isSubmitting } = useForm({
   validationSchema: toTypedSchema(userSchema),
   initialValues: defaultValues,
 });
@@ -155,6 +154,7 @@ watch(isDialogOpen, async (open) => {
           name="user"
           content-class="max-h-[90vh] overflow-y-auto md:max-w-4xl"
           :post-error="postError"
+          :is-submitting="isSubmitting"
           @submit="onSubmit"
         >
           <template #content>

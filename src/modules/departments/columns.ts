@@ -3,8 +3,8 @@ import { h } from 'vue';
 
 import { ColumnHeader } from '@/components/data-table';
 
-import { DataAction } from '@/modules/departments';
-import type { Department } from '@/modules/departments/types';
+import { DataAction } from '@/modules/departments/components';
+import type { Department } from '@/modules/departments';
 
 export const columns = (companyId: string): ColumnDef<Department>[] => [
   {
