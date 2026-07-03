@@ -11,6 +11,7 @@ import { DataTable, Pagination, Search } from '@/components/data-table';
 
 import { getErrorMessage } from '@/lib/utils';
 
+import type { Meta } from '@/modules/types';
 import { columns, type User } from '@/modules/users';
 import { usersApi } from '@/modules/users/services';
 

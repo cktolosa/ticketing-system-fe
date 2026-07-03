@@ -11,9 +11,8 @@ import {
 
 import { getRolePaths } from '@/lib/utils';
 
+import type { Faq } from '@/modules/faqs';
 import { useAuthStore } from '@/stores/auth';
-
-import type { Faq } from '../types';
 
 const auth = useAuthStore();
 const basePath = getRolePaths[auth.user?.role ?? ''];

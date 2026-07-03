@@ -1,5 +1,5 @@
-import type { Department } from '../departments/types';
-import type { User } from '../users/types';
+import type { Department } from '@/modules/departments';
+import type { User } from '@/modules/users';
 
 export type FaqPayload = {
   user_id: number;

@@ -11,12 +11,10 @@ import { DataTable, Pagination, Search } from '@/components/data-table';
 
 import { getErrorMessage } from '@/lib/utils';
 
-import { columns } from '@/modules/faqs/columns';
+import { columns, type Faq } from '@/modules/faqs';
+import { faqsApi } from '@/modules/faqs/services';
 import type { Meta } from '@/modules/types';
 import { useAuthStore } from '@/stores/auth';
-
-import { faqsApi } from '..';
-import type { Faq } from '../types';
 
 const faqs = ref<Faq[]>([]);
 const meta = ref<Meta | null>(null);

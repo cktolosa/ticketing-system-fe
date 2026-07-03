@@ -14,12 +14,13 @@ import {
   FieldLegend,
   FieldSet,
 } from '@/components/ui/field';
+import { Spinner } from '@/components/ui/spinner';
 
 import { getErrorMessage, getRolePaths } from '@/lib/utils';
 
+import { Tiptap } from '@/modules/faqs/components';
+import { faqsApi } from '@/modules/faqs/services';
 import { useAuthStore } from '@/stores/auth';
-
-import { faqsApi, Tiptap } from '..';
 
 const auth = useAuthStore();
 const postError = ref('');
@@ -40,7 +41,7 @@ const defaultValues: z.infer<typeof faqSchema> = {
   content: '',
 };
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(faqSchema),
   initialValues: defaultValues,
 });
@@ -90,7 +91,10 @@ const onSubmit = handleSubmit(async (data) => {
 
         <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="secondary" @click="handleCancel"> Cancel </Button>
-          <Button type="submit">Create</Button>
+          <Button type="submit" :disabled="isSubmitting">
+            <Spinner v-if="isSubmitting" />
+            {{ isSubmitting ? 'Saving' : 'Create' }}
+          </Button>
         </div>
       </FieldSet>
     </FieldGroup>

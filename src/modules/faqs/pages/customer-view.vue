@@ -17,11 +17,10 @@ import {
 
 import { getErrorMessage, getRolePaths } from '@/lib/utils';
 
-import type { Department } from '@/modules/departments/types';
+import type { Department } from '@/modules/departments';
+import type { Faq } from '@/modules/faqs';
+import { faqsApi } from '@/modules/faqs/services';
 import { useAuthStore } from '@/stores/auth';
-
-import { faqsApi } from '..';
-import type { Faq } from '../types';
 
 const faqs = ref<Faq[]>([]);
 const fetchError = ref('');

@@ -6,10 +6,9 @@ import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
 
-import { DataAction } from '@/modules/faqs';
-import type { Faq } from '@/modules/faqs/types';
-
-import type { User } from '../users/types';
+import type { Faq } from '@/modules/faqs';
+import { DataAction } from '@/modules/faqs/components';
+import type { User } from '@/modules/users';
 
 export const columns: ColumnDef<Faq>[] = [
   {

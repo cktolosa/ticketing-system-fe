@@ -2,7 +2,7 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { Eye } from 'lucide-vue-next';
 import { useForm, Field as VeeField } from 'vee-validate';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import * as z from 'zod';
 
@@ -14,10 +14,11 @@ import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate, getErrorMessage } from '@/lib/utils';
 
-import type { Faq } from '@/modules/faqs/types';
+import { useFormDialog } from '@/composables/useFormDialog';
+import type { Faq } from '@/modules/faqs';
+import { Tiptap } from '@/modules/faqs/components';
+import { faqsApi } from '@/modules/faqs/services';
 import { useAuthStore } from '@/stores/auth';
-
-import { faqsApi, Tiptap } from '..';
 
 const auth = useAuthStore();
 
@@ -58,7 +59,7 @@ const defaultValues: z.infer<typeof faqSchema> = {
   content: '',
 };
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(faqSchema),
   initialValues: defaultValues,
 });
@@ -78,17 +79,10 @@ const onSubmit = handleSubmit(async (data) => {
   }
 });
 
-watch(isDialogOpen, (open) => {
-  if (open) {
-    resetForm({
-      values: {
-        title: faq.value?.title ?? '',
-        content: faq.value?.content ?? '',
-      },
-    });
-    postError.value = '';
-  }
-});
+useFormDialog(isDialogOpen, resetForm, () => ({
+  title: faq.value?.title ?? '',
+  content: faq.value?.content ?? '',
+}));
 </script>
 
 <template>
@@ -117,6 +111,7 @@ watch(isDialogOpen, (open) => {
               name="FAQ"
               content-class="max-h-[90vh] overflow-y-auto md:max-w-4xl"
               :post-error="postError"
+              :is-submitting="isSubmitting"
               @submit="onSubmit"
             >
               <template #content>
