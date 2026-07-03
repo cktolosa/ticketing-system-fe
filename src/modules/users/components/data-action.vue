@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-import type { User } from '../types';
+import type { User } from '@/modules/users';
 
 defineProps<{
   user: User;

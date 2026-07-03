@@ -1,4 +1,4 @@
-import type { Department } from '../departments/types';
+import type { Department } from '@modules/departments';
 
 export type Company = {
   id: number;

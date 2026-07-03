@@ -1,7 +1,6 @@
+import type { Company } from '@/modules/companies';
+import type { Department } from '@/modules/departments';
 import type { Role } from '@/stores/roles';
-
-import type { Company } from '../companies/types';
-import type { Department } from '../departments/types';
 
 export type User = {
   id: number;

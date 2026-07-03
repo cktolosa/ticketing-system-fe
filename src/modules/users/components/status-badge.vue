@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 
 import { cn } from '@/lib/utils';
 
-import UserStatus from './types.ts';
+import type { UserStatus } from '@/modules/users';
 
 defineProps<{
   status: UserStatus;

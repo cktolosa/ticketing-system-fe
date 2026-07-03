@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, Field as VeeField } from 'vee-validate';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import * as z from 'zod';
 
@@ -10,9 +10,9 @@ import { Input } from '@/components/form';
 
 import { getErrorMessage } from '@/lib/utils';
 
-import { companiesApi } from '@/modules/companies/services/api';
-
-import type { Company } from '../types';
+import { useFormDialog } from '@/composables/useFormDialog';
+import type { Company } from '@/modules/companies';
+import { companiesApi } from '@/modules/companies/services';
 
 const route = useRoute();
 const companyId = String(route.params.id);
@@ -39,7 +39,7 @@ const defaultValues: z.infer<typeof companySchema> = {
   company: '',
 };
 
-const { handleSubmit, resetForm, values } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(companySchema),
   initialValues: defaultValues,
 });
@@ -56,22 +56,9 @@ const onSubmit = handleSubmit(async (data) => {
   }
 });
 
-//clear server-error
-watch(
-  () => values.company,
-  () => {
-    postError.value = '';
-  }
-);
-
-watch(isEditDialogOpen, (open) => {
-  if (open) {
-    resetForm({
-      values: { company: props.company?.name ?? '' },
-    });
-    postError.value = '';
-  }
-});
+useFormDialog(isEditDialogOpen, resetForm, () => ({
+  company: props.company?.name ?? '',
+}));
 </script>
 
 <template>
@@ -79,7 +66,9 @@ watch(isEditDialogOpen, (open) => {
     v-model:open="isEditDialogOpen"
     name="company"
     :post-error="postError"
+    :is-submitting="isSubmitting"
     @submit="onSubmit"
+    @clear-error="postError = ''"
   >
     <template #content>
       <VeeField v-slot="{ componentField }" name="company">

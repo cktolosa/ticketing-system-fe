@@ -9,7 +9,7 @@ import {
 import { toTypedSchema } from '@vee-validate/zod';
 import { Plus } from 'lucide-vue-next';
 import { useForm, Field as VeeField } from 'vee-validate';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import * as z from 'zod';
 
@@ -21,11 +21,11 @@ import { Card, CardAction, CardContent, CardHeader, CardTitle } from '@/componen
 
 import { getErrorMessage } from '@/lib/utils';
 
-import UpdateCompany from '@/modules/companies/components/update-company.vue';
-import type { Company } from '@/modules/companies/types';
-import { columns } from '@/modules/departments/columns';
-import { departmentsApi } from '@/modules/departments/services/api';
-import type { Department } from '@/modules/departments/types';
+import { useFormDialog } from '@/composables/useFormDialog';
+import type { Company } from '@/modules/companies';
+import { UpdateCompanyForm } from '@/modules/companies/components';
+import { columns, type Department } from '@/modules/departments';
+import { departmentsApi } from '@/modules/departments/services';
 import { useCompanyStore } from '@/stores/company';
 
 const route = useRoute();
@@ -78,7 +78,7 @@ const defaultValues: z.infer<typeof departmentSchema> = {
   department: '',
 };
 
-const { handleSubmit, resetForm, values } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(departmentSchema),
   initialValues: defaultValues,
 });
@@ -95,22 +95,7 @@ const onSubmit = handleSubmit(async (data) => {
   }
 });
 
-//clear server-error
-watch(
-  () => values.department,
-  () => {
-    postError.value = '';
-  }
-);
-
-watch(isCreateDialogOpen, (open) => {
-  if (open) {
-    resetForm({
-      values: defaultValues,
-    });
-    postError.value = '';
-  }
-});
+useFormDialog(isCreateDialogOpen, resetForm, () => defaultValues);
 </script>
 
 <template>
@@ -131,7 +116,9 @@ watch(isCreateDialogOpen, (open) => {
           description="Create a new department by providing a descriptive name. Click create when you are done."
           submit-text="Create"
           :post-error="postError"
+          :is-submitting="isSubmitting"
           @submit="onSubmit"
+          @clear-error="postError = ''"
         >
           <template #trigger>
             <Button type="button"><Plus />Create</Button>
@@ -153,7 +140,7 @@ watch(isCreateDialogOpen, (open) => {
         <CardHeader class="flex items-center justify-between">
           <CardTitle>{{ company?.name ?? 'Unknown' }}</CardTitle>
           <CardAction>
-            <UpdateCompany :company="company" @updated="fetchCompany" />
+            <UpdateCompanyForm :company="company" @updated="fetchCompany" />
           </CardAction>
         </CardHeader>
 

@@ -1,4 +1,4 @@
-import type { Department, DepartmentPayload } from "@/modules/departments/types'";
+import type { Department, DepartmentPayload } from '@/modules/departments';
 import api from '@/services/api';
 
 export const departmentsApi = {
@@ -6,18 +6,12 @@ export const departmentsApi = {
     const response = await api.get<{ data: Department }>(`/departments/${id}`);
     return response.data.data;
   },
-  create: async (company_id: string, name: string) => {
-    const response = await api.post<{ data: DepartmentPayload }>('/departments', {
-      company_id,
-      name,
-    });
+  create: async (data: DepartmentPayload) => {
+    const response = await api.post<{ data: Department }>('/departments', data);
     return response.data.data;
   },
-  update: async (id: string, company_id: string, name: string) => {
-    const response = await api.put<{ data: DepartmentPayload }>(`/departments/${id}`, {
-      company_id,
-      name,
-    });
+  update: async (id: string, data: DepartmentPayload) => {
+    const response = await api.put<{ data: Department }>(`/departments/${id}`, data);
     return response.data.data;
   },
 };

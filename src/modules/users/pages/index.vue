@@ -12,9 +12,8 @@ import { DataTable, Pagination, Search } from '@/components/data-table';
 
 import { getErrorMessage } from '@/lib/utils';
 
-import { columns } from '@/modules/users/columns';
-import { usersApi } from '@/modules/users/services/api';
-import type { User } from '@/modules/users/types';
+import { columns, type User } from '@/modules/users';
+import { usersApi } from '@/modules/users/services';
 
 const users = ref<User[]>([]);
 const fetchError = ref('');

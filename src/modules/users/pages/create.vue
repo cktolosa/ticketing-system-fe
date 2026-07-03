@@ -29,11 +29,10 @@ import { Spinner } from '@/components/ui/spinner';
 
 import { getErrorMessage, transformToSelectOption } from '@/lib/utils';
 
-import type { Department } from '@/modules/departments/types';
+import type { Department } from '@/modules/departments';
+import { usersApi } from '@/modules/users/services';
 import { useCompanyStore } from '@/stores/company';
 import { useRoleStore } from '@/stores/roles';
-
-import { usersApi } from '..';
 
 const companyStore = useCompanyStore();
 const roleStore = useRoleStore();
@@ -218,7 +217,7 @@ const onSubmit = handleSubmit(async (data) => {
           <Button type="button" variant="secondary" @click="handleCancel"> Cancel </Button>
           <Button type="submit" :disabled="isSubmitting">
             <Spinner v-if="isSubmitting" />
-            {{ isSubmitting ? 'Creating' : 'Create' }}
+            {{ isSubmitting ? 'Saving' : 'Create' }}
           </Button>
         </div>
       </FieldSet>

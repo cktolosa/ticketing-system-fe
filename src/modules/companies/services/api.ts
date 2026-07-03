@@ -1,4 +1,4 @@
-import type { Company } from '@/modules/companies/types';
+import type { Company } from '@/modules/companies';
 import api from '@/services/api';
 
 export const companiesApi = {
