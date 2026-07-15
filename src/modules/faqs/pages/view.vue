@@ -106,7 +106,7 @@ useFormDialog(isDialogOpen, resetForm, () => ({
           </CardTitle>
           <CardAction>
             <FormDialog
-              v-if="auth.user?.role !== 'customer'"
+              v-if="auth.user?.role?.name !== 'customer'"
               v-model:open="isDialogOpen"
               name="FAQ"
               content-class="max-h-[90vh] overflow-y-auto md:max-w-4xl"
@@ -138,8 +138,9 @@ useFormDialog(isDialogOpen, resetForm, () => ({
         <CardContent class="flex flex-col gap-y-4">
           <div class="flex items-center gap-2">
             <UserAvatar
+              :src="faq?.author?.avatar?.urls?.full"
               :name="faq?.author?.name ?? ''"
-              :subtitle="faq?.updated_at ? formatDate(faq?.updated_at) : ''"
+              :subtitle="formatDate(faq?.updated_at)"
               variant="md"
             />
           </div>

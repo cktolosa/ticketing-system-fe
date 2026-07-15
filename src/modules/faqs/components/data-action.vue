@@ -15,7 +15,7 @@ import type { Faq } from '@/modules/faqs';
 import { useAuthStore } from '@/stores/auth';
 
 const auth = useAuthStore();
-const basePath = getRolePaths[auth.user?.role ?? ''];
+const basePath = getRolePaths[auth.user?.role?.name ?? ''];
 
 defineProps<{
   faq: Faq;

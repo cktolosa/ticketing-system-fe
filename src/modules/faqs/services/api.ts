@@ -16,6 +16,12 @@ export const faqsApi = {
     });
     return response.data;
   },
+  getByDepartment: async (page = 1) => {
+    const response = await api.get<{ data: Faq[]; meta: Meta }>('/articles/department', {
+      params: { page },
+    });
+    return response.data;
+  },
   getById: async (id: string) => {
     const response = await api.get<{ data: Faq }>(`/articles/${id}`);
     return response.data.data;

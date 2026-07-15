@@ -24,8 +24,14 @@ const auth = useAuthStore();
 const fetchFaqs = async (page = 1) => {
   fetchError.value = '';
   try {
-    const hasAccessToAll = ['superadmin', 'customer'].includes(auth.user?.role ?? '');
-    const response = hasAccessToAll ? await faqsApi.getAll(page) : await faqsApi.getByUser(page);
+    const role = auth.user?.role?.name ?? '';
+
+    const response =
+      role === 'superadmin'
+        ? await faqsApi.getAll(page)
+        : role === 'admin'
+          ? await faqsApi.getByDepartment(page)
+          : await faqsApi.getByUser(page);
 
     faqs.value = response.data;
     meta.value = response.meta;

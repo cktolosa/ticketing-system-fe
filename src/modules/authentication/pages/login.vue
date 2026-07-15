@@ -44,7 +44,7 @@ const onSubmit = handleSubmit(async (data) => {
   errorMessage.value = '';
   try {
     await auth.login(data.email, data.password, data.remember_me);
-    const basePath = getRolePaths[auth.user?.role ?? ''];
+    const basePath = getRolePaths[auth.user?.role?.name ?? ''];
     router.push(`${basePath}/dashboard`);
   } catch (error) {
     errorMessage.value = getErrorMessage(error, 'login');

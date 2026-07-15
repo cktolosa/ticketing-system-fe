@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
 
-import type { AuthUser } from '@/modules/users/types';
+import type { User } from '@/modules/users/types';
 import api from '@/services/api';
 
 interface AuthState {
   token: string | null;
-  user: AuthUser | null;
+  user: User | null;
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
       if (!this.token) return;
       try {
         const response = await api.get('/me');
-        this.user = response.data;
+        this.user = response.data.data;
       } catch (error) {
         console.error('failed to fetch user', error);
       }

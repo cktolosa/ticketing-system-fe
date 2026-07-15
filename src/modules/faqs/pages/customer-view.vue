@@ -25,7 +25,7 @@ import { useAuthStore } from '@/stores/auth';
 const faqs = ref<Faq[]>([]);
 const fetchError = ref('');
 const auth = useAuthStore();
-const basePath = getRolePaths[auth.user?.role ?? ''];
+const basePath = getRolePaths[auth.user?.role?.name ?? ''];
 
 const fetchFaqs = async (page = 1) => {
   fetchError.value = '';

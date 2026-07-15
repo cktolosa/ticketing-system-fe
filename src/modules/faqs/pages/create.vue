@@ -59,7 +59,7 @@ const onSubmit = handleSubmit(async (data) => {
       ...data,
       content_text: tiptapRef.value?.getText() ?? '',
     });
-    const basePath = getRolePaths[auth.user?.role ?? ''];
+    const basePath = getRolePaths[auth.user?.role?.name ?? ''];
     router.push(`${basePath}/faqs`);
   } catch (error) {
     postError.value = getErrorMessage(error);

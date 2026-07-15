@@ -268,14 +268,14 @@ router.beforeEach(async (to) => {
   const requiredRole = to.matched.find((r) => r.meta.role)?.meta.role;
 
   if (to.meta.guest && auth.isAuthenticated) {
-    return getRolePaths[auth.user?.role ?? ''] ?? '/';
+    return getRolePaths[auth.user?.role?.name ?? ''] ?? '/';
   }
 
   if (requiresAuth && !auth.isAuthenticated) {
     return '/';
   }
 
-  if (requiredRole && auth.user?.role !== requiredRole) {
-    return getRolePaths[auth.user?.role ?? ''] ?? '/';
+  if (requiredRole && auth.user?.role?.name !== requiredRole) {
+    return getRolePaths[auth.user?.role?.name ?? ''] ?? '/';
   }
 });

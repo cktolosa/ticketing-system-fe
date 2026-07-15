@@ -10,7 +10,7 @@ export type FaqPayload = {
 
 export type Faq = {
   id: number;
-  updated_at: Date;
+  updated_at: string;
   author: User;
   title: string;
   content: string;
