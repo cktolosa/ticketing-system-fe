@@ -16,9 +16,11 @@ const userFormData = (data: Partial<UserPayload>, method: 'POST' | 'PUT' = 'POST
 };
 
 export const usersApi = {
-  getAll: async () => {
-    const response = await api.get<{ data: User[] }>('/users');
-    return response.data.data;
+  getAll: async (page = 1) => {
+    const response = await api.get<{ data: User[]; meta: Meta }>('/users', {
+      params: { page },
+    });
+    return response.data;
   },
   getById: async (id: string) => {
     const response = await api.get<{ data: User }>(`/users/${id}`);

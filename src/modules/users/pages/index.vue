@@ -2,7 +2,6 @@
 import {
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table';
@@ -12,17 +11,20 @@ import { DataTable, Pagination, Search } from '@/components/data-table';
 
 import { getErrorMessage } from '@/lib/utils';
 
+import type { Meta } from '@/modules/types';
 import { columns, type User } from '@/modules/users';
 import { usersApi } from '@/modules/users/services';
 
 const users = ref<User[]>([]);
+const meta = ref<Meta | null>(null);
 const fetchError = ref('');
 
-const fetchUsers = async () => {
+const fetchUsers = async (page = 1) => {
   fetchError.value = '';
   try {
-    const response = await usersApi.getAll();
-    users.value = response;
+    const response = await usersApi.getAll(page);
+    users.value = response.data;
+    meta.value = response.meta;
   } catch (error) {
     fetchError.value = getErrorMessage(error);
     users.value = [];
@@ -39,9 +41,9 @@ const table = useVueTable({
     return users;
   },
   getCoreRowModel: getCoreRowModel(),
-  getPaginationRowModel: getPaginationRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
   getSortedRowModel: getSortedRowModel(),
+  manualPagination: true,
 });
 </script>
 
@@ -55,7 +57,7 @@ const table = useVueTable({
     <main class="flex flex-col gap-y-4 p-4">
       <Search :table column="name" model="users" />
       <DataTable :table />
-      <Pagination :table />
+      <Pagination :table :meta @change="fetchUsers" />
     </main>
   </template>
 </template>

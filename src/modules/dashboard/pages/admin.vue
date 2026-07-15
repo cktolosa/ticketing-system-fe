@@ -37,7 +37,7 @@ watch(selectedMonth, fetchDashboard, { immediate: true });
     <Header
       v-model:selected-month="selectedMonth"
       download-url="/sample"
-      :role="auth.user?.role"
+      :role="auth.user?.role?.name"
       :loading="isLoading"
     />
 

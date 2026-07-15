@@ -85,7 +85,10 @@ const onPopoverOpen = (open: boolean) => {
 
 defineExpose({
   reset() {
-    editor.value?.commands.clearContent(true);
+    editor.value?.commands.clearContent(false);
+  },
+  getText() {
+    return editor.value?.getText() ?? '';
   },
 });
 

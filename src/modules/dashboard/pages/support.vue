@@ -31,7 +31,7 @@ onMounted(fetchDashboard);
 
 <template>
   <div class="flex flex-col gap-4 px-4 py-4 md:px-6">
-    <Header :role="auth.user?.role" :loading="isLoading" download-url="/sample" />
+    <Header :role="auth.user?.role?.name" :loading="isLoading" download-url="/sample" />
     <template v-if="fetchError">
       <p class="text-destructive text-center text-sm">
         {{ fetchError }}

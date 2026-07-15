@@ -5,7 +5,7 @@ import api from '@/services/api';
 
 export type Role = {
   id: number;
-  role: string;
+  name: string;
 };
 
 export const useRoleStore = defineStore('role', () => {

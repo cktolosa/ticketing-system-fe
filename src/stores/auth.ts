@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
       if (!this.token) return;
       try {
         const response = await api.get('/me');
-        this.user = response.data;
+        this.user = response.data.data;
       } catch (error) {
         console.error('failed to fetch user', error);
       }

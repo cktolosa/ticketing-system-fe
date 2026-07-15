@@ -118,7 +118,12 @@ watch(isDialogOpen, (open) => {
 
           <template v-if="employees && employees.length">
             <div v-for="employee in employees" :key="employee.id" class="flex items-center">
-              <UserAvatar :name="employee.name" :subtitle="employee.email" variant="md" />
+              <UserAvatar
+                :src="employee?.avatar?.urls?.full"
+                :name="employee.name"
+                :subtitle="employee.email"
+                variant="md"
+              />
             </div>
           </template>
 

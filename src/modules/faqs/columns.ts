@@ -6,8 +6,9 @@ import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
 
+import type { Faq } from '@/modules/faqs';
 import { DataAction } from '@/modules/faqs/components';
-import type { Faq } from '@/modules/faqs/types';
+import type { User } from '@/modules/users';
 
 export const columns: ColumnDef<Faq>[] = [
   {
@@ -19,14 +20,22 @@ export const columns: ColumnDef<Faq>[] = [
   {
     accessorKey: 'author',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Author'),
-    cell: ({ row }) => h(UserAvatar, { name: row.getValue('author') }),
+    cell: ({ row }) => {
+      const author = row.getValue<User>('author');
+      return h(UserAvatar, {
+        name: author?.name ?? '',
+        src: author?.avatar?.urls?.full,
+      });
+    },
     enableSorting: true,
   },
+
   {
     accessorKey: 'updated_at',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Updated At'),
     cell: ({ row }) => {
-      const date = row.getValue<Date>('updated_at');
+      const rawDate = row.getValue<string>('updated_at');
+      const date = rawDate ? new Date(rawDate) : null;
       return h(
         'div',
         { class: 'text-left tabular-nums' },

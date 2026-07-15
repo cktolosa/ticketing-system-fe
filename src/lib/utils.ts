@@ -8,7 +8,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const formatDate = (date: Date, opts?: Intl.DateTimeFormatOptions) => {
+export const formatDate = (date: Date | string | undefined, opts?: Intl.DateTimeFormatOptions) => {
+  if (!date) return '—';
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
@@ -21,7 +22,7 @@ export const formatDate = (date: Date, opts?: Intl.DateTimeFormatOptions) => {
     // so if we want e.g. `year`, we can overwrite `year` itself instead of
     // affecting other opts such as `month`, `day`, etc.
     ...opts,
-  }).format(date);
+  }).format(new Date(date));
 };
 
 export function transformToSelectOption<T>(
@@ -81,8 +82,8 @@ export const getErrorMessage = (error: unknown, context?: 'login' | 'default'): 
 };
 
 export const getRolePaths: Record<string, string> = {
-  superadmin: '/su/dashboard',
-  admin: '/admin/dashboard',
-  support: '/support/dashboard',
-  customer: '/customer/dashboard',
+  superadmin: '/su',
+  admin: '/admin',
+  support: '/support',
+  customer: '/customer',
 };

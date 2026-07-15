@@ -8,6 +8,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+import { getRolePaths } from '@/lib/utils';
+
+import type { Faq } from '@/modules/faqs';
+import { useAuthStore } from '@/stores/auth';
+
+const auth = useAuthStore();
+const basePath = getRolePaths[auth.user?.role?.name ?? ''];
+
+defineProps<{
+  faq: Faq;
+}>();
 </script>
 
 <template>
@@ -20,7 +32,7 @@ import {
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem as-child>
-        <router-link to="/su/faqs/view">
+        <router-link :to="`${basePath}/faqs/${faq.id}`">
           <Eye />
           View
         </router-link>

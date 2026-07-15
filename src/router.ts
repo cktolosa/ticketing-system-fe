@@ -103,22 +103,26 @@ const routes = [
       },
       {
         path: 'faqs',
-        name: 'FAQs',
+        name: 'SU FAQs',
+        meta: { title: 'FAQs' },
         redirect: '/su/faqs',
         children: [
           {
             path: 'create',
-            name: 'Create FAQ',
+            name: 'SU Create FAQ',
+            meta: { title: 'Create FAQ' },
             component: () => import('@/modules/faqs/pages/create.vue'),
           },
           {
             path: '',
-            name: 'All FAQs',
+            name: 'SU All FAQs',
+            meta: { title: 'All FAQs' },
             component: () => import('@/modules/faqs/pages/index.vue'),
           },
           {
-            path: 'view',
-            name: 'View FAQ',
+            path: ':id',
+            name: 'SU View FAQ',
+            meta: { title: 'View FAQ' },
             component: () => import('@/modules/faqs/pages/view.vue'),
           },
         ],
@@ -141,6 +145,32 @@ const routes = [
         path: 'dashboard',
         component: () => import('@/modules/dashboard/pages/admin.vue'),
       },
+      {
+        path: 'faqs',
+        name: 'Admin FAQs',
+        meta: { title: 'FAQs' },
+        redirect: '/admin/faqs',
+        children: [
+          {
+            path: 'create',
+            name: 'Admin Create FAQ',
+            meta: { title: 'Create FAQ' },
+            component: () => import('@/modules/faqs/pages/create.vue'),
+          },
+          {
+            path: '',
+            name: 'Admin Department FAQs',
+            meta: { title: 'Department FAQs' },
+            component: () => import('@/modules/faqs/pages/index.vue'),
+          },
+          {
+            path: ':id',
+            name: 'Admin View FAQ',
+            meta: { title: 'View FAQ' },
+            component: () => import('@/modules/faqs/pages/view.vue'),
+          },
+        ],
+      },
     ],
   },
   {
@@ -153,6 +183,32 @@ const routes = [
       {
         path: 'dashboard',
         component: () => import('@/modules/dashboard/pages/support.vue'),
+      },
+      {
+        path: 'faqs',
+        name: 'Support FAQs',
+        meta: { title: 'FAQs' },
+        redirect: '/support/faqs',
+        children: [
+          {
+            path: 'create',
+            name: 'Support Create FAQ',
+            meta: { title: 'Create FAQ' },
+            component: () => import('@/modules/faqs/pages/create.vue'),
+          },
+          {
+            path: '',
+            name: 'Support My FAQs',
+            meta: { title: 'My FAQs' },
+            component: () => import('@/modules/faqs/pages/index.vue'),
+          },
+          {
+            path: ':id',
+            name: 'Support View FAQ',
+            meta: { title: 'View FAQ' },
+            component: () => import('@/modules/faqs/pages/view.vue'),
+          },
+        ],
       },
     ],
   },
@@ -169,9 +225,23 @@ const routes = [
       },
       {
         path: 'faqs',
-        name: 'Customer FAQS',
+        name: 'Customer FAQs',
         meta: { title: 'FAQs' },
-        component: () => import('@/modules/faqs/pages/customer-view.vue'),
+        redirect: '/customer/faqs',
+        children: [
+          {
+            path: '',
+            name: 'Customer FAQS',
+            meta: { title: 'FAQs' },
+            component: () => import('@/modules/faqs/pages/customer-view.vue'),
+          },
+          {
+            path: ':id',
+            name: 'Customer View FAQ',
+            meta: { title: 'View FAQ' },
+            component: () => import('@/modules/faqs/pages/view.vue'),
+          },
+        ],
       },
     ],
   },
@@ -198,14 +268,14 @@ router.beforeEach(async (to) => {
   const requiredRole = to.matched.find((r) => r.meta.role)?.meta.role;
 
   if (to.meta.guest && auth.isAuthenticated) {
-    return getRolePaths[auth.user?.role ?? ''] ?? '/';
+    return getRolePaths[auth.user?.role?.name ?? ''] ?? '/';
   }
 
   if (requiresAuth && !auth.isAuthenticated) {
     return '/';
   }
 
-  if (requiredRole && auth.user?.role !== requiredRole) {
-    return getRolePaths[auth.user?.role ?? ''] ?? '/';
+  if (requiredRole && auth.user?.role?.name !== requiredRole) {
+    return getRolePaths[auth.user?.role?.name ?? ''] ?? '/';
   }
 });
