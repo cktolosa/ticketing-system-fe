@@ -4,7 +4,6 @@ import { useForm, Field as VeeField } from 'vee-validate';
 import { ref } from 'vue';
 import * as z from 'zod';
 
-import { Input } from '@/components/form';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -15,39 +14,30 @@ import {
   FieldLabel,
   FieldSet,
 } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { UserAvatar } from '@/components/user-avatar';
 
+import { getErrorMessage } from '@/lib/utils';
+
+import { profileApi } from '@/modules/profile/services';
+import { useAuthStore } from '@/stores/auth';
+
+const postError = ref('');
+const auth = useAuthStore();
 const userSchema = z.object({
-  picture: z
+  avatar: z
     .instanceof(File)
-    .refine((file) => file.size <= 10_485_760, 'File must be less than 10MB.')
+    .refine((file) => file.size <= 2_097_152, 'File must be less than 2MB.')
     .refine((file) => file.type.startsWith('image/'), 'Only image files are allowed.')
     .optional(),
-  first_name: z
-    .string()
-    .min(2, 'First name must be at least 2 characters.')
-    .max(50, 'First name must not exceed 50 characters.'),
-  middle_name: z.string().max(50, 'Middle name must not exceed 50 characters.').optional(),
-  last_name: z
-    .string()
-    .min(2, 'Last name must be at least 2 characters.')
-    .max(50, 'Last name must not exceed 50 characters.'),
-  email: z.string().optional(),
-  department: z.string().optional(),
-  role: z.string().optional(),
 });
 
 const defaultValues: z.infer<typeof userSchema> = {
-  picture: undefined,
-  first_name: '',
-  middle_name: '',
-  last_name: 'Dela Cruz',
-  email: 'juan@email.com',
-  department: 'AIT',
-  role: 'Superadmin',
+  avatar: undefined,
 };
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(userSchema),
   initialValues: defaultValues,
 });
@@ -60,26 +50,27 @@ const handleCancel = () => {
   resetForm();
 };
 
-const onSubmit = handleSubmit((data) => {
-  alert(
-    JSON.stringify({
-      ...data,
-      picture: data.picture
-        ? {
-            name: data.picture.name,
-            size: data.picture.size,
-            type: data.picture.type,
-          }
-        : undefined,
-    })
-  );
-  handleCancel();
+const onSubmit = handleSubmit(async (data) => {
+  postError.value = '';
+  try {
+    await profileApi.update(data);
+    await auth.fetchMe();
+    handleCancel();
+  } catch (error) {
+    postError.value = getErrorMessage(error);
+    handleCancel();
+  }
 });
 </script>
 
 <template>
   <div class="space-y-4 p-5">
-    <UserAvatar name="Juan Dela Cruz" subtitle="juan@email.com" variant="lg" />
+    <UserAvatar
+      :src="auth.user?.avatar?.urls?.full"
+      :name="auth.user?.name ?? ''"
+      :subtitle="auth.user?.email"
+      variant="lg"
+    />
     <Card>
       <CardHeader>
         <CardTitle>Personal Information</CardTitle>
@@ -93,12 +84,13 @@ const onSubmit = handleSubmit((data) => {
         <form @submit="onSubmit">
           <FieldGroup>
             <FieldSet>
-              <VeeField v-slot="{ componentField, errors }" name="picture">
+              <FieldError v-if="postError">{{ postError }}</FieldError>
+              <VeeField v-slot="{ componentField, errors }" name="avatar">
                 <Field>
-                  <FieldLabel for="picture">Profile Picture</FieldLabel>
+                  <FieldLabel for="avatar">Profile Picture</FieldLabel>
                   <input
                     v-bind="componentField"
-                    id="picture"
+                    id="avatar"
                     ref="fileRef"
                     type="file"
                     accept="image/*"
@@ -107,71 +99,48 @@ const onSubmit = handleSubmit((data) => {
                       errors.length ? 'border-destructive' : 'border-input',
                     ]"
                   />
-                  <FieldDescription>Accepts images up to 10MB.</FieldDescription>
+                  <FieldDescription>Accepts images up to 2MB.</FieldDescription>
                   <FieldError v-if="errors.length" :errors="errors" />
                 </Field>
               </VeeField>
 
-              <VeeField v-slot="{ componentField }" name="first_name">
-                <Input
-                  v-bind="componentField"
-                  label="First Name"
-                  type="text"
-                  placeholder="Enter your first name"
-                  :disabled="!!defaultValues.first_name"
-                />
-              </VeeField>
+              <Field>
+                <FieldLabel for="name">Full Name</FieldLabel>
+                <Input id="name" type="name" :placeholder="auth.user?.name" disabled />
+              </Field>
 
-              <VeeField v-slot="{ componentField }" name="middle_name">
-                <Input
-                  v-bind="componentField"
-                  label="Middle Name"
-                  type="text"
-                  placeholder="Enter your middle name"
-                  :disabled="!!defaultValues.middle_name"
-                />
-              </VeeField>
+              <Field>
+                <FieldLabel for="email">Email</FieldLabel>
+                <Input id="email" type="email" :placeholder="auth.user?.email" disabled />
+              </Field>
 
-              <VeeField v-slot="{ componentField }" name="last_name">
+              <Field>
+                <FieldLabel for="department">Department</FieldLabel>
                 <Input
-                  v-bind="componentField"
-                  label="Last Name"
-                  type="text"
-                  placeholder="Enter your last name"
-                  :disabled="!!defaultValues.last_name"
+                  id="department"
+                  type="department"
+                  :placeholder="auth.user?.department?.name"
+                  disabled
                 />
-              </VeeField>
+              </Field>
 
-              <VeeField v-slot="{ componentField }" name="email">
+              <Field>
+                <FieldLabel for="role">Role</FieldLabel>
                 <Input
-                  v-bind="componentField"
-                  label="Email"
-                  type="email"
-                  :disabled="!!defaultValues.email"
+                  id="role"
+                  type="role"
+                  :placeholder="auth.user?.role?.name"
+                  class="capitalize"
+                  disabled
                 />
-              </VeeField>
-
-              <VeeField v-slot="{ componentField }" name="department">
-                <Input
-                  v-bind="componentField"
-                  label="Department"
-                  type="text"
-                  :disabled="!!defaultValues.department"
-                />
-              </VeeField>
-
-              <VeeField v-slot="{ componentField }" name="role">
-                <Input
-                  v-bind="componentField"
-                  label="Role"
-                  type="text"
-                  :disabled="!!defaultValues.role"
-                />
-              </VeeField>
+              </Field>
 
               <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                 <Button type="button" variant="secondary" @click="handleCancel"> Cancel </Button>
-                <Button type="submit">Update</Button>
+                <Button type="submit" :disabled="isSubmitting">
+                  <Spinner v-if="isSubmitting" />
+                  {{ isSubmitting ? 'Saving' : 'Update' }}
+                </Button>
               </div>
             </FieldSet>
           </FieldGroup>
