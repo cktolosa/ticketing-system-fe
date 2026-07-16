@@ -129,7 +129,8 @@ const routes = [
       },
       {
         path: 'profile',
-        name: 'View Profile',
+        name: 'SU View Profile',
+        meta: { title: 'View Profile' },
         component: () => import('@/modules/profile/pages/index.vue'),
       },
     ],
@@ -171,6 +172,12 @@ const routes = [
           },
         ],
       },
+      {
+        path: 'profile',
+        name: 'Admin View Profile',
+        meta: { title: 'View Profile' },
+        component: () => import('@/modules/profile/pages/index.vue'),
+      },
     ],
   },
   {
@@ -210,6 +217,12 @@ const routes = [
           },
         ],
       },
+      {
+        path: 'profile',
+        name: 'Support View Profile',
+        meta: { title: 'View Profile' },
+        component: () => import('@/modules/profile/pages/index.vue'),
+      },
     ],
   },
   {
@@ -242,6 +255,12 @@ const routes = [
             component: () => import('@/modules/faqs/pages/view.vue'),
           },
         ],
+      },
+      {
+        path: 'profile',
+        name: 'Customer View Profile',
+        meta: { title: 'View Profile' },
+        component: () => import('@/modules/profile/pages/index.vue'),
       },
     ],
   },

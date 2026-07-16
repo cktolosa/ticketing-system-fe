@@ -137,6 +137,7 @@ const isChildActive = (item: MenuItem): boolean => {
                   class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <UserAvatar
+                    :src="auth.user?.avatar?.urls?.full"
                     :name="auth.user?.name ?? 'Unknown'"
                     :subtitle="auth.user?.email ?? 'Unknown'"
                     variant="md"

@@ -1,5 +1,6 @@
 import type { Company } from '@/modules/companies';
 import type { Department } from '@/modules/departments';
+import type { Avatar } from '@/modules/profile';
 import type { Role } from '@/stores/roles';
 
 export type User = {
@@ -10,7 +11,7 @@ export type User = {
   department: Department;
   role: Role;
   status: UserStatus;
-  avatar?: File;
+  avatar?: Avatar;
 };
 
 export type UserPayload = {
