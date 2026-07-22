@@ -27,32 +27,38 @@ const routes = [
       },
       {
         path: 'tickets',
-        name: 'Tickets',
+        name: 'SU Tickets',
+        meta: { title: 'Tickets' },
         redirect: '/su/tickets',
         children: [
           {
             path: 'create',
-            name: 'Create Ticket',
+            name: 'SU Create Ticket',
+            meta: { title: 'Create Ticket' },
             component: () => import('@/modules/tickets/pages/create.vue'),
           },
           {
             path: 'reported',
-            name: 'My Tickets',
+            name: 'SU My Tickets',
+            meta: { title: 'My Tickets' },
             component: () => import('@/modules/tickets/pages/reported.vue'),
           },
           {
             path: 'assigned',
-            name: 'Assigned Tickets',
+            name: 'SU Assigned Tickets',
+            meta: { title: 'Assigned Tickets' },
             component: () => import('@/modules/tickets/pages/assigned.vue'),
           },
           {
             path: '',
-            name: 'All Tickets',
+            name: 'SU All Tickets',
+            meta: { title: 'All Tickets' },
             component: () => import('@/modules/tickets/pages/index.vue'),
           },
           {
-            path: 'view',
-            name: 'View Ticket',
+            path: ':id',
+            name: 'SU View Ticket',
+            meta: { title: 'View Ticket' },
             component: () => import('@/modules/tickets/pages/view.vue'),
           },
         ],
@@ -147,6 +153,44 @@ const routes = [
         component: () => import('@/modules/dashboard/pages/admin.vue'),
       },
       {
+        path: 'tickets',
+        name: 'Admin Tickets',
+        meta: { title: 'Tickets' },
+        redirect: '/admin/tickets',
+        children: [
+          {
+            path: 'create',
+            name: 'Admin Create Ticket',
+            meta: { title: 'Create Ticket' },
+            component: () => import('@/modules/tickets/pages/create.vue'),
+          },
+          {
+            path: 'reported',
+            name: 'Admin My Tickets',
+            meta: { title: 'My Tickets' },
+            component: () => import('@/modules/tickets/pages/reported.vue'),
+          },
+          {
+            path: 'assigned',
+            name: 'Admin Assigned Tickets',
+            meta: { title: 'Assigned Tickets' },
+            component: () => import('@/modules/tickets/pages/assigned.vue'),
+          },
+          {
+            path: '',
+            name: 'Admin Department Tickets',
+            meta: { title: 'Department Tickets' },
+            component: () => import('@/modules/tickets/pages/index.vue'),
+          },
+          {
+            path: ':id',
+            name: 'Admin View Ticket',
+            meta: { title: 'View Ticket' },
+            component: () => import('@/modules/tickets/pages/view.vue'),
+          },
+        ],
+      },
+      {
         path: 'faqs',
         name: 'Admin FAQs',
         meta: { title: 'FAQs' },
@@ -192,6 +236,38 @@ const routes = [
         component: () => import('@/modules/dashboard/pages/support.vue'),
       },
       {
+        path: 'tickets',
+        name: 'Support Tickets',
+        meta: { title: 'Tickets' },
+        redirect: '/support/tickets',
+        children: [
+          {
+            path: 'create',
+            name: 'Support Create Ticket',
+            meta: { title: 'Create Ticket' },
+            component: () => import('@/modules/tickets/pages/create.vue'),
+          },
+          {
+            path: 'reported',
+            name: 'Support My Tickets',
+            meta: { title: 'My Tickets' },
+            component: () => import('@/modules/tickets/pages/reported.vue'),
+          },
+          {
+            path: 'assigned',
+            name: 'Support Assigned Tickets',
+            meta: { title: 'Assigned Tickets' },
+            component: () => import('@/modules/tickets/pages/assigned.vue'),
+          },
+          {
+            path: ':id',
+            name: 'Support View Ticket',
+            meta: { title: 'View Ticket' },
+            component: () => import('@/modules/tickets/pages/view.vue'),
+          },
+        ],
+      },
+      {
         path: 'faqs',
         name: 'Support FAQs',
         meta: { title: 'FAQs' },
@@ -235,6 +311,32 @@ const routes = [
       {
         path: 'dashboard',
         component: () => import('@/modules/dashboard/pages/customer.vue'),
+      },
+      {
+        path: 'tickets',
+        name: 'Customer Tickets',
+        meta: { title: 'Tickets' },
+        redirect: '/customer/tickets',
+        children: [
+          {
+            path: 'create',
+            name: 'Customer Create Ticket',
+            meta: { title: 'Create Ticket' },
+            component: () => import('@/modules/tickets/pages/create.vue'),
+          },
+          {
+            path: 'reported',
+            name: 'Customer My Tickets',
+            meta: { title: 'My Tickets' },
+            component: () => import('@/modules/tickets/pages/reported.vue'),
+          },
+          {
+            path: ':id',
+            name: 'Support View Ticket',
+            meta: { title: 'View Ticket' },
+            component: () => import('@/modules/tickets/pages/view.vue'),
+          },
+        ],
       },
       {
         path: 'faqs',

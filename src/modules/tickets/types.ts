@@ -1,24 +1,20 @@
+import type { Department } from '@/modules/departments';
+import type { User } from '@/modules/users';
+
 export type Attachment = {
   filename: string;
   size: string;
 };
 
-export const statusOrder = {
-  new: 1,
-  'in progress': 2,
-  resolved: 3,
-  closed: 4,
-} as const;
+export type Status = {
+  id: number;
+  category: string;
+};
 
-export type Status = keyof typeof statusOrder;
-
-export const priorityOrder = {
-  low: 1,
-  medium: 2,
-  high: 3,
-} as const;
-
-export type Priority = keyof typeof priorityOrder;
+export type Priority = {
+  id: number;
+  category: string;
+};
 
 export type Comment = {
   id: number;
@@ -29,12 +25,28 @@ export type Comment = {
 };
 
 export type Ticket = {
-  date: Date;
+  id: number;
+  created_at: string;
+  updated_at: string;
   title: string;
-  department: string;
-  admin: string;
+  description: string;
+  department: Department;
   status: Status;
   priority: Priority;
+  user: User;
+  admin: User;
+  histories: History;
+  attachment: Attachment;
+};
+
+export type TicketPayload = {
+  // need to add attachments
+  title: string;
+  description: string;
+  department_id: number;
+  employee_id?: number;
+  admin_id?: number;
+  priority_id: number;
 };
 
 export type History = {

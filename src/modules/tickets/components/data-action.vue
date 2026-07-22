@@ -9,7 +9,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-defineProps<{ link: string }>();
+import type { Ticket } from '@/modules/tickets';
+
+defineProps<{
+  ticket: Ticket;
+}>();
 </script>
 
 <template>
@@ -22,7 +26,7 @@ defineProps<{ link: string }>();
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem as-child>
-        <router-link :to="link">
+        <router-link :to="`/su/tickets/${ticket.id}`">
           <Eye />
           View
         </router-link>

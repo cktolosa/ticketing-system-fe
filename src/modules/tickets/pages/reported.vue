@@ -6,134 +6,33 @@ import {
   getSortedRowModel,
   useVueTable,
 } from '@tanstack/vue-table';
+import { onMounted, ref } from 'vue';
 
 import { DataTable, Pagination, Search } from '@/components/data-table';
 
-import { columns } from '@/modules/tickets/columns';
-import { type Ticket } from '@/modules/tickets/types';
+import { getErrorMessage } from '@/lib/utils';
 
-const tickets: Ticket[] = [
-  {
-    date: new Date('2025-12-02'),
-    title: 'Password resets and account lockouts',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'in progress',
-    priority: 'low',
-  },
-  {
-    date: new Date('2025-12-03'),
-    title: 'Email not sending or receiving',
-    department: 'Team Banana',
-    admin: 'Jose Reyes',
-    status: 'new',
-    priority: 'medium',
-  },
-  {
-    date: new Date('2025-12-03'),
-    title: 'Slow computer performance',
-    department: 'Operations',
-    admin: 'Ana De Guzman',
-    status: 'in progress',
-    priority: 'medium',
-  },
-  {
-    date: new Date('2025-12-04'),
-    title: 'Laptop not responding',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'resolved',
-    priority: 'low',
-  },
-  {
-    date: new Date('2025-12-04'),
-    title: 'Software installation request',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'closed',
-    priority: 'low',
-  },
-  {
-    date: new Date('2025-12-05'),
-    title: 'Unable to connect to Wi-Fi network',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'in progress',
-    priority: 'high',
-  },
-  {
-    date: new Date('2025-12-05'),
-    title: 'VPN connection failure',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'new',
-    priority: 'high',
-  },
-  {
-    date: new Date('2025-12-06'),
-    title: 'System crashes on startup',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'in progress',
-    priority: 'high',
-  },
-  {
-    date: new Date('2025-12-06'),
-    title: 'Access permission denied to shared folder',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'resolved',
-    priority: 'medium',
-  },
-  {
-    date: new Date('2025-12-07'),
-    title: 'Antivirus alert detected',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'in progress',
-    priority: 'high',
-  },
-  {
-    date: new Date('2025-12-07'),
-    title: 'Monitor display not working',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'resolved',
-    priority: 'medium',
-  },
-  {
-    date: new Date('2025-12-08'),
-    title: 'File recovery request',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'new',
-    priority: 'medium',
-  },
-  {
-    date: new Date('2025-12-08'),
-    title: 'New user account setup',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'closed',
-    priority: 'low',
-  },
-  {
-    date: new Date('2025-12-09'),
-    title: 'Application not responding',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'in progress',
-    priority: 'medium',
-  },
-  {
-    date: new Date('2025-12-09'),
-    title: 'Keyboard not functioning properly',
-    department: 'AIT',
-    admin: 'Juan Dela Cruz',
-    status: 'resolved',
-    priority: 'low',
-  },
-];
+import { columns, type Ticket } from '@/modules/tickets';
+import { ticketsApi } from '@/modules/tickets/services';
+import type { Meta } from '@/modules/types';
+
+const tickets = ref<Ticket[]>([]);
+const meta = ref<Meta | null>(null);
+const fetchError = ref('');
+
+const fetchTickets = async (page = 1) => {
+  fetchError.value = '';
+  try {
+    const response = await ticketsApi.getAll(page);
+    tickets.value = response.data;
+    meta.value = response.meta;
+  } catch (error) {
+    fetchError.value = getErrorMessage(error);
+    tickets.value = [];
+  }
+};
+
+onMounted(fetchTickets);
 
 const table = useVueTable({
   get columns() {
@@ -150,9 +49,16 @@ const table = useVueTable({
 </script>
 
 <template>
-  <main class="flex flex-col gap-y-4 p-4">
-    <Search :table column="title" model="tickets" />
-    <DataTable :table />
-    <Pagination :table />
-  </main>
+  <template v-if="fetchError">
+    <p class="text-destructive py-5 text-center text-sm">
+      {{ fetchError }}
+    </p>
+  </template>
+  <template v-else>
+    <main class="flex flex-col gap-y-4 p-4">
+      <Search :table column="title" model="tickets" />
+      <DataTable :table />
+      <Pagination :table :meta @change="fetchTickets" />
+    </main>
+  </template>
 </template>

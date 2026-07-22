@@ -158,7 +158,7 @@ export const ADMIN_NAV_ITEMS: MenuItem[] = [
       },
       {
         title: 'Department Tickets',
-        url: '/admin/tickets/assigned',
+        url: '/admin/tickets',
         icon: Files,
       },
     ],

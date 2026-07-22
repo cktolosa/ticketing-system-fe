@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
 import { FileText, Image, Upload, Video, X } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
 import { type FieldBindingObject, useForm, Field as VeeField } from 'vee-validate';
-import { ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import * as z from 'zod';
 
 import { Input, Select, Textarea } from '@/components/form';
@@ -19,9 +20,21 @@ import {
   FieldSet,
 } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
-import { SelectGroup, SelectItem, SelectLabel } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
 
-import { transformToSelectOption } from '@/lib/utils';
+import { getErrorMessage, transformToSelectOption } from '@/lib/utils';
+
+import type { User } from '@/modules/users';
+import { useAuthStore } from '@/stores/auth';
+import { useDepartmentStore } from '@/stores/department';
+import { usePriorityStore } from '@/stores/priority';
+import { useUserStore } from '@/stores/user';
+
+import { ticketsApi } from '../services';
+
+const priorityStore = usePriorityStore();
+const userStore = useUserStore();
+const departmentStore = useDepartmentStore();
 
 const getFileIcon = (fileType: string) => {
   if (fileType.startsWith('image/')) return Image;
@@ -55,48 +68,44 @@ watch(isUnassigned, (checked) => {
   }
 });
 
-type Employee = {
-  id: number;
-  name: string;
-};
-const employees = ref<Employee[]>([
-  { id: 1, name: 'Jose Reyes' },
-  { id: 2, name: 'Carlos Mendoza' },
-  { id: 3, name: 'Ana Marie Garcia' },
-]);
+const { priorities } = storeToRefs(priorityStore);
+const { users: storeUsers } = storeToRefs(userStore);
+const users = ref<User[]>([]);
+const { departments } = storeToRefs(departmentStore);
+const admins = ref<User[]>([]);
+const postError = ref('');
+const auth = useAuthStore();
+const role = auth.user?.role?.name;
 
-type Priority = {
-  id: number;
-  name: string;
-};
-const priorities = ref<Priority[]>([
-  { id: 1, name: 'Low' },
-  { id: 2, name: 'Medium' },
-  { id: 3, name: 'High' },
-]);
+// still need to test for other user level
+const employeeOptions = computed(() => {
+  if (role === 'superadmin' || role === 'admin') {
+    return transformToSelectOption(users.value, { labelKey: 'name', valueKey: 'id' });
+  }
+  return transformToSelectOption(auth.user ? [auth.user] : [], {
+    labelKey: 'name',
+    valueKey: 'id',
+  });
+});
 
-type Department = {
-  id: number;
-  name: string;
-};
-const departments = ref<Department[]>([
-  { id: 1, name: 'Team Banana' },
-  { id: 2, name: 'AIT' },
-  { id: 3, name: 'HRAD' },
-  { id: 4, name: 'Equinox' },
-  { id: 5, name: 'QA' },
-  { id: 6, name: 'Crowd Works' },
-]);
+// still need to test for other user level
+onMounted(async () => {
+  const fetches = [priorityStore.fetchPriorities(), departmentStore.fetchDepartments()];
 
-type Admin = {
-  id: number;
-  name: string;
-};
-const admins = ref<Admin[]>([
-  { id: 1, name: 'Juan Dela Cruz' },
-  { id: 2, name: 'Juana Rodriguez' },
-  { id: 3, name: 'Ruby Velasquez' },
-]);
+  if (role === 'superadmin') {
+    await userStore.fetchUsers();
+    users.value = storeUsers.value;
+  } else if (role === 'admin') {
+    try {
+      const dept = await departmentStore.fetchDepartmentbyId(String(auth.user?.department?.id));
+      console.log('dept:', dept);
+    } catch (error) {
+      console.error('fetchDepartmentbyId error:', error);
+    }
+  }
+
+  await Promise.all(fetches);
+});
 
 const ticketSchema = z
   .object({
@@ -147,8 +156,9 @@ const ticketSchema = z
     }
   );
 
+// still need to test for other user level
 const defaultValues: z.infer<typeof ticketSchema> = {
-  employee_id: 0,
+  employee_id: ['support', 'customer'].includes(role ?? '') ? auth.user?.id : undefined,
   department_id: 0,
   admin_id: 0,
   priority_id: 0,
@@ -157,7 +167,7 @@ const defaultValues: z.infer<typeof ticketSchema> = {
   attachments: undefined,
 };
 
-const { handleSubmit, setFieldValue, resetForm, values } = useForm({
+const { handleSubmit, setFieldValue, resetForm, values, isSubmitting } = useForm({
   validationSchema: toTypedSchema(ticketSchema),
   initialValues: defaultValues,
 });
@@ -167,18 +177,19 @@ const handleCancel = () => {
   isUnassigned.value = false;
 };
 
-const onSubmit = handleSubmit((data) => {
-  alert(
-    JSON.stringify({
-      ...data,
-      attachments: data.attachments?.map((f) => ({
-        name: f.name,
-        size: f.size,
-        type: f.type,
-      })),
-    })
-  );
-  handleCancel();
+async function onDepartmentChange(departmentId: string) {
+  const department = await departmentStore.fetchDepartmentbyId(departmentId);
+  admins.value = (department.users ?? []).filter((user: User) => user.role?.name !== 'customer');
+}
+
+const onSubmit = handleSubmit(async (data) => {
+  postError.value = '';
+  try {
+    await ticketsApi.create(data);
+  } catch (error) {
+    postError.value = getErrorMessage(error);
+    handleCancel();
+  }
 });
 </script>
 
@@ -191,14 +202,15 @@ const onSubmit = handleSubmit((data) => {
         <FieldDescription>
           Provide the details below and we'll get your issue resolved quickly.
         </FieldDescription>
-
+        <FieldError v-if="postError">{{ postError }}</FieldError>
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
           <VeeField v-slot="{ componentField }" name="employee_id">
             <Select
               v-bind="componentField"
               label="Employee"
               placeholder="Select an employee"
-              :options="transformToSelectOption(employees, { labelKey: 'name', valueKey: 'id' })"
+              :options="employeeOptions"
+              :disabled="['support', 'customer'].includes(role)"
             />
           </VeeField>
 
@@ -207,19 +219,20 @@ const onSubmit = handleSubmit((data) => {
               v-bind="componentField"
               label="Priority"
               placeholder="Select a priority"
-              :options="transformToSelectOption(priorities, { labelKey: 'name', valueKey: 'id' })"
+              :options="
+                transformToSelectOption(priorities, { labelKey: 'category', valueKey: 'id' })
+              "
             />
           </VeeField>
 
           <VeeField v-slot="{ componentField }" name="department_id">
-            <Select v-bind="componentField" label="Priority" placeholder="Select a department">
-              <SelectGroup>
-                <SelectLabel>Sample Label for Departments Select</SelectLabel>
-                <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
-                  {{ d.name }}
-                </SelectItem>
-              </SelectGroup>
-            </Select>
+            <Select
+              v-bind="componentField"
+              label="Department"
+              placeholder="Select a department"
+              :options="transformToSelectOption(departments, { labelKey: 'name', valueKey: 'id' })"
+              @update:model-value="onDepartmentChange"
+            />
           </VeeField>
 
           <div class="flex flex-col space-y-3">
@@ -317,7 +330,10 @@ const onSubmit = handleSubmit((data) => {
 
         <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="secondary" @click="handleCancel"> Cancel </Button>
-          <Button type="submit">Create</Button>
+          <Button type="submit" :disabled="isSubmitting">
+            <Spinner v-if="isSubmitting" />
+            {{ isSubmitting ? 'Saving' : 'Create' }}
+          </Button>
         </div>
       </FieldSet>
     </FieldGroup>
