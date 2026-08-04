@@ -44,8 +44,8 @@ export type TicketPayload = {
   title: string;
   description: string;
   department_id: number;
+  user_id?: number;
   employee_id?: number;
-  admin_id?: number;
   priority_id: number;
 };
 

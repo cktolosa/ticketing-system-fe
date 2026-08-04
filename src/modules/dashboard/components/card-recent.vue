@@ -32,7 +32,6 @@ const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
       <Button
         variant="ghost"
         as="a"
-        target="_blank"
         rel="noopener noreferrer"
         :href="loading ? undefined : viewUrl"
         :class="loading ? 'pointer-events-none opacity-50' : ''"
@@ -64,15 +63,17 @@ const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
 
       <template v-else>
         <CardContent v-for="(ticket, index) in tickets" :key="ticket.title">
-          <a href="#" class="flex flex-col justify-between md:flex-row">
+          <a href="#" class="flex flex-col justify-between lg:flex-row">
             <div class="flex flex-col-reverse gap-2 md:flex-row md:items-center">
               <p>{{ ticket.title }}</p>
               <div class="flex items-center gap-2">
+                <!-- need to fix responsiveness once shown correctly -->
                 <StatusBadge :status="ticket.status" />
                 <PriorityBadge :priority="ticket.priority" />
               </div>
             </div>
-            <p class="text-muted-foreground text-sm">{{ timeAgo(ticket.date) }}</p>
+            <!-- need updated_at field -->
+            <p class="text-muted-foreground text-sm">Updated {{ timeAgo(ticket.updated_at) }}</p>
           </a>
           <Separator v-if="index < tickets.length - 1" class="my-2" />
         </CardContent>

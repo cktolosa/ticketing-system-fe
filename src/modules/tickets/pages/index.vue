@@ -15,15 +15,21 @@ import { getErrorMessage } from '@/lib/utils';
 import { columns, type Ticket } from '@/modules/tickets';
 import { ticketsApi } from '@/modules/tickets/services';
 import type { Meta } from '@/modules/types';
+import { useAuthStore } from '@/stores/auth';
 
 const tickets = ref<Ticket[]>([]);
 const meta = ref<Meta | null>(null);
 const fetchError = ref('');
+const auth = useAuthStore();
 
 const fetchTickets = async (page = 1) => {
   fetchError.value = '';
+  const role = auth.user?.role?.name;
   try {
-    const response = await ticketsApi.getAll(page);
+    const response =
+      role === 'superadmin'
+        ? await ticketsApi.getAll(page)
+        : await ticketsApi.getByDepartment(page);
     tickets.value = response.data;
     meta.value = response.meta;
   } catch (error) {

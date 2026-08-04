@@ -64,12 +64,11 @@ const removeFile = (index: number, field: FieldBindingObject<File[]>) => {
 const isUnassigned = ref<boolean>(false);
 watch(isUnassigned, (checked) => {
   if (checked) {
-    setFieldValue('admin_id', undefined);
+    setFieldValue('employee_id', undefined);
   }
 });
 
 const { priorities } = storeToRefs(priorityStore);
-const { users: storeUsers } = storeToRefs(userStore);
 const users = ref<User[]>([]);
 const { departments } = storeToRefs(departmentStore);
 const admins = ref<User[]>([]);
@@ -77,7 +76,6 @@ const postError = ref('');
 const auth = useAuthStore();
 const role = auth.user?.role?.name;
 
-// still need to test for other user level
 const employeeOptions = computed(() => {
   if (role === 'superadmin' || role === 'admin') {
     return transformToSelectOption(users.value, { labelKey: 'name', valueKey: 'id' });
@@ -88,19 +86,18 @@ const employeeOptions = computed(() => {
   });
 });
 
-// still need to test for other user level
 onMounted(async () => {
   const fetches = [priorityStore.fetchPriorities(), departmentStore.fetchDepartments()];
 
   if (role === 'superadmin') {
     await userStore.fetchUsers();
-    users.value = storeUsers.value;
+    users.value = userStore.users;
   } else if (role === 'admin') {
     try {
       const dept = await departmentStore.fetchDepartmentbyId(String(auth.user?.department?.id));
-      console.log('dept:', dept);
+      users.value = dept.users;
     } catch (error) {
-      console.error('fetchDepartmentbyId error:', error);
+      console.error('error:', error);
     }
   }
 
@@ -109,12 +106,12 @@ onMounted(async () => {
 
 const ticketSchema = z
   .object({
-    employee_id: z.coerce.number().min(1, 'Please select an employee.'),
+    user_id: z.coerce.number().min(1, 'Please select a user.'),
     priority_id: z.coerce.number().min(1, 'Please select a priority.'),
     department_id: z.coerce.number().min(1, 'Please select a department.'),
-    admin_id: z.coerce
+    employee_id: z.coerce
       .number()
-      .min(1, 'Please select an admin or check the leave unassigned option.')
+      .min(1, 'Please select an employee or check the leave unassigned option.')
       .optional(),
     title: z
       .string()
@@ -145,22 +142,22 @@ const ticketSchema = z
   })
   .refine(
     (data) => {
-      if (!isUnassigned.value && !data.admin_id) {
+      if (!isUnassigned.value && !data.employee_id) {
         return false;
       }
       return true;
     },
     {
       message: 'Please select an admin or check the leave unassigned option.',
-      path: ['admin_id'],
+      path: ['employee_id'],
     }
   );
 
 // still need to test for other user level
 const defaultValues: z.infer<typeof ticketSchema> = {
-  employee_id: ['support', 'customer'].includes(role ?? '') ? auth.user?.id : undefined,
+  user_id: ['support', 'customer'].includes(role ?? '') ? auth.user?.id : undefined,
   department_id: 0,
-  admin_id: 0,
+  employee_id: 0,
   priority_id: 0,
   title: '',
   description: '',
@@ -204,11 +201,11 @@ const onSubmit = handleSubmit(async (data) => {
         </FieldDescription>
         <FieldError v-if="postError">{{ postError }}</FieldError>
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <VeeField v-slot="{ componentField }" name="employee_id">
+          <VeeField v-slot="{ componentField }" name="user_id">
             <Select
               v-bind="componentField"
-              label="Employee"
-              placeholder="Select an employee"
+              label="User"
+              placeholder="Select a user"
               :options="employeeOptions"
               :disabled="['support', 'customer'].includes(role)"
             />
@@ -236,11 +233,11 @@ const onSubmit = handleSubmit(async (data) => {
           </VeeField>
 
           <div class="flex flex-col space-y-3">
-            <VeeField v-slot="{ componentField }" name="admin_id">
+            <VeeField v-slot="{ componentField }" name="employee_id">
               <Select
                 v-bind="componentField"
-                label="Admin"
-                placeholder="Select an admin"
+                label="Employee"
+                placeholder="Select an employee"
                 :options="transformToSelectOption(admins, { labelKey: 'name', valueKey: 'id' })"
                 :disabled="isUnassigned"
               />

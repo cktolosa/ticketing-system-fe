@@ -23,7 +23,7 @@ const fetchError = ref('');
 const fetchTickets = async (page = 1) => {
   fetchError.value = '';
   try {
-    const response = await ticketsApi.getAll(page);
+    const response = await ticketsApi.getAssigned(page);
     tickets.value = response.data;
     meta.value = response.meta;
   } catch (error) {

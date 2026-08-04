@@ -1,8 +1,8 @@
+import type { User } from '@modules/users';
 import type { ColumnDef } from '@tanstack/vue-table';
 import { h } from 'vue';
 
 import { ColumnHeader } from '@/components/data-table';
-// missing admin object
 import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
@@ -42,13 +42,13 @@ export const columns: ColumnDef<Ticket>[] = [
     cell: ({ row }) => row.getValue<Department>('department')?.name,
     enableSorting: false,
   },
-  // missing admin object
-  // {
-  //   accessorKey: 'admin',
-  //   header: ({ column }) => h(ColumnHeader, { column }, () => 'Admin'),
-  //   cell: ({ row }) => h(UserAvatar, { name: row.getValue('admin') }),
-  //   enableSorting: false,
-  // },
+  {
+    accessorKey: 'employee',
+    header: ({ column }) => h(ColumnHeader, { column }, () => 'Employee'),
+    cell: ({ row }) =>
+      h(UserAvatar, { name: row.getValue<User>('employee')?.name ?? 'Unassigned' }),
+    enableSorting: false,
+  },
   {
     accessorKey: 'updated_at',
     header: ({ column }) => h(ColumnHeader, { column }, () => 'Updated At'),
@@ -66,7 +66,7 @@ export const columns: ColumnDef<Ticket>[] = [
   {
     id: 'actions',
     header: ({ column }) => h(ColumnHeader, { column, '^data-action': true }, () => 'Actions'),
-    cell: ({ row }) => h(DataAction, { link: `/su/tickets/view`, ticket: row.original }),
+    cell: ({ row }) => h(DataAction, { ticket: row.original }),
     enableSorting: false,
   },
 ];

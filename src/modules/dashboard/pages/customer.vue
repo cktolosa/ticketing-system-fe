@@ -39,7 +39,11 @@ onMounted(fetchDashboard);
     </template>
     <template v-else>
       <CardOverview :data="items.cards" :meta="USER_METRIC_META" :loading="isLoading" />
-      <CardRecent :tickets="items.recent_tickets" view-url="/sample" :loading="isLoading" />
+      <CardRecent
+        :tickets="items.recent_tickets"
+        view-url="/customer/tickets/reported"
+        :loading="isLoading"
+      />
     </template>
   </div>
 </template>

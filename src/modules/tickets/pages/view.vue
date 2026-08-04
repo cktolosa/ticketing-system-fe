@@ -2,6 +2,8 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { ref, watch } from 'vue';
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import * as z from 'zod';
 
 import { FormDialog } from '@/components/dialog';
@@ -22,6 +24,8 @@ import {
   ViewAttachmentDialog,
 } from '@/modules/tickets/components';
 import type { Attachment, Comment, History, Ticket } from '@/modules/tickets/types';
+
+import { ticketsApi } from '../services';
 
 const ticket: Ticket = {
   date: new Date('2025-12-02'),
@@ -168,6 +172,22 @@ watch(isDialogOpen, (open) => {
 });
 
 const description = `I'm unable to log into my account and need help regaining access as soon as possible. I think I either forgot my password, my credentials might have expired, or my account got automatically locked after several failed login attempts. I'm ready to verify my identity through the security procedures, reset my password if needed, and follow the steps to create a new secure password. I'd also appreciate guidance on setting up additional security measures like two-factor authentication to avoid this issue in the future.`;
+const route = useRoute();
+const ticketId = String(route.params.id);
+
+const fetchTicket = async () => {
+  // fetchError.value = '';
+  try {
+    const response = await ticketsApi.getById(ticketId);
+    console.log(response);
+  } catch (error) {
+    // fetchError.value = getErrorMessage(error);
+    // ticket.value = null;
+    console.log(error);
+  }
+};
+
+onMounted(fetchTicket);
 </script>
 
 <template>
