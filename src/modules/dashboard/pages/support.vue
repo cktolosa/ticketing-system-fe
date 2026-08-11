@@ -41,7 +41,7 @@ onMounted(fetchDashboard);
       <CardOverview :data="items.cards" :meta="SUPPORT_METRIC_META" :loading="isLoading" />
       <CardRecent
         :tickets="items.recent_tickets"
-        view-url="/support/tickets/assigned"
+        view-url="/support/tickets"
         :loading="isLoading"
       />
     </template>

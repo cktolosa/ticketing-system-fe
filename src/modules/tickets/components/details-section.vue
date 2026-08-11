@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ChevronDown } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -10,7 +11,7 @@ import { formatDate } from '@/lib/utils';
 import { PriorityBadge, StatusBadge } from '@/modules/tickets/components';
 import { type Ticket } from '@/modules/tickets/types';
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     open?: boolean;
     ticket: Ticket;
@@ -23,6 +24,13 @@ withDefaults(
 const emit = defineEmits<{
   'update:open': [value: boolean];
 }>();
+
+const resolvedDate = computed(() => {
+  const statuses = ['resolved', 'closed'];
+  return statuses.includes(props.ticket.status.category.toLowerCase())
+    ? formatDate(props.ticket.updated_at)
+    : null;
+});
 </script>
 
 <template>
@@ -48,17 +56,17 @@ const emit = defineEmits<{
       <dl class="space-y-5 text-sm">
         <div class="flex items-start gap-3">
           <dt class="text-muted-foreground min-w-37.5">Assignee</dt>
-          <UserAvatar :name="ticket.admin" />
+          <UserAvatar :name="ticket.employee ? ticket.employee.name : 'Unassigned'" />
         </div>
 
         <div class="flex items-start gap-3">
           <dt class="text-muted-foreground min-w-37.5">Department</dt>
-          <dd>{{ ticket.department }}</dd>
+          <dd>{{ ticket.department.name }}</dd>
         </div>
 
         <div class="flex items-start gap-3">
           <dt class="text-muted-foreground min-w-37.5">Reporter</dt>
-          <UserAvatar name="Jose Reyes" />
+          <UserAvatar :name="ticket.user.name" />
         </div>
 
         <div class="flex items-start gap-3">
@@ -73,12 +81,14 @@ const emit = defineEmits<{
 
         <div class="flex items-start gap-3">
           <dt class="text-muted-foreground min-w-37.5">Created</dt>
-          <dd>{{ formatDate(ticket.date) }}</dd>
+          <dd>{{ formatDate(ticket.created_at) }}</dd>
         </div>
 
         <div class="flex items-start gap-3">
           <dt class="text-muted-foreground min-w-37.5">Resolved</dt>
-          <dd class="text-muted-foreground">Not yet resolved</dd>
+          <dd :class="resolvedDate ? '' : 'text-muted-foreground'">
+            {{ resolvedDate ?? 'Not yet resolved' }}
+          </dd>
         </div>
       </dl>
     </CollapsibleContent>

@@ -5,7 +5,11 @@ import type { Ticket, TicketPayload } from '../types';
 
 const ticketFormData = (data: Partial<TicketPayload>): FormData => {
   const formData = new FormData();
-  // need to add attachments
+  if (data.attachments?.length) {
+    data.attachments.forEach((file) => {
+      formData.append('attachments[]', file);
+    });
+  }
   if (data.user_id) formData.append('user_id', String(data.user_id));
   if (data.department_id) formData.append('department_id', String(data.department_id));
   if (data.priority_id) formData.append('priority_id', String(data.priority_id));
@@ -48,6 +52,13 @@ export const ticketsApi = {
     const response = await api.post<{ data: Ticket }>('/tickets', ticketFormData(data), {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
+    return response.data.data;
+  },
+  update: async (
+    id: string,
+    data: { priority_id: number; status_id: number; department_id: number; employee_id: number }
+  ) => {
+    const response = await api.put<{ data: TicketPayload }>(`/tickets/${id}`, data);
     return response.data.data;
   },
 };

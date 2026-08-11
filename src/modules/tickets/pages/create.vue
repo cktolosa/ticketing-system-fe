@@ -4,6 +4,7 @@ import { FileText, Image, Upload, Video, X } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { type FieldBindingObject, useForm, Field as VeeField } from 'vee-validate';
 import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import * as z from 'zod';
 
 import { Input, Select, Textarea } from '@/components/form';
@@ -22,7 +23,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 
-import { getErrorMessage, transformToSelectOption } from '@/lib/utils';
+import { getErrorMessage, getRolePaths, transformToSelectOption } from '@/lib/utils';
 
 import type { User } from '@/modules/users';
 import { useAuthStore } from '@/stores/auth';
@@ -32,9 +33,19 @@ import { useUserStore } from '@/stores/user';
 
 import { ticketsApi } from '../services';
 
+const router = useRouter();
+const auth = useAuthStore();
+
 const priorityStore = usePriorityStore();
 const userStore = useUserStore();
 const departmentStore = useDepartmentStore();
+
+const { departments } = storeToRefs(departmentStore);
+const { priorities } = storeToRefs(priorityStore);
+const users = ref<User[]>([]);
+const admins = ref<User[]>([]);
+const role = auth.user?.role?.name;
+const postError = ref('');
 
 const getFileIcon = (fileType: string) => {
   if (fileType.startsWith('image/')) return Image;
@@ -68,14 +79,6 @@ watch(isUnassigned, (checked) => {
   }
 });
 
-const { priorities } = storeToRefs(priorityStore);
-const users = ref<User[]>([]);
-const { departments } = storeToRefs(departmentStore);
-const admins = ref<User[]>([]);
-const postError = ref('');
-const auth = useAuthStore();
-const role = auth.user?.role?.name;
-
 const employeeOptions = computed(() => {
   if (role === 'superadmin' || role === 'admin') {
     return transformToSelectOption(users.value, { labelKey: 'name', valueKey: 'id' });
@@ -100,13 +103,12 @@ onMounted(async () => {
       console.error('error:', error);
     }
   }
-
   await Promise.all(fetches);
 });
 
 const ticketSchema = z
   .object({
-    user_id: z.coerce.number().min(1, 'Please select a user.'),
+    user_id: z.coerce.number().min(1, 'Please select a user.').optional(),
     priority_id: z.coerce.number().min(1, 'Please select a priority.'),
     department_id: z.coerce.number().min(1, 'Please select a department.'),
     employee_id: z.coerce
@@ -125,8 +127,8 @@ const ticketSchema = z
       .array(z.instanceof(File))
       .max(5, 'You can upload up to 5 files only.')
       .refine(
-        (files) => files.every((file) => file.size <= 10_485_760),
-        'Each file must be less than 10MB.'
+        (files) => files.every((file) => file.size <= 52428800),
+        'Each file must be less than 50MB.'
       )
       .refine(
         (files) =>
@@ -153,7 +155,6 @@ const ticketSchema = z
     }
   );
 
-// still need to test for other user level
 const defaultValues: z.infer<typeof ticketSchema> = {
   user_id: ['support', 'customer'].includes(role ?? '') ? auth.user?.id : undefined,
   department_id: 0,
@@ -164,7 +165,7 @@ const defaultValues: z.infer<typeof ticketSchema> = {
   attachments: undefined,
 };
 
-const { handleSubmit, setFieldValue, resetForm, values, isSubmitting } = useForm({
+const { handleSubmit, setFieldValue, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(ticketSchema),
   initialValues: defaultValues,
 });
@@ -183,6 +184,8 @@ const onSubmit = handleSubmit(async (data) => {
   postError.value = '';
   try {
     await ticketsApi.create(data);
+    const basePath = getRolePaths[auth.user?.role?.name ?? ''];
+    router.push(`${basePath}/tickets/reported`);
   } catch (error) {
     postError.value = getErrorMessage(error);
     handleCancel();
@@ -192,7 +195,6 @@ const onSubmit = handleSubmit(async (data) => {
 
 <template>
   <form class="w-full p-5" @submit="onSubmit">
-    <pre>{{ values }}</pre>
     <FieldGroup>
       <FieldSet>
         <FieldLegend>Create Ticket</FieldLegend>
@@ -207,7 +209,7 @@ const onSubmit = handleSubmit(async (data) => {
               label="User"
               placeholder="Select a user"
               :options="employeeOptions"
-              :disabled="['support', 'customer'].includes(role)"
+              :disabled="['support', 'customer'].includes(role ?? '')"
             />
           </VeeField>
 
@@ -270,7 +272,7 @@ const onSubmit = handleSubmit(async (data) => {
           <Field>
             <FieldLabel :for="field.name">Attachments</FieldLabel>
             <FieldDescription>
-              Maximum 5 files. Accepts images, videos, and PDF documents (up to 10MB each).
+              Maximum 5 files. Accepts images, videos, and PDF documents (up to 50MB each).
             </FieldDescription>
             <input
               :id="`${field.name}-input`"
@@ -301,7 +303,7 @@ const onSubmit = handleSubmit(async (data) => {
               <Card
                 v-for="(file, index) in field.value"
                 :key="`${file.name}-${index}`"
-                :class="file.size > 10485760 ? 'border-destructive bg-red-50' : ''"
+                :class="file.size > 52428800 ? 'border-destructive bg-red-50' : ''"
               >
                 <CardContent class="flex items-center justify-between p-3">
                   <div class="flex items-center gap-3">

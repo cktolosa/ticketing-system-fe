@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
+import { storeToRefs } from 'pinia';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { ref, watch } from 'vue';
 import { onMounted } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import * as z from 'zod';
 
@@ -13,6 +15,7 @@ import { FieldGroup, FieldSet } from '@/components/ui/field';
 import { ItemGroup } from '@/components/ui/item';
 
 import { transformToSelectOption } from '@/lib/utils';
+import { getErrorMessage } from '@/lib/utils';
 
 import {
   ActivitySection,
@@ -23,263 +26,236 @@ import {
   StatusBadge,
   ViewAttachmentDialog,
 } from '@/modules/tickets/components';
-import type { Attachment, Comment, History, Ticket } from '@/modules/tickets/types';
+import type { Status, Ticket } from '@/modules/tickets/types';
+import type { User } from '@/modules/users';
+import api from '@/services/api';
+import { useAuthStore } from '@/stores/auth';
+import { useDepartmentStore } from '@/stores/department';
+import { usePriorityStore } from '@/stores/priority';
 
 import { ticketsApi } from '../services';
 
-const ticket: Ticket = {
-  date: new Date('2025-12-02'),
-  title: 'Password resets and account lockouts',
-  department: 'AIT',
-  admin: 'Juan Dela Cruz',
-  status: 'in progress',
-  priority: 'low',
-};
-
-const attachments: Attachment[] = [
-  { filename: 'IMG_0001', size: '5 MB' },
-  { filename: 'IMG_0002', size: '3 MB' },
-  { filename: 'IMG_0003', size: '2 MB' },
-];
-
-const histories: History[] = [
-  {
-    description: 'Jose Reyes created a new ticket.',
-    timestamp: new Date('2025-12-02T10:30:00'),
-  },
-  {
-    description: 'Jose Reyes set the ticket status to New.',
-    timestamp: new Date('2025-12-02T10:32:00'),
-  },
-  {
-    description: 'Jose Reyes set the ticket priority to Low.',
-    timestamp: new Date('2025-12-02T10:35:00'),
-  },
-  {
-    description: 'Jose Reyes assigned a ticket to Juan Dela Cruz.',
-    timestamp: new Date('2025-12-02T11:00:00'),
-  },
-  {
-    description: 'Juan Dela Cruz changed its status to In Progress.',
-    timestamp: new Date('2025-12-03T14:20:00'),
-  },
-];
-
-const comments: Comment[] = [
-  {
-    id: 1,
-    author: 'Jose Reyes',
-    comment:
-      "Users are reporting that they're being locked out of their accounts after only 2 failed password attempts. The system should allow 5 attempts before locking. I've documented several cases from this morning.",
-    timestamp: new Date('2025-12-02T11:00:00'),
-  },
-  {
-    id: 2,
-    author: 'Juan Dela Cruz',
-    comment:
-      "I've investigated the issue and found a misconfiguration in the authentication module. The lockout threshold was set to 2 instead of 5. I'm attaching the updated configuration file for review before deploying to production.",
-    timestamp: new Date('2025-12-02T11:00:00'),
-    attachments: [{ filename: 'IMG_0004', size: '2 MB' }],
-  },
-  {
-    id: 3,
-    author: 'Jose Reyes',
-    comment:
-      "Excellent work! I've tested the fix in staging and confirmed that users can now attempt password reset 5 times before being locked out. The reset email delivery is also working correctly. Attaching the full test results.",
-    timestamp: new Date('2025-12-02T11:00:00'),
-    attachments: [{ filename: 'IMG_0005', size: '1.8 MB' }],
-  },
-];
+const auth = useAuthStore();
+const role = auth.user?.role?.name;
+const route = useRoute();
+const ticketId = String(route.params.id);
 
 const isCollapsibleOpen = ref(true);
 const isDialogOpen = ref(false);
+const fetchError = ref('');
+const postError = ref('');
+const ticket = ref<Ticket | null>(null);
+const statuses = ref<Status[]>([]);
+const employees = ref<User[]>([]);
+const priorityStore = usePriorityStore();
+const departmentStore = useDepartmentStore();
+const { priorities } = storeToRefs(priorityStore);
+const { departments } = storeToRefs(departmentStore);
 
-type Status = {
-  id: number;
-  name: string;
-};
-const statuses = ref<Status[]>([
-  { id: 1, name: 'New' },
-  { id: 2, name: 'In Progress' },
-  { id: 3, name: 'Resolved' },
-  { id: 4, name: 'Closed' },
-]);
+const canEdit = computed(() => {
+  if (role === 'superadmin') return true;
+  if (role === 'admin') return ticket.value?.department?.id === auth.user?.department?.id;
+  if (role === 'support') return ticket.value?.employee?.id === auth.user?.id;
+  return false;
+});
 
-type Priority = {
-  id: number;
-  name: string;
-};
-const priorities = ref<Priority[]>([
-  { id: 1, name: 'Low' },
-  { id: 2, name: 'Medium' },
-  { id: 3, name: 'High' },
-]);
-
-type Department = {
-  id: number;
-  name: string;
-};
-const departments = ref<Department[]>([
-  { id: 1, name: 'Team Banana' },
-  { id: 2, name: 'AIT' },
-  { id: 3, name: 'HRAD' },
-  { id: 4, name: 'Equinox' },
-  { id: 5, name: 'QA' },
-  { id: 6, name: 'Crowd Works' },
-]);
-
-type Admin = {
-  id: number;
-  name: string;
-};
-const admins = ref<Admin[]>([
-  { id: 1, name: 'Juan Dela Cruz' },
-  { id: 2, name: 'Juana Rodriguez' },
-  { id: 3, name: 'Ruby Velasquez' },
-]);
+async function onDepartmentChange(departmentId: string) {
+  const department = await departmentStore.fetchDepartmentbyId(departmentId);
+  employees.value = (department.users ?? []).filter((user: User) => user.role?.name !== 'customer');
+}
 
 const ticketSchema = z.object({
   priority_id: z.coerce.number().min(1, 'Please select a priority.'),
   status_id: z.coerce.number().min(1, 'Please select a status.'),
   department_id: z.coerce.number().min(1, 'Please select a department.'),
-  admin_id: z.coerce.number().min(1, 'Please select an admin'),
+  employee_id: z.coerce.number().min(1, 'Please select an employee'),
 });
 
 //sample default values
 const defaultValues: z.infer<typeof ticketSchema> = {
-  department_id: 2,
-  admin_id: 1,
-  priority_id: 1,
-  status_id: 2,
+  department_id: 0,
+  employee_id: 0,
+  priority_id: 0,
+  status_id: 0,
 };
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(ticketSchema),
   initialValues: defaultValues,
 });
 
-const onSubmit = handleSubmit((data) => {
-  alert(JSON.stringify(data));
-  isDialogOpen.value = false;
-});
-
-watch(isDialogOpen, (open) => {
-  if (open) {
-    resetForm({
-      values: defaultValues,
-    });
+const onSubmit = handleSubmit(async (data) => {
+  try {
+    await ticketsApi.update(ticketId, data);
+    isDialogOpen.value = false;
+    resetForm();
+  } catch (error) {
+    postError.value = getErrorMessage(error);
   }
 });
 
-const description = `I'm unable to log into my account and need help regaining access as soon as possible. I think I either forgot my password, my credentials might have expired, or my account got automatically locked after several failed login attempts. I'm ready to verify my identity through the security procedures, reset my password if needed, and follow the steps to create a new secure password. I'd also appreciate guidance on setting up additional security measures like two-factor authentication to avoid this issue in the future.`;
-const route = useRoute();
-const ticketId = String(route.params.id);
+watch(isDialogOpen, async (open) => {
+  if (open) {
+    if (ticket.value?.department?.id) {
+      await onDepartmentChange(String(ticket.value.department.id));
+    }
+
+    resetForm({
+      values: {
+        department_id: ticket.value?.department?.id,
+        employee_id: ticket.value?.employee?.id,
+        status_id: ticket.value?.status?.id,
+        priority_id: ticket.value?.priority?.id,
+      },
+    });
+
+    postError.value = '';
+  }
+});
 
 const fetchTicket = async () => {
-  // fetchError.value = '';
+  fetchError.value = '';
   try {
     const response = await ticketsApi.getById(ticketId);
-    console.log(response);
+    ticket.value = response;
   } catch (error) {
-    // fetchError.value = getErrorMessage(error);
-    // ticket.value = null;
+    fetchError.value = getErrorMessage(error);
+    ticket.value = null;
     console.log(error);
   }
 };
 
-onMounted(fetchTicket);
+//403 error for fetching statuses(support and admin)
+onMounted(async () => {
+  await Promise.all([
+    priorityStore.fetchPriorities(),
+    departmentStore.fetchDepartments(),
+    fetchTicket(),
+    api.get('statuses').then((res) => (statuses.value = res.data.data)),
+  ]);
+});
 </script>
 
 <template>
-  <div class="grid w-full grid-cols-1 gap-5 p-5 lg:grid-cols-2">
-    <Card>
-      <CardHeader>
-        <div class="space-y-1">
-          <CardTitle class="flex items-center justify-between gap-2 text-xl">
-            {{ ticket.title }}
-            <FormDialog v-model:open="isDialogOpen" name="ticket" @submit="onSubmit">
-              <template #content>
-                <FieldGroup>
-                  <FieldSet>
-                    <div class="grid gap-4">
-                      <VeeField v-slot="{ componentField }" name="priority_id">
-                        <Select
-                          v-bind="componentField"
-                          label="Priority"
-                          placeholder="Select a priority"
-                          :options="
-                            transformToSelectOption(priorities, {
-                              labelKey: 'name',
-                              valueKey: 'id',
-                            })
-                          "
-                        />
-                      </VeeField>
+  <template v-if="fetchError">
+    <p class="text-destructive py-5 text-center text-sm">
+      {{ fetchError }}
+    </p>
+  </template>
+  <template v-else-if="ticket">
+    <div class="grid w-full grid-cols-1 gap-5 p-5 lg:grid-cols-2">
+      <Card>
+        <CardHeader>
+          <div class="space-y-1">
+            <CardTitle class="flex items-center justify-between gap-2 text-xl">
+              {{ ticket?.title }}
+              <FormDialog
+                v-if="canEdit"
+                v-model:open="isDialogOpen"
+                name="ticket"
+                :is-submitting="isSubmitting"
+                :post-error="postError"
+                @submit="onSubmit"
+              >
+                <template #content>
+                  <FieldGroup>
+                    <FieldSet>
+                      <div class="grid gap-4">
+                        <VeeField v-slot="{ componentField }" name="priority_id">
+                          <Select
+                            v-bind="componentField"
+                            label="Priority"
+                            placeholder="Select a priority"
+                            :options="
+                              transformToSelectOption(priorities, {
+                                labelKey: 'category',
+                                valueKey: 'id',
+                              })
+                            "
+                          />
+                        </VeeField>
 
-                      <VeeField v-slot="{ componentField }" name="status_id">
-                        <Select
-                          v-bind="componentField"
-                          label="Status"
-                          placeholder="Select a status"
-                          :options="
-                            transformToSelectOption(statuses, { labelKey: 'name', valueKey: 'id' })
-                          "
-                        />
-                      </VeeField>
+                        <!-- no access yet for admin and support -->
+                        <VeeField v-slot="{ componentField }" name="status_id">
+                          <Select
+                            v-bind="componentField"
+                            label="Status"
+                            placeholder="Select a status"
+                            :options="
+                              transformToSelectOption(statuses, {
+                                labelKey: 'category',
+                                valueKey: 'id',
+                              })
+                            "
+                          />
+                        </VeeField>
 
-                      <VeeField v-slot="{ componentField }" name="department_id">
-                        <Select
-                          v-bind="componentField"
-                          label="Department"
-                          placeholder="Select a department"
-                          :options="
-                            transformToSelectOption(departments, {
-                              labelKey: 'name',
-                              valueKey: 'id',
-                            })
-                          "
-                        />
-                      </VeeField>
+                        <VeeField v-slot="{ componentField }" name="department_id">
+                          <Select
+                            v-bind="componentField"
+                            label="Department"
+                            placeholder="Select a department"
+                            :options="
+                              transformToSelectOption(departments, {
+                                labelKey: 'name',
+                                valueKey: 'id',
+                              })
+                            "
+                            @update:model-value="onDepartmentChange"
+                          />
+                        </VeeField>
 
-                      <VeeField v-slot="{ componentField }" name="admin_id">
-                        <Select
-                          v-bind="componentField"
-                          label="Admin"
-                          placeholder="Select an admin"
-                          :options="
-                            transformToSelectOption(admins, { labelKey: 'name', valueKey: 'id' })
-                          "
-                        />
-                      </VeeField>
-                    </div>
-                  </FieldSet>
-                </FieldGroup>
-              </template>
-            </FormDialog>
-          </CardTitle>
-          <CardDescription class="flex items-center gap-2">
-            <StatusBadge :status="ticket.status" />
-            <PriorityBadge :priority="ticket.priority" />
-          </CardDescription>
-        </div>
-      </CardHeader>
-      <CardContent class="mt-1 space-y-7">
-        <div class="space-y-1">
-          <h3 class="font-medium">Description</h3>
-          <p class="text-sm leading-relaxed">{{ description }}</p>
-        </div>
-        <ItemGroup v-if="attachments.length" class="gap-y-2">
-          <AttachmentItem v-for="(attachment, index) in attachments" :key="index" :attachment />
-        </ItemGroup>
-        <CommentsSection :comments />
-      </CardContent>
-    </Card>
+                        <VeeField v-slot="{ componentField }" name="employee_id">
+                          <Select
+                            v-bind="componentField"
+                            label="Employee"
+                            placeholder="Select an employee"
+                            :disabled="!employees.length"
+                            :options="
+                              transformToSelectOption(employees, {
+                                labelKey: 'name',
+                                valueKey: 'id',
+                              })
+                            "
+                          />
+                        </VeeField>
+                      </div>
+                    </FieldSet>
+                  </FieldGroup>
+                </template>
+              </FormDialog>
+            </CardTitle>
+            <CardDescription class="flex items-center gap-2">
+              <StatusBadge :status="ticket.status" />
+              <PriorityBadge :priority="ticket.priority" />
+            </CardDescription>
+          </div>
+        </CardHeader>
+        <CardContent class="mt-1 space-y-7">
+          <div class="space-y-1">
+            <h3 class="font-medium">Description</h3>
+            <p class="text-sm leading-relaxed">{{ ticket.description }}</p>
+          </div>
 
-    <div class="space-y-5">
-      <DetailsSection v-model:open="isCollapsibleOpen" :ticket="ticket" />
-      <ActivitySection :histories="histories" />
+          <ItemGroup v-if="ticket?.attachments.length" class="gap-y-2">
+            <AttachmentItem
+              v-for="(attachment, index) in ticket.attachments"
+              :key="index"
+              :attachment="attachment"
+            />
+          </ItemGroup>
+
+          <CommentsSection :comments="ticket?.comments" :name="auth.user?.name" />
+        </CardContent>
+      </Card>
+
+      <div class="space-y-5">
+        <DetailsSection v-model:open="isCollapsibleOpen" :ticket="ticket" />
+        <!-- need to fix history type -->
+        <ActivitySection :histories="ticket?.histories" />
+      </div>
     </div>
-  </div>
 
-  <ViewAttachmentDialog />
+    <ViewAttachmentDialog />
+  </template>
 </template>

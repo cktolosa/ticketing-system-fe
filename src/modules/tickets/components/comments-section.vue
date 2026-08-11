@@ -7,7 +7,6 @@ import * as z from 'zod';
 import { Textarea } from '@/components/form';
 import { Button } from '@/components/ui/button';
 import { FieldDescription, FieldError } from '@/components/ui/field';
-import { ItemGroup } from '@/components/ui/item';
 import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
@@ -20,7 +19,7 @@ const commentSchema = z.object({
     .string()
     .min(10, 'Comment must be at least 10 characters.')
     .max(50, 'Comment must not exceed 50 characters.'),
-  picture: z
+  attachment: z
     .instanceof(File)
     .refine((file) => file.size <= 10_485_760, 'File must be less than 10MB.')
     .optional(),
@@ -28,7 +27,7 @@ const commentSchema = z.object({
 
 const defaultValues: z.infer<typeof commentSchema> = {
   comment: '',
-  picture: undefined,
+  attachment: undefined,
 };
 
 const { handleSubmit, resetForm } = useForm({
@@ -48,11 +47,11 @@ const onSubmit = handleSubmit((data) => {
   alert(
     JSON.stringify({
       ...data,
-      picture: data.picture
+      attachment: data.attachment
         ? {
-            name: data.picture.name,
-            size: data.picture.size,
-            type: data.picture.type,
+            name: data.attachment.name,
+            size: data.attachment.size,
+            type: data.attachment.type,
           }
         : undefined,
     })
@@ -60,9 +59,15 @@ const onSubmit = handleSubmit((data) => {
   handleCancel();
 });
 
-const props = defineProps<{
-  comments: Comment[];
-}>();
+const props = withDefaults(
+  defineProps<{
+    name: string;
+    comments?: Comment[];
+  }>(),
+  {
+    comments: () => [],
+  }
+);
 
 const showAll = ref(false);
 const limit = 2;
@@ -82,21 +87,21 @@ const hasMore = computed(() => props.comments.length > limit);
     <h3 class="font-medium">Discussion</h3>
     <form class="space-y-2" @submit="onSubmit">
       <VeeField v-slot="{ componentField }" name="comment">
-        <Textarea v-bind="componentField" placeholder="Comment as Juan" class="w-full" />
+        <Textarea v-bind="componentField" :placeholder="`Comment as ${name}`" class="w-full" />
       </VeeField>
 
-      <VeeField v-slot="{ componentField, errors }" name="picture">
+      <VeeField v-slot="{ componentField, errors }" name="attachment">
         <div class="space-y-1">
           <input
             v-bind="componentField"
-            id="picture"
+            id="attachment"
             ref="fileRef"
             type="file"
             accept="application/pdf,image/*,video/*"
             class="border-input flex h-10 w-full rounded-md border p-3 py-2.5 text-sm file:font-medium"
           />
           <FieldDescription>
-            Accepts images, videos, and PDF documents (up to 10MB each).
+            Accepts images, videos, and PDF documents (up to 10MB).
           </FieldDescription>
           <FieldError v-if="errors.length" :errors="errors" />
         </div>
@@ -115,16 +120,13 @@ const hasMore = computed(() => props.comments.length > limit);
       >
         <div class="flex min-w-0 flex-1 flex-col gap-2">
           <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-            <UserAvatar :name="c.author" />
-            <span class="text-muted-foreground text-xs">{{ formatDate(c.timestamp) }}</span>
+            <UserAvatar :name="c.user?.name" />
+            <span class="text-muted-foreground text-xs">{{ formatDate(c.updated_at) }}</span>
           </div>
           <p class="text-sm leading-relaxed whitespace-pre-wrap">
             {{ c.comment }}
           </p>
-
-          <ItemGroup v-if="c.attachments?.length" class="gap-y-2">
-            <AttachmentItem v-for="(attachment, index) in c.attachments" :key="index" :attachment />
-          </ItemGroup>
+          <AttachmentItem v-if="c.attachment" :attachment="c.attachment" />
         </div>
       </div>
     </div>

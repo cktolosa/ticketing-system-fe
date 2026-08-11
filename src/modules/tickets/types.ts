@@ -18,10 +18,10 @@ export type Priority = {
 
 export type Comment = {
   id: number;
-  author: string;
-  timestamp: Date;
+  user: User;
+  updated_at: Date;
   comment: string;
-  attachments?: Attachment[];
+  attachment?: Attachment;
 };
 
 export type Ticket = {
@@ -34,13 +34,14 @@ export type Ticket = {
   status: Status;
   priority: Priority;
   user: User;
-  admin: User;
-  histories: History;
-  attachment: Attachment;
+  employee: User;
+  histories: History[];
+  comments: Comment[];
+  attachments: Attachment[];
 };
 
 export type TicketPayload = {
-  // need to add attachments
+  attachments?: File[];
   title: string;
   description: string;
   department_id: number;

@@ -254,7 +254,7 @@ const routes = [
             component: () => import('@/modules/tickets/pages/reported.vue'),
           },
           {
-            path: 'assigned',
+            path: '',
             name: 'Support Assigned Tickets',
             meta: { title: 'Assigned Tickets' },
             component: () => import('@/modules/tickets/pages/assigned.vue'),
@@ -325,14 +325,14 @@ const routes = [
             component: () => import('@/modules/tickets/pages/create.vue'),
           },
           {
-            path: 'reported',
+            path: '',
             name: 'Customer My Tickets',
             meta: { title: 'My Tickets' },
             component: () => import('@/modules/tickets/pages/reported.vue'),
           },
           {
             path: ':id',
-            name: 'Support View Ticket',
+            name: 'Customer View Ticket',
             meta: { title: 'View Ticket' },
             component: () => import('@/modules/tickets/pages/view.vue'),
           },
