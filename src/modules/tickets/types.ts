@@ -16,12 +16,17 @@ export type Priority = {
   category: string;
 };
 
+export type CommentPayload = {
+  comment: string;
+  photo?: File;
+};
+
 export type Comment = {
   id: number;
   user: User;
   updated_at: Date;
   comment: string;
-  attachment?: Attachment;
+  photo?: Attachment;
 };
 
 export type Ticket = {
@@ -51,6 +56,7 @@ export type TicketPayload = {
 };
 
 export type History = {
+  id: number; 
   description: string;
-  timestamp: Date;
+  created_at: Date;
 };

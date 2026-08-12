@@ -68,14 +68,14 @@ const table = useVueTable({
 
 // create new department
 const departmentSchema = z.object({
-  department: z
+  name: z
     .string()
     .min(3, 'Department must be at least 3 characters.')
     .max(100, 'Department must not exceed 100 characters.'),
 });
 
 const defaultValues: z.infer<typeof departmentSchema> = {
-  department: '',
+  name: '',
 };
 
 const { handleSubmit, resetForm, isSubmitting } = useForm({
@@ -86,7 +86,10 @@ const { handleSubmit, resetForm, isSubmitting } = useForm({
 const onSubmit = handleSubmit(async (data) => {
   postError.value = '';
   try {
-    await departmentsApi.create(companyId, data.department);
+    await departmentsApi.create({
+      name: data.name, 
+      company_id: companyId, 
+    });
     isCreateDialogOpen.value = false;
     resetForm();
     await fetchCompany();
@@ -125,7 +128,7 @@ useFormDialog(isCreateDialogOpen, resetForm, () => defaultValues);
           </template>
 
           <template #content>
-            <VeeField v-slot="{ componentField }" name="department">
+            <VeeField v-slot="{ componentField }" name="name">
               <Input
                 v-bind="componentField"
                 label="Department"

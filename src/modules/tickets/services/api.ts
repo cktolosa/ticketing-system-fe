@@ -58,7 +58,7 @@ export const ticketsApi = {
     id: string,
     data: { priority_id: number; status_id: number; department_id: number; employee_id: number }
   ) => {
-    const response = await api.put<{ data: TicketPayload }>(`/tickets/${id}`, data);
+    const response = await api.put<{ data: Ticket }>(`/tickets/${id}`, data);
     return response.data.data;
   },
 };

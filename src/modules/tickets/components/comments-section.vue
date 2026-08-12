@@ -13,21 +13,28 @@ import { formatDate } from '@/lib/utils';
 
 import { AttachmentItem } from '@/modules/tickets/components';
 import { type Comment } from '@/modules/tickets/types';
+import { commentsApi } from '../services';
+
+import { useRoute } from 'vue-router';
+import { getErrorMessage } from '@/lib/utils';
+
+const postError = ref(''); 
+const route = useRoute();
+const ticketId = String(route.params.id);
 
 const commentSchema = z.object({
   comment: z
     .string()
-    .min(10, 'Comment must be at least 10 characters.')
-    .max(50, 'Comment must not exceed 50 characters.'),
-  attachment: z
+    .min(10, 'Comment must be at least 10 characters.'), 
+  photo: z
     .instanceof(File)
-    .refine((file) => file.size <= 10_485_760, 'File must be less than 10MB.')
+    .refine((file) => file.size <= 52428800, 'File must be less than 50MB.')
     .optional(),
 });
 
 const defaultValues: z.infer<typeof commentSchema> = {
   comment: '',
-  attachment: undefined,
+  photo: undefined,
 };
 
 const { handleSubmit, resetForm } = useForm({
@@ -43,20 +50,14 @@ const handleCancel = () => {
   }
 };
 
-const onSubmit = handleSubmit((data) => {
-  alert(
-    JSON.stringify({
-      ...data,
-      attachment: data.attachment
-        ? {
-            name: data.attachment.name,
-            size: data.attachment.size,
-            type: data.attachment.type,
-          }
-        : undefined,
-    })
-  );
-  handleCancel();
+const onSubmit = handleSubmit(async (data) => {
+  postError.value = '';
+  try {
+    await commentsApi.create(ticketId, data);
+  } catch (error) {
+    postError.value = getErrorMessage(error);
+    handleCancel();
+  }
 });
 
 const props = withDefaults(
@@ -90,20 +91,21 @@ const hasMore = computed(() => props.comments.length > limit);
         <Textarea v-bind="componentField" :placeholder="`Comment as ${name}`" class="w-full" />
       </VeeField>
 
-      <VeeField v-slot="{ componentField, errors }" name="attachment">
+      <VeeField v-slot="{ componentField, errors }" name="photo">
         <div class="space-y-1">
           <input
             v-bind="componentField"
-            id="attachment"
+            id="photo"
             ref="fileRef"
             type="file"
             accept="application/pdf,image/*,video/*"
             class="border-input flex h-10 w-full rounded-md border p-3 py-2.5 text-sm file:font-medium"
           />
           <FieldDescription>
-            Accepts images, videos, and PDF documents (up to 10MB).
+            Accepts images, videos, and PDF documents (up to 50MB).
           </FieldDescription>
           <FieldError v-if="errors.length" :errors="errors" />
+          <FieldError v-if="postError">{{ postError }}</FieldError>
         </div>
       </VeeField>
       <div class="flex justify-end gap-2">
@@ -126,7 +128,7 @@ const hasMore = computed(() => props.comments.length > limit);
           <p class="text-sm leading-relaxed whitespace-pre-wrap">
             {{ c.comment }}
           </p>
-          <AttachmentItem v-if="c.attachment" :attachment="c.attachment" />
+          <AttachmentItem v-if="c.photo" :photo="c.photo" />
         </div>
       </div>
     </div>

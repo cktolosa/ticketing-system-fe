@@ -84,6 +84,7 @@ const { handleSubmit, resetForm, isSubmitting } = useForm({
   initialValues: defaultValues,
 });
 
+// 500 server error
 const onSubmit = handleSubmit(async (data) => {
   try {
     await ticketsApi.update(ticketId, data);
@@ -125,14 +126,17 @@ const fetchTicket = async () => {
   }
 };
 
-//403 error for fetching statuses(support and admin)
 onMounted(async () => {
-  await Promise.all([
-    priorityStore.fetchPriorities(),
-    departmentStore.fetchDepartments(),
-    fetchTicket(),
-    api.get('statuses').then((res) => (statuses.value = res.data.data)),
-  ]);
+  const fetches = [fetchTicket()]; 
+
+  if (role !== 'customer') {
+    fetches.push(
+      priorityStore.fetchPriorities(),
+      departmentStore.fetchDepartments(),
+      api.get('statuses').then((res) => (statuses.value = res.data.data)),
+    )
+  }
+  await Promise.all(fetches);
 });
 </script>
 
@@ -245,13 +249,12 @@ onMounted(async () => {
             />
           </ItemGroup>
 
-          <CommentsSection :comments="ticket?.comments" :name="auth.user?.name" />
+          <CommentsSection :comments="ticket?.comments" :name="auth.user?.name ?? ''" />
         </CardContent>
       </Card>
 
       <div class="space-y-5">
         <DetailsSection v-model:open="isCollapsibleOpen" :ticket="ticket" />
-        <!-- need to fix history type -->
         <ActivitySection :histories="ticket?.histories" />
       </div>
     </div>

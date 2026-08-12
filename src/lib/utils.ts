@@ -46,7 +46,7 @@ export const formatPercentage = (percentage: number) => {
     style: 'percent',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(percentage);
+  }).format(percentage / 100);
 };
 
 export const getTrend = (percentage: number) => {

@@ -47,6 +47,11 @@ const admins = ref<User[]>([]);
 const role = auth.user?.role?.name;
 const postError = ref('');
 
+const basePath = getRolePaths[auth.user?.role?.name ?? ''];
+const redirectPath = role === 'customer'
+? `${basePath}/tickets/reported`
+: `${basePath}/tickets`;
+
 const getFileIcon = (fileType: string) => {
   if (fileType.startsWith('image/')) return Image;
   if (fileType.startsWith('video/')) return Video;
@@ -184,8 +189,7 @@ const onSubmit = handleSubmit(async (data) => {
   postError.value = '';
   try {
     await ticketsApi.create(data);
-    const basePath = getRolePaths[auth.user?.role?.name ?? ''];
-    router.push(`${basePath}/tickets/reported`);
+    router.push(redirectPath);
   } catch (error) {
     postError.value = getErrorMessage(error);
     handleCancel();
