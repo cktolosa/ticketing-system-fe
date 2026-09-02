@@ -2,6 +2,7 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { computed, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import * as z from 'zod';
 
 import { Textarea } from '@/components/form';
@@ -10,22 +11,19 @@ import { FieldDescription, FieldError } from '@/components/ui/field';
 import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
+import { getErrorMessage } from '@/lib/utils';
 
 import { AttachmentItem } from '@/modules/tickets/components';
 import { type Comment } from '@/modules/tickets/types';
+
 import { commentsApi } from '../services';
 
-import { useRoute } from 'vue-router';
-import { getErrorMessage } from '@/lib/utils';
-
-const postError = ref(''); 
+const postError = ref('');
 const route = useRoute();
 const ticketId = String(route.params.id);
 
 const commentSchema = z.object({
-  comment: z
-    .string()
-    .min(10, 'Comment must be at least 10 characters.'), 
+  comment: z.string().min(10, 'Comment must be at least 10 characters.'),
   photo: z
     .instanceof(File)
     .refine((file) => file.size <= 52428800, 'File must be less than 50MB.')
@@ -116,19 +114,19 @@ const hasMore = computed(() => props.comments.length > limit);
 
     <div class="space-y-4 pt-4">
       <div
-        v-for="c in displayedComments"
-        :key="c.id"
+        v-for="comment in displayedComments"
+        :key="comment.id"
         class="border-b pb-4 last:border-b-0 last:pb-0"
       >
         <div class="flex min-w-0 flex-1 flex-col gap-2">
           <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-            <UserAvatar :name="c.user?.name" />
-            <span class="text-muted-foreground text-xs">{{ formatDate(c.updated_at) }}</span>
+            <UserAvatar :name="comment.user?.name ? comment.user?.name : ''" />
+            <span class="text-muted-foreground text-xs">{{ formatDate(comment.updated_at) }}</span>
           </div>
           <p class="text-sm leading-relaxed whitespace-pre-wrap">
-            {{ c.comment }}
+            {{ comment.comment }}
           </p>
-          <AttachmentItem v-if="c.photo" :photo="c.photo" />
+          <AttachmentItem v-if="comment.photo" :photo="comment.photo" />
         </div>
       </div>
     </div>

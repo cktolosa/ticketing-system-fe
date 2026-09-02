@@ -2,8 +2,9 @@ import type { Department } from '@/modules/departments';
 import type { User } from '@/modules/users';
 
 export type Attachment = {
-  filename: string;
-  size: string;
+  file_name: string;
+  file_path: string;
+  file_type: string;
 };
 
 export type Status = {
@@ -56,7 +57,7 @@ export type TicketPayload = {
 };
 
 export type History = {
-  id: number; 
+  id: number;
   description: string;
   created_at: Date;
 };

@@ -127,14 +127,14 @@ const fetchTicket = async () => {
 };
 
 onMounted(async () => {
-  const fetches = [fetchTicket()]; 
+  const fetches = [fetchTicket()];
 
   if (role !== 'customer') {
     fetches.push(
       priorityStore.fetchPriorities(),
       departmentStore.fetchDepartments(),
-      api.get('statuses').then((res) => (statuses.value = res.data.data)),
-    )
+      api.get('statuses').then((res) => (statuses.value = res.data.data))
+    );
   }
   await Promise.all(fetches);
 });

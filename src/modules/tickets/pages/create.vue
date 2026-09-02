@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
-import { FileText, Image, Upload, Video, X } from 'lucide-vue-next';
+import { Upload, X } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 import { type FieldBindingObject, useForm, Field as VeeField } from 'vee-validate';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -23,7 +23,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 
-import { getErrorMessage, getRolePaths, transformToSelectOption } from '@/lib/utils';
+import { getErrorMessage, getFileIcon, getRolePaths, transformToSelectOption } from '@/lib/utils';
 
 import type { User } from '@/modules/users';
 import { useAuthStore } from '@/stores/auth';
@@ -48,16 +48,7 @@ const role = auth.user?.role?.name;
 const postError = ref('');
 
 const basePath = getRolePaths[auth.user?.role?.name ?? ''];
-const redirectPath = role === 'customer'
-? `${basePath}/tickets/reported`
-: `${basePath}/tickets`;
-
-const getFileIcon = (fileType: string) => {
-  if (fileType.startsWith('image/')) return Image;
-  if (fileType.startsWith('video/')) return Video;
-  if (fileType === 'application/pdf') return FileText;
-  return FileText;
-};
+const redirectPath = role === 'customer' ? `${basePath}/tickets` : `${basePath}/tickets/reported`;
 
 const handleFileChange = (event: Event, field: FieldBindingObject<File[]>) => {
   const target = event.target as HTMLInputElement;

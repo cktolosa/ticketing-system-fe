@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ImageIcon } from 'lucide-vue-next';
-
 import { Item, ItemContent, ItemMedia, ItemTitle } from '@/components/ui/item';
+
+import { getFileIcon } from '@/lib/utils';
 
 import type { Attachment } from '../types';
 import { useViewAttachmentDialogStore } from './view-attachment-dialog';
@@ -25,11 +25,11 @@ function handleClick() {
     @click="handleClick"
   >
     <ItemMedia>
-      <ImageIcon class="text-muted-foreground size-4" />
+      <component :is="getFileIcon(attachment.file_type)" class="text-muted-foreground h-8 w-8" />
     </ItemMedia>
     <ItemContent>
       <ItemTitle>
-        {{ attachment.filename }}
+        {{ attachment.file_name }}
       </ItemTitle>
     </ItemContent>
   </Item>

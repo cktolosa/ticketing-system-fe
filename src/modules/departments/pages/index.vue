@@ -87,8 +87,8 @@ const onSubmit = handleSubmit(async (data) => {
   postError.value = '';
   try {
     await departmentsApi.create({
-      name: data.name, 
-      company_id: companyId, 
+      name: data.name,
+      company_id: companyId,
     });
     isCreateDialogOpen.value = false;
     resetForm();

@@ -1,14 +1,7 @@
 <script setup lang="ts">
-import { ImageIcon } from 'lucide-vue-next';
 import { storeToRefs } from 'pinia';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 import { useViewAttachmentDialogStore } from './store';
 
@@ -18,14 +11,14 @@ const { isOpen, attachment } = storeToRefs(viewAttachmentDialogStore);
 
 <template>
   <Dialog v-if="attachment" :open="isOpen" @update:open="viewAttachmentDialogStore.handleToggle">
-    <DialogContent>
+    <DialogContent class="w-full md:max-w-5xl">
       <DialogHeader>
         <DialogTitle>View Attachment</DialogTitle>
-        <DialogDescription> some short but concise description here </DialogDescription>
       </DialogHeader>
       <div class="grid place-items-center">
-        <ImageIcon class="text-muted-foreground size-32 shrink-0" />
-        <p class="text-sm font-medium">{{ attachment.filename }}</p>
+        <img :src="`http://127.0.0.1:8000${attachment.file_path}`" class="w-full object-contain" />
+
+        <p class="mt-3 text-sm font-medium">{{ attachment.file_name }}</p>
       </div>
     </DialogContent>
   </Dialog>

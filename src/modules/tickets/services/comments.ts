@@ -12,9 +12,13 @@ const commentFormData = (data: Partial<CommentPayload>): FormData => {
 
 export const commentsApi = {
   create: async (ticketId: string, data: CommentPayload) => {
-    const response = await api.post<{ data: Comment }>(`/tickets/${ticketId}/comments`, commentFormData(data), {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
+    const response = await api.post<{ data: Comment }>(
+      `/tickets/${ticketId}/comments`,
+      commentFormData(data),
+      {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      }
+    );
     return response.data.data;
   },
 };

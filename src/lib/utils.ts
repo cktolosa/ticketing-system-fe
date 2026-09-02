@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
-import { TrendingDown, TrendingUp } from 'lucide-vue-next';
+import { FileText, Image, TrendingDown, TrendingUp, Video } from 'lucide-vue-next';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -86,4 +86,11 @@ export const getRolePaths: Record<string, string> = {
   admin: '/admin',
   support: '/support',
   customer: '/customer',
+};
+
+export const getFileIcon = (type: string) => {
+  if (type.startsWith('image/')) return Image;
+  if (type.startsWith('video/')) return Video;
+  if (type === 'application/pdf') return FileText;
+  return FileText;
 };

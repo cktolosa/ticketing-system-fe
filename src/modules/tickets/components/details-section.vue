@@ -56,7 +56,10 @@ const resolvedDate = computed(() => {
       <dl class="space-y-5 text-sm">
         <div class="flex items-start gap-3">
           <dt class="text-muted-foreground min-w-37.5">Assignee</dt>
-          <UserAvatar :name="ticket.employee ? ticket.employee.name : 'Unassigned'" />
+          <UserAvatar
+            :src="ticket.employee?.avatar?.urls?.full"
+            :name="ticket.employee ? ticket.employee.name : 'Unassigned'"
+          />
         </div>
 
         <div class="flex items-start gap-3">
@@ -66,7 +69,7 @@ const resolvedDate = computed(() => {
 
         <div class="flex items-start gap-3">
           <dt class="text-muted-foreground min-w-37.5">Reporter</dt>
-          <UserAvatar :name="ticket.user.name" />
+          <UserAvatar :src="ticket.user?.avatar?.urls?.full" :name="ticket.user.name" />
         </div>
 
         <div class="flex items-start gap-3">
