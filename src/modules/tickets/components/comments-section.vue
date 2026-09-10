@@ -7,13 +7,14 @@ import * as z from 'zod';
 
 import { Textarea } from '@/components/form';
 import { Button } from '@/components/ui/button';
-import { FieldDescription, FieldError } from '@/components/ui/field';
+import { Field, FieldDescription, FieldError } from '@/components/ui/field';
 import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils';
 
 import { AttachmentItem } from '@/modules/tickets/components';
+import { UploadAttachment } from '@/modules/tickets/components';
 import { type Comment } from '@/modules/tickets/types';
 
 import { commentsApi } from '../services';
@@ -25,8 +26,19 @@ const ticketId = String(route.params.id);
 const commentSchema = z.object({
   comment: z.string().min(10, 'Comment must be at least 10 characters.'),
   photo: z
-    .instanceof(File)
-    .refine((file) => file.size <= 52428800, 'File must be less than 50MB.')
+    .array(z.instanceof(File))
+    .max(1, 'You can only upload 1 file.')
+    .refine((files) => files.every((file) => file.size <= 52428800), 'File must be less than 50MB.')
+    .refine(
+        (files) =>
+          files.every((file) => {
+            const isImage = file.type.startsWith('image/');
+            const isVideo = file.type.startsWith('video/');
+            const isPDF = file.type === 'application/pdf';
+            return isImage || isVideo || isPDF;
+          }),
+        'Only image, video, and PDF files are allowed.'
+      )
     .optional(),
 });
 
@@ -84,28 +96,23 @@ const hasMore = computed(() => props.comments.length > limit);
 <template>
   <div>
     <h3 class="font-medium">Discussion</h3>
-    <form class="space-y-2" @submit="onSubmit">
+    <form class="space-y-3" @submit="onSubmit">
       <VeeField v-slot="{ componentField }" name="comment">
         <Textarea v-bind="componentField" :placeholder="`Comment as ${name}`" class="w-full" />
       </VeeField>
 
-      <VeeField v-slot="{ componentField, errors }" name="photo">
-        <div class="space-y-1">
-          <input
-            v-bind="componentField"
-            id="photo"
-            ref="fileRef"
-            type="file"
-            accept="application/pdf,image/*,video/*"
-            class="border-input flex h-10 w-full rounded-md border p-3 py-2.5 text-sm file:font-medium"
-          />
+      <VeeField v-slot="{ field, errors }" name="photo">
+        <Field>
+          <UploadAttachment :field="field" :max-files="1" />
           <FieldDescription>
-            Accepts images, videos, and PDF documents (up to 50MB).
+            Maximum 1 file. Accepts images, videos, and PDF documents (up to 50MB).
           </FieldDescription>
-          <FieldError v-if="errors.length" :errors="errors" />
+
+          <FieldError v-if="errors" :errors="errors" />
           <FieldError v-if="postError">{{ postError }}</FieldError>
-        </div>
+        </Field>
       </VeeField>
+
       <div class="flex justify-end gap-2">
         <Button type="button" variant="outline" @click="handleCancel">Cancel</Button>
         <Button type="submit">Post</Button>

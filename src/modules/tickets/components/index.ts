@@ -6,3 +6,4 @@ export { default as DetailsSection } from './details-section.vue';
 export { default as DataAction } from './data-action.vue';
 export { default as PriorityBadge } from './priority-badge.vue';
 export { default as StatusBadge } from './status-badge.vue';
+export { default as UploadAttachment } from './upload-attachment.vue';

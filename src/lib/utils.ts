@@ -88,7 +88,16 @@ export const getRolePaths: Record<string, string> = {
   customer: '/customer',
 };
 
-export const getFileIcon = (type: string) => {
+//workaround while waiting for object
+export const getFileType = (name: string) => {
+  if (name.match(/\.(jpg|jpeg|png|bmp|webp)$/i)) return 'image/';
+  if (name.match(/\.(mp4|mov)$/i)) return 'video/';
+  if (name.match(/\.pdf$/i)) return 'application/pdf';
+  return 'unknown';
+};
+
+export const getFileIcon = (name: string) => {
+  const type = getFileType(name);
   if (type.startsWith('image/')) return Image;
   if (type.startsWith('video/')) return Video;
   if (type === 'application/pdf') return FileText;

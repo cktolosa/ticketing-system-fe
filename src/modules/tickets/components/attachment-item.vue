@@ -25,7 +25,7 @@ function handleClick() {
     @click="handleClick"
   >
     <ItemMedia>
-      <component :is="getFileIcon(attachment.file_type)" class="text-muted-foreground h-8 w-8" />
+      <component :is="getFileIcon(attachment.file_name)" class="text-muted-foreground h-8 w-8" />
     </ItemMedia>
     <ItemContent>
       <ItemTitle>
