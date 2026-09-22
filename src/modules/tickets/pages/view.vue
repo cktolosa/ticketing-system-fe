@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
-import { storeToRefs } from 'pinia';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { ref, watch } from 'vue';
 import { onMounted } from 'vue';
@@ -17,6 +16,7 @@ import { ItemGroup } from '@/components/ui/item';
 import { transformToSelectOption } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils';
 
+import { useTicketFormData } from '@/composables/useTicketFormData';
 import {
   ActivitySection,
   AttachmentItem,
@@ -26,17 +26,13 @@ import {
   StatusBadge,
   ViewAttachmentDialog,
 } from '@/modules/tickets/components';
-import type { Status, Ticket } from '@/modules/tickets/types';
-import type { User } from '@/modules/users';
-import api from '@/services/api';
-import { useAuthStore } from '@/stores/auth';
-import { useDepartmentStore } from '@/stores/department';
-import { usePriorityStore } from '@/stores/priority';
+import type { Ticket } from '@/modules/tickets/types';
 
 import { ticketsApi } from '../services';
 
-const auth = useAuthStore();
-const role = auth.user?.role?.name;
+const { departments, priorities, statuses, admins, auth, role, onDepartmentChange } =
+  useTicketFormData();
+
 const route = useRoute();
 const ticketId = String(route.params.id);
 
@@ -45,12 +41,6 @@ const isDialogOpen = ref(false);
 const fetchError = ref('');
 const postError = ref('');
 const ticket = ref<Ticket | null>(null);
-const statuses = ref<Status[]>([]);
-const employees = ref<User[]>([]);
-const priorityStore = usePriorityStore();
-const departmentStore = useDepartmentStore();
-const { priorities } = storeToRefs(priorityStore);
-const { departments } = storeToRefs(departmentStore);
 
 const canEdit = computed(() => {
   if (role === 'superadmin') return true;
@@ -58,11 +48,6 @@ const canEdit = computed(() => {
   if (role === 'support') return ticket.value?.employee?.id === auth.user?.id;
   return false;
 });
-
-async function onDepartmentChange(departmentId: string) {
-  const department = await departmentStore.fetchDepartmentbyId(departmentId);
-  employees.value = (department.users ?? []).filter((user: User) => user.role?.name !== 'customer');
-}
 
 const ticketSchema = z.object({
   priority_id: z.coerce.number().min(1, 'Please select a priority.'),
@@ -114,7 +99,7 @@ watch(isDialogOpen, async (open) => {
   }
 });
 
-const fetchTicket = async () => {
+onMounted(async () => {
   fetchError.value = '';
   try {
     const response = await ticketsApi.getById(ticketId);
@@ -122,21 +107,7 @@ const fetchTicket = async () => {
   } catch (error) {
     fetchError.value = getErrorMessage(error);
     ticket.value = null;
-    console.log(error);
   }
-};
-
-onMounted(async () => {
-  const fetches = [fetchTicket()];
-
-  if (role !== 'customer') {
-    fetches.push(
-      priorityStore.fetchPriorities(),
-      departmentStore.fetchDepartments(),
-      api.get('statuses').then((res) => (statuses.value = res.data.data))
-    );
-  }
-  await Promise.all(fetches);
 });
 </script>
 
@@ -214,9 +185,9 @@ onMounted(async () => {
                             v-bind="componentField"
                             label="Employee"
                             placeholder="Select an employee"
-                            :disabled="!employees.length"
+                            :disabled="!admins.length"
                             :options="
-                              transformToSelectOption(employees, {
+                              transformToSelectOption(admins, {
                                 labelKey: 'name',
                                 valueKey: 'id',
                               })

@@ -2,6 +2,7 @@ import type { Department } from '@/modules/departments';
 import type { User } from '@/modules/users';
 
 export type Attachment = {
+  id: number;
   file_name: string;
   file_path: string;
   file_type: string;
@@ -19,7 +20,7 @@ export type Priority = {
 
 export type CommentPayload = {
   comment: string;
-  photo?: File;
+  photo?: File[];
 };
 
 export type Comment = {

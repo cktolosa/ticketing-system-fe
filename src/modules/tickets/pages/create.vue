@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
-import { storeToRefs } from 'pinia';
 import { useForm, Field as VeeField } from 'vee-validate';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import * as z from 'zod';
 
@@ -23,30 +22,15 @@ import { Spinner } from '@/components/ui/spinner';
 
 import { getErrorMessage, getRolePaths, transformToSelectOption } from '@/lib/utils';
 
-import type { User } from '@/modules/users';
-import { useAuthStore } from '@/stores/auth';
-import { useDepartmentStore } from '@/stores/department';
-import { usePriorityStore } from '@/stores/priority';
-import { useUserStore } from '@/stores/user';
+import { useTicketFormData } from '@/composables/useTicketFormData';
 
-import { ViewAttachmentDialog } from '../components';
-import { UploadAttachment } from '../components';
+import { UploadAttachment, ViewAttachmentDialog } from '../components';
 import { ticketsApi } from '../services';
 
+const { departments, priorities, users, admins, auth, role, onDepartmentChange } =
+  useTicketFormData();
 const router = useRouter();
-const auth = useAuthStore();
-
-const priorityStore = usePriorityStore();
-const userStore = useUserStore();
-const departmentStore = useDepartmentStore();
-
-const { departments } = storeToRefs(departmentStore);
-const { priorities } = storeToRefs(priorityStore);
-const users = ref<User[]>([]);
-const admins = ref<User[]>([]);
-const role = auth.user?.role?.name;
 const postError = ref('');
-
 const basePath = getRolePaths[auth.user?.role?.name ?? ''];
 const redirectPath = role === 'customer' ? `${basePath}/tickets` : `${basePath}/tickets/reported`;
 
@@ -65,23 +49,6 @@ const employeeOptions = computed(() => {
     labelKey: 'name',
     valueKey: 'id',
   });
-});
-
-onMounted(async () => {
-  const fetches = [priorityStore.fetchPriorities(), departmentStore.fetchDepartments()];
-
-  if (role === 'superadmin') {
-    await userStore.fetchUsers();
-    users.value = userStore.users;
-  } else if (role === 'admin') {
-    try {
-      const dept = await departmentStore.fetchDepartmentbyId(String(auth.user?.department?.id));
-      users.value = dept.users;
-    } catch (error) {
-      console.error('error:', error);
-    }
-  }
-  await Promise.all(fetches);
 });
 
 const ticketSchema = z
@@ -152,11 +119,6 @@ const handleCancel = () => {
   resetForm();
   isUnassigned.value = false;
 };
-
-async function onDepartmentChange(departmentId: string) {
-  const department = await departmentStore.fetchDepartmentbyId(departmentId);
-  admins.value = (department.users ?? []).filter((user: User) => user.role?.name !== 'customer');
-}
 
 const onSubmit = handleSubmit(async (data) => {
   postError.value = '';

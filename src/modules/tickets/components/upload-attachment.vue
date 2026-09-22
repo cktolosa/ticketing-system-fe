@@ -38,14 +38,13 @@ const removeFile = (index: number) => {
 const handlePreview = (file: File) => {
   viewAttachmentDialogStore.handleInitialize(file);
   viewAttachmentDialogStore.handleOpen();
-}; 
+};
 
-const isInvalidFile = (file: File) => 
-  file.size > 52428800 || 
-  (!file.type.startsWith('image/') && 
-   !file.type.startsWith('video/') && 
-   file.type !== 'application/pdf');
-
+const isInvalidFile = (file: File) =>
+  file.size > 52428800 ||
+  (!file.type.startsWith('image/') &&
+    !file.type.startsWith('video/') &&
+    file.type !== 'application/pdf');
 </script>
 <template>
   <input

@@ -1,4 +1,3 @@
-import type { User } from '@modules/users';
 import type { ColumnDef } from '@tanstack/vue-table';
 import { h } from 'vue';
 
@@ -10,6 +9,7 @@ import { formatDate } from '@/lib/utils';
 import type { Department } from '@/modules/departments';
 import { DataAction, PriorityBadge, StatusBadge } from '@/modules/tickets/components';
 import { type Priority, type Status, type Ticket } from '@/modules/tickets/types';
+import type { User } from '@/modules/users';
 
 export const columns: ColumnDef<Ticket>[] = [
   {

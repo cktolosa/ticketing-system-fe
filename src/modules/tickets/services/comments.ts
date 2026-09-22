@@ -4,7 +4,7 @@ import type { Comment, CommentPayload } from '../types';
 
 const commentFormData = (data: Partial<CommentPayload>): FormData => {
   const formData = new FormData();
-  if (data.photo) formData.append('photo', data.photo);
+  if (data.photo?.[0]) formData.append('photo', data.photo[0]);
   if (data.comment) formData.append('comment', data.comment);
 
   return formData;

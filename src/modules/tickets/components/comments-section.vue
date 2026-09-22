@@ -10,11 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldError } from '@/components/ui/field';
 import { UserAvatar } from '@/components/user-avatar';
 
-import { formatDate } from '@/lib/utils';
-import { getErrorMessage } from '@/lib/utils';
+import { formatDate, getErrorMessage } from '@/lib/utils';
 
-import { AttachmentItem } from '@/modules/tickets/components';
-import { UploadAttachment } from '@/modules/tickets/components';
+// waiting for photo object
+import { AttachmentItem, UploadAttachment } from '@/modules/tickets/components';
 import { type Comment } from '@/modules/tickets/types';
 
 import { commentsApi } from '../services';
@@ -30,15 +29,15 @@ const commentSchema = z.object({
     .max(1, 'You can only upload 1 file.')
     .refine((files) => files.every((file) => file.size <= 52428800), 'File must be less than 50MB.')
     .refine(
-        (files) =>
-          files.every((file) => {
-            const isImage = file.type.startsWith('image/');
-            const isVideo = file.type.startsWith('video/');
-            const isPDF = file.type === 'application/pdf';
-            return isImage || isVideo || isPDF;
-          }),
-        'Only image, video, and PDF files are allowed.'
-      )
+      (files) =>
+        files.every((file) => {
+          const isImage = file.type.startsWith('image/');
+          const isVideo = file.type.startsWith('video/');
+          const isPDF = file.type === 'application/pdf';
+          return isImage || isVideo || isPDF;
+        }),
+      'Only image, video, and PDF files are allowed.'
+    )
     .optional(),
 });
 
@@ -47,7 +46,7 @@ const defaultValues: z.infer<typeof commentSchema> = {
   photo: undefined,
 };
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(commentSchema),
   initialValues: defaultValues,
 });
@@ -100,7 +99,6 @@ const hasMore = computed(() => props.comments.length > limit);
       <VeeField v-slot="{ componentField }" name="comment">
         <Textarea v-bind="componentField" :placeholder="`Comment as ${name}`" class="w-full" />
       </VeeField>
-
       <VeeField v-slot="{ field, errors }" name="photo">
         <Field>
           <UploadAttachment :field="field" :max-files="1" />
@@ -115,7 +113,9 @@ const hasMore = computed(() => props.comments.length > limit);
 
       <div class="flex justify-end gap-2">
         <Button type="button" variant="outline" @click="handleCancel">Cancel</Button>
-        <Button type="submit">Post</Button>
+        <Button type="submit" :disabled="isSubmitting">{{
+          isSubmitting ? 'Posting' : 'Post'
+        }}</Button>
       </div>
     </form>
 
@@ -127,13 +127,14 @@ const hasMore = computed(() => props.comments.length > limit);
       >
         <div class="flex min-w-0 flex-1 flex-col gap-2">
           <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-            <UserAvatar :name="comment.user?.name ? comment.user?.name : ''" />
+            <UserAvatar :src="comment.user?.avatar?.urls?.full" :name="comment.user?.name ?? ''" />
             <span class="text-muted-foreground text-xs">{{ formatDate(comment.updated_at) }}</span>
           </div>
           <p class="text-sm leading-relaxed whitespace-pre-wrap">
             {{ comment.comment }}
           </p>
-          <AttachmentItem v-if="comment.photo" :photo="comment.photo" />
+          <!-- waiting for photo object -->
+          <!-- <AttachmentItem v-if="comment.photo" :attachment="comment.photo" /> -->
         </div>
       </div>
     </div>

@@ -88,18 +88,23 @@ export const getRolePaths: Record<string, string> = {
   customer: '/customer',
 };
 
-//workaround while waiting for object
-export const getFileType = (name: string) => {
-  if (name.match(/\.(jpg|jpeg|png|bmp|webp)$/i)) return 'image/';
-  if (name.match(/\.(mp4|mov)$/i)) return 'video/';
-  if (name.match(/\.pdf$/i)) return 'application/pdf';
+export const getFileType = (type: string) => {
+  //handle api response
+  if (['jpg', 'jpeg', 'png', 'bmp', 'webp'].includes(type)) return 'image/';
+  if (['mp4', 'mov'].includes(type)) return 'video/';
+  if (type === 'pdf') return 'application/pdf';
+
+  //handle file upload
+  if (type.match(/\.(jpg|jpeg|png|bmp|webp)$/i)) return 'image/';
+  if (type.match(/\.(mp4|mov)$/i)) return 'video/';
+  if (type.match(/\.pdf$/i)) return 'application/pdf';
   return 'unknown';
 };
 
-export const getFileIcon = (name: string) => {
-  const type = getFileType(name);
-  if (type.startsWith('image/')) return Image;
-  if (type.startsWith('video/')) return Video;
-  if (type === 'application/pdf') return FileText;
+export const getFileIcon = (type: string) => {
+  const resolved = getFileType(type);
+  if (resolved.startsWith('image/')) return Image;
+  if (resolved.startsWith('video/')) return Video;
+  if (resolved === 'application/pdf') return FileText;
   return FileText;
 };
