@@ -14,9 +14,10 @@ import { formatDate, getErrorMessage } from '@/lib/utils';
 
 // waiting for photo object
 import { AttachmentItem, UploadAttachment } from '@/modules/tickets/components';
-import { type Comment } from '@/modules/tickets/types';
 
 import { commentsApi } from '../services';
+import type { Comment } from '../types.ts';
+import { ViewComment } from './index.ts';
 
 const postError = ref('');
 const route = useRoute();
@@ -126,10 +127,15 @@ const hasMore = computed(() => props.comments.length > limit);
         class="border-b pb-4 last:border-b-0 last:pb-0"
       >
         <div class="flex min-w-0 flex-1 flex-col gap-2">
-          <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
-            <UserAvatar :src="comment.user?.avatar?.urls?.full" :name="comment.user?.name ?? ''" />
-            <span class="text-muted-foreground text-xs">{{ formatDate(comment.updated_at) }}</span>
+          <div class="flex flex-row justify-between gap-5">
+            <UserAvatar
+              :src="comment.user?.avatar?.urls?.full"
+              :name="comment.user?.name ?? ''"
+              :subtitle="formatDate(comment.updated_at)"
+            />
+            <ViewComment :comment="comment" />
           </div>
+
           <p class="text-sm leading-relaxed whitespace-pre-wrap">
             {{ comment.comment }}
           </p>

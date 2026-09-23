@@ -1,3 +1,4 @@
+import type { Comment } from '@/modules/comments';
 import type { Department } from '@/modules/departments';
 import type { User } from '@/modules/users';
 
@@ -16,19 +17,6 @@ export type Status = {
 export type Priority = {
   id: number;
   category: string;
-};
-
-export type CommentPayload = {
-  comment: string;
-  photo?: File[];
-};
-
-export type Comment = {
-  id: number;
-  user: User;
-  updated_at: Date;
-  comment: string;
-  photo?: Attachment;
 };
 
 export type Ticket = {

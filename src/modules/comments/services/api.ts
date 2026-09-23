@@ -21,4 +21,9 @@ export const commentsApi = {
     );
     return response.data.data;
   },
+  //need to update to match BE's controller
+  update: async (ticketId: string, id: number, data: { comment: string }) => {
+    const response = await api.put<{ data: Comment }>(`/tickets/${ticketId}/comments/${id}`, data);
+    return response.data.data;
+  },
 };

@@ -17,10 +17,10 @@ import { transformToSelectOption } from '@/lib/utils';
 import { getErrorMessage } from '@/lib/utils';
 
 import { useTicketFormData } from '@/composables/useTicketFormData';
+import { CommentsSection } from '@/modules/comments/components';
 import {
   ActivitySection,
   AttachmentItem,
-  CommentsSection,
   DetailsSection,
   PriorityBadge,
   StatusBadge,
