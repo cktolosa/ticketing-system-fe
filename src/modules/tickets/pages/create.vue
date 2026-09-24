@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/zod';
-import { FileText, Image, Upload, Video, X } from 'lucide-vue-next';
-import { type FieldBindingObject, useForm, Field as VeeField } from 'vee-validate';
-import { ref, watch } from 'vue';
+import { useForm, Field as VeeField } from 'vee-validate';
+import { computed, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import * as z from 'zod';
 
 import { Input, Select, Textarea } from '@/components/form';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Field,
@@ -19,93 +18,47 @@ import {
   FieldSet,
 } from '@/components/ui/field';
 import { Label } from '@/components/ui/label';
-import { SelectGroup, SelectItem, SelectLabel } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
 
-import { transformToSelectOption } from '@/lib/utils';
+import { getErrorMessage, getRolePaths, transformToSelectOption } from '@/lib/utils';
 
-const getFileIcon = (fileType: string) => {
-  if (fileType.startsWith('image/')) return Image;
-  if (fileType.startsWith('video/')) return Video;
-  if (fileType === 'application/pdf') return FileText;
-  return FileText;
-};
+import { useTicketFormData } from '@/composables/useTicketFormData';
 
-const handleFileChange = (event: Event, field: FieldBindingObject<File[]>) => {
-  const target = event.target as HTMLInputElement;
-  const files = Array.from(target.files || []);
-  const combined = [...(field.value || []), ...files];
+import { UploadAttachment, ViewAttachmentDialog } from '../components';
+import { ticketsApi } from '../services';
 
-  if (combined.length > 5) {
-    field.onChange(combined.slice(0, 5));
-  } else {
-    field.onChange(combined);
-  }
-};
-
-const removeFile = (index: number, field: FieldBindingObject<File[]>) => {
-  const files = field.value || [];
-  const filtered = files.filter((_file: File, i: number) => i !== index);
-  field.onChange(filtered);
-};
+const { departments, priorities, users, admins, auth, role, onDepartmentChange } =
+  useTicketFormData();
+const router = useRouter();
+const postError = ref('');
+const basePath = getRolePaths[auth.user?.role?.name ?? ''];
+const redirectPath = role === 'customer' ? `${basePath}/tickets` : `${basePath}/tickets/reported`;
 
 const isUnassigned = ref<boolean>(false);
 watch(isUnassigned, (checked) => {
   if (checked) {
-    setFieldValue('admin_id', undefined);
+    setFieldValue('employee_id', undefined);
   }
 });
 
-type Employee = {
-  id: number;
-  name: string;
-};
-const employees = ref<Employee[]>([
-  { id: 1, name: 'Jose Reyes' },
-  { id: 2, name: 'Carlos Mendoza' },
-  { id: 3, name: 'Ana Marie Garcia' },
-]);
-
-type Priority = {
-  id: number;
-  name: string;
-};
-const priorities = ref<Priority[]>([
-  { id: 1, name: 'Low' },
-  { id: 2, name: 'Medium' },
-  { id: 3, name: 'High' },
-]);
-
-type Department = {
-  id: number;
-  name: string;
-};
-const departments = ref<Department[]>([
-  { id: 1, name: 'Team Banana' },
-  { id: 2, name: 'AIT' },
-  { id: 3, name: 'HRAD' },
-  { id: 4, name: 'Equinox' },
-  { id: 5, name: 'QA' },
-  { id: 6, name: 'Crowd Works' },
-]);
-
-type Admin = {
-  id: number;
-  name: string;
-};
-const admins = ref<Admin[]>([
-  { id: 1, name: 'Juan Dela Cruz' },
-  { id: 2, name: 'Juana Rodriguez' },
-  { id: 3, name: 'Ruby Velasquez' },
-]);
+const employeeOptions = computed(() => {
+  if (role === 'superadmin' || role === 'admin') {
+    return transformToSelectOption(users.value, { labelKey: 'name', valueKey: 'id' });
+  }
+  return transformToSelectOption(auth.user ? [auth.user] : [], {
+    labelKey: 'name',
+    valueKey: 'id',
+  });
+});
 
 const ticketSchema = z
   .object({
-    employee_id: z.coerce.number().min(1, 'Please select an employee.'),
+    user_id: z.coerce.number().min(1, 'Please select a user.').optional(),
     priority_id: z.coerce.number().min(1, 'Please select a priority.'),
     department_id: z.coerce.number().min(1, 'Please select a department.'),
-    admin_id: z.coerce
+    employee_id: z.coerce
       .number()
-      .min(1, 'Please select an admin or check the leave unassigned option.')
+      .min(1, 'Please select an employee or check the leave unassigned option.')
       .optional(),
     title: z
       .string()
@@ -119,8 +72,8 @@ const ticketSchema = z
       .array(z.instanceof(File))
       .max(5, 'You can upload up to 5 files only.')
       .refine(
-        (files) => files.every((file) => file.size <= 10_485_760),
-        'Each file must be less than 10MB.'
+        (files) => files.every((file) => file.size <= 52428800),
+        'Each file must be less than 50MB.'
       )
       .refine(
         (files) =>
@@ -136,28 +89,28 @@ const ticketSchema = z
   })
   .refine(
     (data) => {
-      if (!isUnassigned.value && !data.admin_id) {
+      if (!isUnassigned.value && !data.employee_id) {
         return false;
       }
       return true;
     },
     {
       message: 'Please select an admin or check the leave unassigned option.',
-      path: ['admin_id'],
+      path: ['employee_id'],
     }
   );
 
 const defaultValues: z.infer<typeof ticketSchema> = {
-  employee_id: 0,
+  user_id: ['support', 'customer'].includes(role ?? '') ? auth.user?.id : undefined,
   department_id: 0,
-  admin_id: 0,
+  employee_id: 0,
   priority_id: 0,
   title: '',
   description: '',
   attachments: undefined,
 };
 
-const { handleSubmit, setFieldValue, resetForm, values } = useForm({
+const { handleSubmit, setFieldValue, resetForm, isSubmitting } = useForm({
   validationSchema: toTypedSchema(ticketSchema),
   initialValues: defaultValues,
 });
@@ -167,38 +120,35 @@ const handleCancel = () => {
   isUnassigned.value = false;
 };
 
-const onSubmit = handleSubmit((data) => {
-  alert(
-    JSON.stringify({
-      ...data,
-      attachments: data.attachments?.map((f) => ({
-        name: f.name,
-        size: f.size,
-        type: f.type,
-      })),
-    })
-  );
-  handleCancel();
+const onSubmit = handleSubmit(async (data) => {
+  postError.value = '';
+  try {
+    await ticketsApi.create(data);
+    router.push(redirectPath);
+  } catch (error) {
+    postError.value = getErrorMessage(error);
+    handleCancel();
+  }
 });
 </script>
 
 <template>
   <form class="w-full p-5" @submit="onSubmit">
-    <pre>{{ values }}</pre>
     <FieldGroup>
       <FieldSet>
         <FieldLegend>Create Ticket</FieldLegend>
         <FieldDescription>
           Provide the details below and we'll get your issue resolved quickly.
         </FieldDescription>
-
+        <FieldError v-if="postError">{{ postError }}</FieldError>
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <VeeField v-slot="{ componentField }" name="employee_id">
+          <VeeField v-slot="{ componentField }" name="user_id">
             <Select
               v-bind="componentField"
-              label="Employee"
-              placeholder="Select an employee"
-              :options="transformToSelectOption(employees, { labelKey: 'name', valueKey: 'id' })"
+              label="User"
+              placeholder="Select a user"
+              :options="employeeOptions"
+              :disabled="['support', 'customer'].includes(role ?? '')"
             />
           </VeeField>
 
@@ -207,27 +157,28 @@ const onSubmit = handleSubmit((data) => {
               v-bind="componentField"
               label="Priority"
               placeholder="Select a priority"
-              :options="transformToSelectOption(priorities, { labelKey: 'name', valueKey: 'id' })"
+              :options="
+                transformToSelectOption(priorities, { labelKey: 'category', valueKey: 'id' })
+              "
             />
           </VeeField>
 
           <VeeField v-slot="{ componentField }" name="department_id">
-            <Select v-bind="componentField" label="Priority" placeholder="Select a department">
-              <SelectGroup>
-                <SelectLabel>Sample Label for Departments Select</SelectLabel>
-                <SelectItem v-for="d in departments" :key="d.id" :value="d.id">
-                  {{ d.name }}
-                </SelectItem>
-              </SelectGroup>
-            </Select>
+            <Select
+              v-bind="componentField"
+              label="Department"
+              placeholder="Select a department"
+              :options="transformToSelectOption(departments, { labelKey: 'name', valueKey: 'id' })"
+              @update:model-value="onDepartmentChange"
+            />
           </VeeField>
 
           <div class="flex flex-col space-y-3">
-            <VeeField v-slot="{ componentField }" name="admin_id">
+            <VeeField v-slot="{ componentField }" name="employee_id">
               <Select
                 v-bind="componentField"
-                label="Admin"
-                placeholder="Select an admin"
+                label="Employee"
+                placeholder="Select an employee"
                 :options="transformToSelectOption(admins, { labelKey: 'name', valueKey: 'id' })"
                 :disabled="isUnassigned"
               />
@@ -260,66 +211,24 @@ const onSubmit = handleSubmit((data) => {
           <Field>
             <FieldLabel :for="field.name">Attachments</FieldLabel>
             <FieldDescription>
-              Maximum 5 files. Accepts images, videos, and PDF documents (up to 10MB each).
+              Maximum 5 files. Accepts images, videos, and PDF documents (up to 50MB each).
             </FieldDescription>
-            <input
-              :id="`${field.name}-input`"
-              :key="field.value?.length"
-              type="file"
-              multiple
-              accept="application/pdf,image/*,video/*"
-              class="hidden"
-              :disabled="field.value?.length >= 5"
-              @change="(e: Event) => handleFileChange(e, field)"
-            />
-            <Label :for="`${field.name}-input`">
-              <Button
-                type="button"
-                variant="outline"
-                class="w-full justify-start text-left"
-                :disabled="field.value?.length >= 5"
-                as-child
-              >
-                <span>
-                  <Upload class="mr-2 h-4 w-4" />
-                  {{ field.value?.length >= 5 ? 'Maximum files reached' : 'Choose Files' }}
-                </span>
-              </Button>
-            </Label>
 
-            <div v-if="field.value && field.value.length > 0" class="mt-3 space-y-2">
-              <Card
-                v-for="(file, index) in field.value"
-                :key="`${file.name}-${index}`"
-                :class="file.size > 10485760 ? 'border-destructive bg-red-50' : ''"
-              >
-                <CardContent class="flex items-center justify-between p-3">
-                  <div class="flex items-center gap-3">
-                    <component :is="getFileIcon(file.type)" class="text-muted-foreground h-8 w-8" />
-                    <div class="flex flex-col">
-                      <p class="truncate text-sm font-medium">
-                        {{ file.name }}
-                      </p>
-                      <p class="truncate text-xs font-medium">
-                        {{ (file.size / 1048576).toFixed(2) }} MB
-                      </p>
-                    </div>
-                  </div>
-                  <Button type="button" variant="ghost" @click="removeFile(+index, field)">
-                    <X />
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
+            <UploadAttachment :field="field" :max-files="5" />
+
             <FieldError :errors="errors" />
           </Field>
         </VeeField>
 
         <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button type="button" variant="secondary" @click="handleCancel"> Cancel </Button>
-          <Button type="submit">Create</Button>
+          <Button type="submit" :disabled="isSubmitting">
+            <Spinner v-if="isSubmitting" />
+            {{ isSubmitting ? 'Saving' : 'Create' }}
+          </Button>
         </div>
       </FieldSet>
     </FieldGroup>
   </form>
+  <ViewAttachmentDialog />
 </template>

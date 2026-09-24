@@ -9,7 +9,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-defineProps<{ link: string }>();
+import { getRolePaths } from '@/lib/utils';
+
+import type { Ticket } from '@/modules/tickets';
+import { useAuthStore } from '@/stores/auth';
+
+const auth = useAuthStore();
+const basePath = getRolePaths[auth.user?.role?.name ?? ''];
+defineProps<{
+  ticket: Ticket;
+}>();
 </script>
 
 <template>
@@ -22,7 +31,7 @@ defineProps<{ link: string }>();
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem as-child>
-        <router-link :to="link">
+        <router-link :to="`${basePath}/tickets/${ticket.id}`">
           <Eye />
           View
         </router-link>

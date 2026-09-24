@@ -12,7 +12,8 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    "baseUrl": ".",
+    // deprecated
+    // "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     }

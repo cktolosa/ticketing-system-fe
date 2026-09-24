@@ -27,7 +27,7 @@ defineProps<{
         <div class="flex-1">
           <div class="text-sm">{{ history.description }}</div>
           <span class="text-muted-foreground text-xs">
-            {{ formatDate(history.timestamp) }}
+            {{ formatDate(history.created_at) }}
           </span>
         </div>
       </div>

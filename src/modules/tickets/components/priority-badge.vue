@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { ArrowDown, ArrowRight, ArrowUp } from 'lucide-vue-next';
+import { Circle, CircleArrowDown, CircleArrowRight, CircleArrowUp } from 'lucide-vue-next';
 import type { Component } from 'vue';
+import { computed } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
 
 import { cn } from '@/lib/utils';
 
-import type { Priority } from '@/modules/tickets/types';
+import type { Priority } from '@/modules/tickets';
 
 const { priority } = defineProps<{
   priority: Priority;
@@ -17,25 +18,31 @@ type PriorityConfig = {
   icon: Component;
 };
 
-const config: Record<Priority, PriorityConfig> = {
-  low: {
+const config: Record<number, PriorityConfig> = {
+  1: {
+    class: 'bg-slate-50 text-slate-700 ring-1 ring-inset ring-slate-300',
+    icon: Circle,
+  },
+  2: {
     class: 'bg-yellow-50 text-yellow-700 ring-1 ring-inset ring-yellow-300',
-    icon: ArrowDown,
+    icon: CircleArrowDown,
   },
-  medium: {
+  3: {
     class: 'bg-orange-100 text-orange-800 ring-1 ring-inset ring-orange-400',
-    icon: ArrowRight,
+    icon: CircleArrowRight,
   },
-  high: {
+  4: {
     class: 'bg-red-100 text-red-800 ring-1 ring-inset ring-red-400',
-    icon: ArrowUp,
+    icon: CircleArrowUp,
   },
 };
+
+const current = computed(() => config[priority.id]);
 </script>
 
 <template>
-  <Badge :class="cn('inline-flex items-center gap-1 capitalize', config[priority].class)">
-    <component :is="config[priority].icon" class="size-3" />
-    {{ priority }}
+  <Badge v-if="current" :class="cn('inline-flex items-center gap-1 capitalize', current.class)">
+    <component :is="current.icon" class="size-3" />
+    {{ priority.category }}
   </Badge>
 </template>

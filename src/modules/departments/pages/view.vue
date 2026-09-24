@@ -60,7 +60,10 @@ const { handleSubmit, resetForm, isSubmitting } = useForm({
 const onSubmit = handleSubmit(async (data) => {
   postError.value = '';
   try {
-    await departmentsApi.update(departmentId, companyId, data.department);
+    await departmentsApi.update(departmentId, {
+      name: data.department,
+      company_id: companyId,
+    });
     isDialogOpen.value = false;
     resetForm();
     await fetchDepartment();
