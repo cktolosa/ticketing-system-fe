@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 const props = defineProps<{
   name: string;
-  label: string;
+  label?: string;
   description?: string;
 }>();
 

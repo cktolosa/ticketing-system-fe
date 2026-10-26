@@ -10,13 +10,16 @@ export const useViewAttachmentDialogStore = defineStore('view-attachment-dialog'
   const { isOpen, handleOpen, handleClose, handleToggle } = useDialog();
 
   // initializing attachment
-  const attachment = ref<Attachment | null>();
+  const attachment = ref<Attachment | File | null>();
 
-  function handleInitialize(payload: Attachment) {
+  function handleInitialize(payload: Attachment | File) {
     attachment.value = payload;
   }
 
   function handleClear() {
+    if (attachment.value instanceof File) {
+      URL.revokeObjectURL(URL.createObjectURL(attachment.value));
+    }
     attachment.value = null;
   }
 

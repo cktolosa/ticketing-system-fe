@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { ClassValue } from 'clsx';
 import { clsx } from 'clsx';
-import { TrendingDown, TrendingUp } from 'lucide-vue-next';
+import { FileText, Image, TrendingDown, TrendingUp, Video } from 'lucide-vue-next';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -46,7 +46,7 @@ export const formatPercentage = (percentage: number) => {
     style: 'percent',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(percentage);
+  }).format(percentage / 100);
 };
 
 export const getTrend = (percentage: number) => {
@@ -86,4 +86,25 @@ export const getRolePaths: Record<string, string> = {
   admin: '/admin',
   support: '/support',
   customer: '/customer',
+};
+
+export const getFileType = (type: string) => {
+  //handle api response
+  if (['jpg', 'jpeg', 'png', 'bmp', 'webp'].includes(type)) return 'image/';
+  if (['mp4', 'mov'].includes(type)) return 'video/';
+  if (type === 'pdf') return 'application/pdf';
+
+  //handle file upload
+  if (type.match(/\.(jpg|jpeg|png|bmp|webp)$/i)) return 'image/';
+  if (type.match(/\.(mp4|mov)$/i)) return 'video/';
+  if (type.match(/\.pdf$/i)) return 'application/pdf';
+  return 'unknown';
+};
+
+export const getFileIcon = (type: string) => {
+  const resolved = getFileType(type);
+  if (resolved.startsWith('image/')) return Image;
+  if (resolved.startsWith('video/')) return Video;
+  if (resolved === 'application/pdf') return FileText;
+  return FileText;
 };

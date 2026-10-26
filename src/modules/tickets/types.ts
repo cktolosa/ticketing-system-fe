@@ -1,43 +1,52 @@
+import type { Comment } from '@/modules/comments';
+import type { Department } from '@/modules/departments';
+import type { User } from '@/modules/users';
+
 export type Attachment = {
-  filename: string;
-  size: string;
+  id: number;
+  file_name: string;
+  file_path: string;
+  file_type: string;
 };
 
-export const statusOrder = {
-  new: 1,
-  'in progress': 2,
-  resolved: 3,
-  closed: 4,
-} as const;
-
-export type Status = keyof typeof statusOrder;
-
-export const priorityOrder = {
-  low: 1,
-  medium: 2,
-  high: 3,
-} as const;
-
-export type Priority = keyof typeof priorityOrder;
-
-export type Comment = {
+export type Status = {
   id: number;
-  author: string;
-  timestamp: Date;
-  comment: string;
-  attachments?: Attachment[];
+  category: string;
+};
+
+export type Priority = {
+  id: number;
+  category: string;
 };
 
 export type Ticket = {
-  date: Date;
+  id: number;
+  created_at: string;
+  updated_at: string;
   title: string;
-  department: string;
-  admin: string;
+  description: string;
+  department: Department;
   status: Status;
   priority: Priority;
+  user: User;
+  employee: User;
+  histories: History[];
+  comments: Comment[];
+  attachments: Attachment[];
+};
+
+export type TicketPayload = {
+  attachments?: File[];
+  title: string;
+  description: string;
+  department_id: number;
+  user_id?: number;
+  employee_id?: number;
+  priority_id: number;
 };
 
 export type History = {
+  id: number;
   description: string;
-  timestamp: Date;
+  created_at: Date;
 };

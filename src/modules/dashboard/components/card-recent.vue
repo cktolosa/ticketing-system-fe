@@ -7,8 +7,15 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { getRolePaths } from '@/lib/utils';
+
 import { PriorityBadge, StatusBadge } from '@/modules/tickets/components';
 import type { Ticket } from '@/modules/tickets/types';
+import { useAuthStore } from '@/stores/auth';
+
+const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
+const auth = useAuthStore();
+const basePath = getRolePaths[auth.user?.role?.name ?? ''];
 
 withDefaults(
   defineProps<{
@@ -21,8 +28,6 @@ withDefaults(
     loading: false,
   }
 );
-
-const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
 </script>
 
 <template>
@@ -32,7 +37,6 @@ const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
       <Button
         variant="ghost"
         as="a"
-        target="_blank"
         rel="noopener noreferrer"
         :href="loading ? undefined : viewUrl"
         :class="loading ? 'pointer-events-none opacity-50' : ''"
@@ -63,8 +67,11 @@ const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
       </template>
 
       <template v-else>
-        <CardContent v-for="(ticket, index) in tickets" :key="ticket.title">
-          <a href="#" class="flex flex-col justify-between md:flex-row">
+        <CardContent v-for="(ticket, index) in tickets" :key="ticket.id">
+          <router-link
+            :to="`${basePath}/tickets/${ticket.id}`"
+            class="flex flex-col justify-between lg:flex-row"
+          >
             <div class="flex flex-col-reverse gap-2 md:flex-row md:items-center">
               <p>{{ ticket.title }}</p>
               <div class="flex items-center gap-2">
@@ -72,8 +79,8 @@ const timeAgo = (date: string) => useTimeAgo(new Date(date)).value;
                 <PriorityBadge :priority="ticket.priority" />
               </div>
             </div>
-            <p class="text-muted-foreground text-sm">{{ timeAgo(ticket.date) }}</p>
-          </a>
+            <p class="text-muted-foreground text-sm">Updated {{ timeAgo(ticket.updated_at) }}</p>
+          </router-link>
           <Separator v-if="index < tickets.length - 1" class="my-2" />
         </CardContent>
       </template>

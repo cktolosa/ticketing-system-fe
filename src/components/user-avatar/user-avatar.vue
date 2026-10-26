@@ -43,7 +43,7 @@ const current = computed(() => map[props.variant]);
     </Avatar>
     <div class="flex flex-col text-sm">
       <span :class="current.name">{{ name }}</span>
-      <span class="text-muted-foreground empty:hidden">{{ subtitle }}</span>
+      <span class="text-muted-foreground text-xs empty:hidden">{{ subtitle }}</span>
     </div>
   </div>
 </template>

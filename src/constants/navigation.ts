@@ -108,7 +108,7 @@ export const SUPPORT_NAV_ITEMS: MenuItem[] = [
       },
       {
         title: 'Assigned Tickets',
-        url: '/support/tickets/assigned',
+        url: '/support/tickets',
         icon: Files,
       },
     ],
@@ -158,7 +158,7 @@ export const ADMIN_NAV_ITEMS: MenuItem[] = [
       },
       {
         title: 'Department Tickets',
-        url: '/admin/tickets/assigned',
+        url: '/admin/tickets',
         icon: Files,
       },
     ],
@@ -198,7 +198,7 @@ export const CUSTOMER_NAV_ITEMS: MenuItem[] = [
       },
       {
         title: 'My Tickets',
-        url: '/customer/tickets/reported',
+        url: '/customer/tickets',
         icon: Files,
       },
     ],
