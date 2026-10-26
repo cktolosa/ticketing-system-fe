@@ -12,7 +12,6 @@ import { UserAvatar } from '@/components/user-avatar';
 
 import { formatDate, getErrorMessage } from '@/lib/utils';
 
-// waiting for photo object
 import { AttachmentItem, UploadAttachment } from '@/modules/tickets/components';
 
 import { commentsApi } from '../services';
@@ -60,10 +59,17 @@ const handleCancel = () => {
   }
 };
 
+const emit = defineEmits<{
+  created: [];
+  updated: [];
+}>();
+
 const onSubmit = handleSubmit(async (data) => {
   postError.value = '';
   try {
     await commentsApi.create(ticketId, data);
+    resetForm();
+    emit('created');
   } catch (error) {
     postError.value = getErrorMessage(error);
     handleCancel();
@@ -133,14 +139,13 @@ const hasMore = computed(() => props.comments.length > limit);
               :name="comment.user?.name ?? ''"
               :subtitle="formatDate(comment.updated_at)"
             />
-            <ViewComment :comment="comment" />
+            <ViewComment :comment="comment" @updated="emit('updated')" />
           </div>
 
           <p class="text-sm leading-relaxed whitespace-pre-wrap">
             {{ comment.comment }}
           </p>
-          <!-- waiting for photo object -->
-          <!-- <AttachmentItem v-if="comment.photo" :attachment="comment.photo" /> -->
+          <AttachmentItem v-if="comment.photo" :attachment="comment.photo" />
         </div>
       </div>
     </div>

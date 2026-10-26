@@ -99,7 +99,7 @@ watch(isDialogOpen, async (open) => {
   }
 });
 
-onMounted(async () => {
+const fetchTicketbyId = async () => {
   fetchError.value = '';
   try {
     const response = await ticketsApi.getById(ticketId);
@@ -108,7 +108,9 @@ onMounted(async () => {
     fetchError.value = getErrorMessage(error);
     ticket.value = null;
   }
-});
+};
+
+onMounted(fetchTicketbyId);
 </script>
 
 <template>
@@ -219,8 +221,13 @@ onMounted(async () => {
               :attachment="attachment"
             />
           </ItemGroup>
-
-          <CommentsSection :comments="ticket?.comments" :name="auth.user?.name ?? ''" />
+          <!-- will test after mailtrap fix -->
+          <CommentsSection
+            :comments="ticket?.comments"
+            :name="auth.user?.name ?? ''"
+            @created="fetchTicketbyId"
+            @updated="fetchTicketbyId"
+          />
         </CardContent>
       </Card>
 

@@ -38,11 +38,17 @@ const { handleSubmit, resetForm, isSubmitting } = useForm({
   initialValues: defaultValues,
 });
 
+const emit = defineEmits<{
+  updated: [];
+}>();
+
 const onSubmit = handleSubmit(async (data) => {
+  postError.value = '';
   try {
     await commentsApi.update(ticketId, props.comment.id, data);
     isDialogOpen.value = false;
     resetForm();
+    emit('updated');
   } catch (error) {
     postError.value = getErrorMessage(error);
   }
